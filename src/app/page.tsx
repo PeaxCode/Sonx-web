@@ -3,6 +3,7 @@ import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 import { Hero } from "@/components/landing/hero";
 import { STORE_LINKS } from "@/lib/billing-config";
+import { FAQ, STARTERS, STEPS } from "@/components/landing/content";
 import { HeaderAction } from "@/components/landing/header-action";
 import { StoreBadges } from "@/components/store-badges";
 
@@ -58,6 +59,72 @@ export default function Home() {
               </article>
             ))}
           </div>
+        </section>
+
+        <section aria-labelledby="steps-title" className="mx-auto max-w-6xl px-4 py-20 md:px-8">
+          <h2 id="steps-title" className="max-w-xl font-display text-3xl font-semibold leading-tight md:text-4xl">
+            From a sentence to a song
+          </h2>
+          {/* A real sequence, so the steps are numbered. */}
+          <ol className="mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
+            {STEPS.map((step, index) => (
+              <li key={step.title} className="border-t border-line pt-6">
+                <span className="font-display text-5xl font-semibold text-violet/70">{index + 1}</span>
+                <h3 className="mt-4 font-display text-xl font-semibold">{step.title}</h3>
+                <p className="mt-2 max-w-sm text-fog">{step.text}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section aria-labelledby="starters-title" className="mx-auto max-w-6xl px-4 pb-20 md:px-8">
+          <h2 id="starters-title" className="font-display text-2xl font-semibold md:text-3xl">Not sure where to start?</h2>
+          <p className="mt-2 text-fog">Pick one and change it however you like.</p>
+          <ul className="mt-8 flex flex-wrap gap-3">
+            {STARTERS.map((starter) => (
+              <li key={starter.label}>
+                <Link href={`/create?prompt=${encodeURIComponent(starter.prompt)}`}
+                  className="block rounded-full border border-line px-5 py-2.5 text-sm transition hover:border-violet hover:bg-violet/10">
+                  {starter.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section aria-labelledby="faq-title" className="mx-auto grid max-w-6xl gap-10 px-4 py-20 md:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] md:px-8">
+          <div>
+            <h2 id="faq-title" className="font-display text-3xl font-semibold leading-tight md:sticky md:top-10 md:text-4xl">
+              Questions, answered
+            </h2>
+          </div>
+          <div className="divide-y divide-line border-y border-line">
+            {FAQ.map((item) => (
+              <details key={item.question} className="group py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-medium [&::-webkit-details-marker]:hidden">
+                  {item.question}
+                  <span aria-hidden="true"
+                    className="relative size-4 shrink-0 before:absolute before:inset-x-0 before:top-1/2 before:h-0.5 before:-translate-y-1/2 before:bg-fog after:absolute after:inset-y-0 after:left-1/2 after:w-0.5 after:-translate-x-1/2 after:bg-fog after:transition-transform group-open:after:rotate-90" />
+                </summary>
+                <p className="mt-3 max-w-2xl text-fog">{item.answer}</p>
+              </details>
+            ))}
+          </div>
+          {/* Structured data so search engines can show these answers. */}
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                mainEntity: FAQ.map((item) => ({
+                  "@type": "Question",
+                  name: item.question,
+                  acceptedAnswer: { "@type": "Answer", text: item.answer },
+                })),
+              }).replace(/</g, "\\u003c"),
+            }}
+          />
         </section>
 
         <section aria-labelledby="app-title" className="mx-auto max-w-6xl px-4 pb-24 md:px-8">

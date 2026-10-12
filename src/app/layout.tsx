@@ -8,7 +8,6 @@ const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakart
 export const metadata: Metadata = {
   title: { default: "Sonx: make songs with AI", template: "%s | Sonx" },
   description: "Describe a song or write lyrics and Sonx turns it into music. Your songs sync with the Sonx app.",
-  icons: { icon: "/images/sonx-icon.png" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

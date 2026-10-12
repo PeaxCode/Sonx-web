@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Suspense } from "react";
 import Link from "next/link";
+import { AppleSignInButton } from "@/components/apple-button";
 import { GoogleSignInButton } from "@/components/google-button";
 
 export const metadata = { title: "Sign in" };
@@ -21,7 +22,12 @@ async function SignInError({ searchParams }: { searchParams: LoginSearchParams }
 
 async function SignInButton({ searchParams }: { searchParams: LoginSearchParams }) {
   const { next } = await searchParams;
-  return <GoogleSignInButton next={safeNext(next)} />;
+  return (
+    <div className="flex flex-col gap-3">
+      <AppleSignInButton next={safeNext(next)} />
+      <GoogleSignInButton next={safeNext(next)} />
+    </div>
+  );
 }
 
 export default function LoginPage({ searchParams }: { searchParams: LoginSearchParams }) {

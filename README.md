@@ -37,5 +37,18 @@ Functions that live in the mobile repo (`ai-music-generator/supabase`):
 
 - Next.js 16 with Cache Components: anything that reads cookies or search
   params must sit behind `<Suspense>`. See `AGENTS.md`.
-- Sign in with Apple on the web needs an Apple Services ID and key configured
-  in Supabase before it can be added.
+
+## Sign in with Apple on the web
+
+The web and the mobile app share one Supabase Apple provider:
+
+- **Client IDs**: `com.sonx.web,com.sonx`. The Services ID (first) is used for
+  the web OAuth flow; the bundle ID verifies native ID tokens from the app.
+- **Secret Key (for OAuth)**: a JWT from `scripts/apple-client-secret.mjs`,
+  valid for at most six months. Only the web flow uses it, so an expired secret
+  breaks Apple sign-in on the web but not in the app. Rotate it before expiry.
+- Services ID return URL: `https://<project-ref>.supabase.co/auth/v1/callback`.
+- Set `NEXT_PUBLIC_APPLE_SIGNIN_ENABLED=true` once this is configured.
+
+The same Apple ID resolves to the same Supabase user on both platforms,
+because the Services ID is grouped under the app's primary App ID.
