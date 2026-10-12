@@ -61,6 +61,11 @@ function Spectrum({ pulseRef, gainRef }: {
 
       const gap = 4;
       const barWidth = (width - gap * (BAR_COUNT - 1)) / BAR_COUNT;
+      // The canvas can measure 0 wide before layout settles; skip that frame.
+      if (barWidth <= 0 || height <= 0) {
+        if (!reduceMotion) raf = requestAnimationFrame(draw);
+        return;
+      }
       const t = frame / 90;
       for (let index = 0; index < BAR_COUNT; index++) {
         // A slow, layered wave so the idle spectrum reads as music, not a flat line.
@@ -70,7 +75,7 @@ function Spectrum({ pulseRef, gainRef }: {
         const barHeight = level * height;
         context.globalAlpha = 0.3 + level * 0.6;
         context.beginPath();
-        context.roundRect(index * (barWidth + gap), height - barHeight, barWidth, barHeight, Math.min(barWidth / 2, 6));
+        context.roundRect(index * (barWidth + gap), height - barHeight, barWidth, barHeight, Math.max(0, Math.min(barWidth / 2, barHeight / 2, 6)));
         context.fill();
         if (!reduceMotion) energy[index] *= 0.965;
       }

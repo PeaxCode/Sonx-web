@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { AccountView } from "@/components/studio/account-view";
 import { createServerSupabase } from "@/lib/supabase/server";
@@ -9,6 +10,8 @@ const metadataString = (metadata: Record<string, unknown>, ...keys: string[]) =>
 
 /** Reads the session, so it streams in behind a Suspense boundary. */
 async function AccountDetails() {
+  // Supabase checks token expiry against the clock, which is request-time data.
+  await connection();
   const supabase = await createServerSupabase();
   const { data: { user } } = await supabase.auth.getUser();
   const metadata = user?.user_metadata ?? {};
