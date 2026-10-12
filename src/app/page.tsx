@@ -4,6 +4,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { Hero } from "@/components/landing/hero";
 import { STORE_LINKS } from "@/lib/billing-config";
 import { HeaderAction } from "@/components/landing/header-action";
+import { StoreBadges } from "@/components/store-badges";
 
 const FEATURES = [
   {
@@ -66,16 +67,7 @@ export default function Home() {
               <p className="mt-3 text-fog">
                 Sign in with the same account in the Sonx app. Everything you make here is there, and the other way around.
               </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <a href={STORE_LINKS.ios} target="_blank" rel="noreferrer"
-                  className="rounded-[var(--radius-control)] bg-paper px-5 py-3 text-sm font-semibold text-night">
-                  Download on the App Store
-                </a>
-                <a href={STORE_LINKS.android} target="_blank" rel="noreferrer"
-                  className="rounded-[var(--radius-control)] border border-line px-5 py-3 text-sm font-semibold">
-                  Get it on Google Play
-                </a>
-              </div>
+              <StoreBadges className="mt-6" />
             </div>
             <div className="hidden shrink-0 items-center gap-4 md:flex">
               <div className="rounded-2xl bg-paper p-3"><QRCodeSVG value={STORE_LINKS.ios} size={112} /></div>

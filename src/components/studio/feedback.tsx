@@ -1,7 +1,9 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
+import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
 import { QRCodeSVG } from "qrcode.react";
+import { StoreBadges } from "@/components/store-badges";
 import { STORE_LINKS } from "@/lib/billing-config";
 
 interface FeedbackValue {
@@ -10,6 +12,48 @@ interface FeedbackValue {
 }
 
 const FeedbackContext = createContext<FeedbackValue | null>(null);
+
+function PaywallDialog({ onClose }: { onClose: () => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useGSAP(() => {
+    if (prefersReducedMotion()) return;
+    gsap.from(ref.current, { opacity: 0, duration: 0.2 });
+    gsap.from(".paywall-panel", { scale: 0.96, y: 8, opacity: 0, duration: 0.3, ease: "power2.out" });
+  }, { scope: ref });
+
+  return (
+    <div
+      ref={ref}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="paywall-title"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="paywall-panel w-full max-w-md rounded-[var(--radius-panel)] border border-line bg-plum p-7"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <h2 id="paywall-title" className="font-display text-xl font-semibold">
+          You are out of songs for now
+        </h2>
+        <p className="mt-3 text-fog">
+          Subscribe or buy credits in the Sonx app. Sign in there with the same account and your plan works here too.
+        </p>
+        <div className="mt-6 flex items-center gap-5">
+          <div className="rounded-xl bg-paper p-2">
+            <QRCodeSVG value={STORE_LINKS.ios} size={96} />
+          </div>
+          <p className="text-sm text-fog">Scan with your iPhone camera to open the App Store.</p>
+        </div>
+        <StoreBadges className="mt-6" />
+        <button type="button" onClick={onClose} className="mt-5 w-full py-2 text-sm text-fog hover:text-paper">
+          Not now
+        </button>
+      </div>
+    </div>
+  );
+}
 
 /** Toast messages and the "get Pro in the app" paywall. */
 export function FeedbackProvider({ children }: { children: React.ReactNode }) {
@@ -40,46 +84,7 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
         )}
       </div>
 
-      {paywallOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="paywall-title"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
-          onClick={() => setPaywallOpen(false)}
-        >
-          <div
-            className="w-full max-w-md rounded-[var(--radius-panel)] border border-line bg-plum p-7"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <h2 id="paywall-title" className="font-display text-xl font-semibold">
-              You are out of songs for now
-            </h2>
-            <p className="mt-3 text-fog">
-              Subscribe or buy credits in the Sonx app. Sign in there with the same account and your plan works here too.
-            </p>
-            <div className="mt-6 flex items-center gap-5">
-              <div className="rounded-xl bg-paper p-2">
-                <QRCodeSVG value={STORE_LINKS.ios} size={96} />
-              </div>
-              <p className="text-sm text-fog">Scan with your iPhone camera to open the App Store.</p>
-            </div>
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              <a href={STORE_LINKS.ios} target="_blank" rel="noreferrer"
-                className="rounded-[var(--radius-control)] bg-paper px-4 py-3 text-center text-sm font-semibold text-night">
-                App Store
-              </a>
-              <a href={STORE_LINKS.android} target="_blank" rel="noreferrer"
-                className="rounded-[var(--radius-control)] border border-line px-4 py-3 text-center text-sm font-semibold">
-                Google Play
-              </a>
-            </div>
-            <button type="button" onClick={() => setPaywallOpen(false)} className="mt-5 w-full py-2 text-sm text-fog hover:text-paper">
-              Not now
-            </button>
-          </div>
-        </div>
-      )}
+      {paywallOpen && <PaywallDialog onClose={() => setPaywallOpen(false)} />}
     </FeedbackContext.Provider>
   );
 }

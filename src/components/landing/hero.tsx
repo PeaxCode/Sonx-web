@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
+import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
 
 const EXAMPLES = [
   "a rainy drive home at 2am",
@@ -18,7 +19,10 @@ const BAR_COUNT = 72;
  * bars, which then settle. It idles with a slow breath, and stays still for
  * people who prefer reduced motion.
  */
-function Spectrum({ pulseRef }: { pulseRef: React.RefObject<() => void> }) {
+function Spectrum({ pulseRef, gainRef }: {
+  pulseRef: React.RefObject<() => void>;
+  gainRef: React.RefObject<{ value: number }>;
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -61,7 +65,8 @@ function Spectrum({ pulseRef }: { pulseRef: React.RefObject<() => void> }) {
       for (let index = 0; index < BAR_COUNT; index++) {
         // A slow, layered wave so the idle spectrum reads as music, not a flat line.
         const idle = 0.14 + 0.32 * (0.5 + 0.5 * Math.sin(index / 7 + t)) * (0.55 + 0.45 * Math.sin(index / 2.7 - t * 1.6));
-        const level = Math.min(1, idle + energy[index]);
+        // gainRef rises from 0 to 1 in the hero's intro.
+        const level = Math.min(1, idle + energy[index]) * gainRef.current.value;
         const barHeight = level * height;
         context.globalAlpha = 0.3 + level * 0.6;
         context.beginPath();
@@ -74,7 +79,7 @@ function Spectrum({ pulseRef }: { pulseRef: React.RefObject<() => void> }) {
     };
     draw();
     return () => cancelAnimationFrame(raf);
-  }, [pulseRef]);
+  }, [pulseRef, gainRef]);
 
   return (
     <canvas
@@ -90,6 +95,21 @@ export function Hero() {
   const [topic, setTopic] = useState("");
   const [exampleIndex, setExampleIndex] = useState(0);
   const pulseRef = useRef<() => void>(() => undefined);
+  const gainRef = useRef({ value: 0 });
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // One orchestrated entrance: the headline rises word by word, the field and
+  // button follow, and the spectrum swells up from silence.
+  useGSAP(() => {
+    if (prefersReducedMotion()) {
+      gainRef.current.value = 1;
+      return;
+    }
+    gsap.timeline({ defaults: { ease: "power3.out" } })
+      .from(".hero-word", { yPercent: 110, duration: 0.8, stagger: 0.07 })
+      .from(".hero-reveal", { opacity: 0, y: 18, duration: 0.6, stagger: 0.1 }, "-=0.45")
+      .to(gainRef.current, { value: 1, duration: 1.4, ease: "power2.out" }, 0.2);
+  }, { scope: sectionRef });
 
   useEffect(() => {
     const timer = setInterval(() => setExampleIndex((index) => (index + 1) % EXAMPLES.length), 2800);
@@ -103,25 +123,41 @@ export function Hero() {
   };
 
   return (
-    <section className="relative overflow-hidden px-4 pb-48 pt-16 md:px-8 md:pb-64 md:pt-24">
+    <section ref={sectionRef} className="relative overflow-hidden px-4 pb-48 pt-16 md:px-8 md:pb-64 md:pt-24">
       <form onSubmit={start} className="relative z-10 mx-auto max-w-5xl">
         <label htmlFor="topic" className="block font-display text-4xl font-semibold leading-[1.05] tracking-tight md:text-7xl">
-          Make a song about
+          {"Make a song about".split(" ").map((word, index) => (
+            // The clipping wrapper lets each word rise into view from below; the
+            // plain space between wrappers keeps the headline able to wrap.
+            <Fragment key={index}>
+              {index > 0 && " "}
+              <span className="inline-block overflow-hidden pb-[0.08em] align-bottom">
+                <span className="hero-word inline-block">{word}</span>
+              </span>
+            </Fragment>
+          ))}
         </label>
-        <textarea
-          id="topic"
-          value={topic}
-          rows={2}
-          maxLength={500}
-          onChange={(event) => setTopic(event.target.value)}
-          onKeyDown={(event) => {
-            pulseRef.current();
-            if (event.key === "Enter" && !event.shiftKey) start(event);
-          }}
-          placeholder={EXAMPLES[exampleIndex]}
-          className="mt-2 w-full resize-none bg-transparent font-display text-4xl font-semibold leading-[1.1] tracking-tight text-violet placeholder:text-fog/35 focus:outline-none md:text-7xl"
-        />
-        <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-6">
+        {/* The hidden copy sizes the grid cell, so the field grows with its text
+            (or the rotating placeholder) and never shows a scrollbar. */}
+        <div className="hero-reveal mt-2 grid font-display text-4xl font-semibold leading-[1.1] tracking-tight md:text-7xl">
+          <span aria-hidden="true" className="invisible whitespace-pre-wrap break-words [grid-area:1/1]">
+            {(topic || EXAMPLES[exampleIndex]) + " "}
+          </span>
+          <textarea
+            id="topic"
+            value={topic}
+            rows={1}
+            maxLength={500}
+            onChange={(event) => setTopic(event.target.value)}
+            onKeyDown={(event) => {
+              pulseRef.current();
+              if (event.key === "Enter" && !event.shiftKey) start(event);
+            }}
+            placeholder={EXAMPLES[exampleIndex]}
+            className="w-full resize-none overflow-hidden bg-transparent text-violet [grid-area:1/1] placeholder:text-fog/35 focus:outline-none"
+          />
+        </div>
+        <div className="hero-reveal mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-6">
           <button type="submit"
             className="bg-signature rounded-[var(--radius-control)] px-7 py-4 font-display text-sm font-semibold tracking-wide transition hover:brightness-110">
             Create song
@@ -129,7 +165,7 @@ export function Hero() {
           <p className="text-sm text-fog">Your first song is free. Lyrics and vocals included.</p>
         </div>
       </form>
-      <Spectrum pulseRef={pulseRef} />
+      <Spectrum pulseRef={pulseRef} gainRef={gainRef} />
     </section>
   );
 }

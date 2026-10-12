@@ -1,5 +1,8 @@
 "use client";
 
+import { useRef } from "react";
+import { CoverArt } from "@/components/cover-art";
+import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
 import { formatTime } from "@/lib/audio";
 import { IconNext, IconPause, IconPlay, IconPrevious } from "@/components/icons";
 import { usePlayer } from "./player";
@@ -7,12 +10,21 @@ import { usePlayer } from "./player";
 /** Always-visible playback bar, shown once a song has been played. */
 export function PlayerBar() {
   const { current, playing, time, duration, toggle, seek, next, previous, hasNext, hasPrevious } = usePlayer();
+  const barRef = useRef<HTMLDivElement>(null);
+  const hasTrack = current !== null;
+
+  // Slides up the first time a song plays.
+  useGSAP(() => {
+    if (!hasTrack || prefersReducedMotion()) return;
+    gsap.from(barRef.current, { yPercent: 100, duration: 0.45, ease: "power3.out", clearProps: "transform" });
+  }, { dependencies: [hasTrack] });
+
   if (!current) return null;
 
   const progress = duration > 0 ? (time / duration) * 100 : 0;
 
   return (
-    <div className="fixed inset-x-0 bottom-16 z-40 border-t border-line bg-plum/95 backdrop-blur md:bottom-0 md:left-60">
+    <div ref={barRef} className="fixed inset-x-0 bottom-16 z-40 border-t border-line bg-plum/95 backdrop-blur md:bottom-0 md:left-60">
       {/* The signature gradient marks playback progress. */}
       <div className="relative h-1 w-full bg-raised">
         <div className="bg-signature absolute inset-y-0 left-0" style={{ width: `${progress}%` }} />
@@ -28,6 +40,7 @@ export function PlayerBar() {
         />
       </div>
       <div className="flex items-center gap-4 px-4 py-3 md:px-6">
+        <CoverArt seed={current.id} className="size-11 shrink-0 rounded-[10px]" />
         <div className="min-w-0 flex-1">
           <p className="truncate font-medium">{current.title}</p>
           <p className="text-xs text-fog tabular-nums">
