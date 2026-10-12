@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
+import Image from "next/image";
 import { CoverArt } from "@/components/cover-art";
 import { IconClose, IconDownload, IconHeart, IconPause, IconPlay, IconTrash, IconVideo } from "@/components/icons";
 import { GENRES } from "@/lib/billing-config";
@@ -104,7 +105,11 @@ export function TrackList({ generations, emptyText }: { generations: Generation[
                 onClick={() => (isVideo ? setOpenVideo(generation) : play(generation, playable))}
                 className="group relative size-14 shrink-0 overflow-hidden rounded-[var(--radius-control)] disabled:cursor-default"
               >
-                <CoverArt seed={generation.id} className={`size-full ${ready ? "" : "opacity-40 grayscale"}`} />
+                {generation.cover_url ? (
+                  <Image src={generation.cover_url} alt="" fill sizes="56px" className="object-cover" />
+                ) : (
+                  <CoverArt seed={generation.id} className={`size-full ${ready ? "" : "opacity-40 grayscale"}`} />
+                )}
                 {ready && (
                   <span className={`absolute inset-0 flex items-center justify-center bg-night/45 transition-opacity ${
                     isCurrent ? "opacity-100" : "opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100"
@@ -131,17 +136,21 @@ export function TrackList({ generations, emptyText }: { generations: Generation[
                 <div className="flex items-center gap-1 text-fog">
                   {ready && (
                     <>
+                      {!generation.is_sample && (
                       <button type="button" aria-label={generation.is_favorite ? "Remove from favorites" : "Add to favorites"}
                         aria-pressed={generation.is_favorite} onClick={() => toggleFavorite(generation)}
                         className={`rounded-full p-2 transition hover:text-paper ${generation.is_favorite ? "text-orchid" : ""}`}>
                         <IconHeart size={18} filled={generation.is_favorite} />
                       </button>
+                      )}
                       <a href={generation.output_url!} download target="_blank" rel="noreferrer"
                         aria-label={`Download ${generation.title}`} className="rounded-full p-2 transition hover:text-paper">
                         <IconDownload size={18} />
                       </a>
                     </>
                   )}
+                  {/* Examples are not rows in the user's library, so they cannot be deleted. */}
+                  {!generation.is_sample && (
                   <button type="button" aria-label={`Delete ${generation.title}`}
                     onClick={() => {
                       if (window.confirm(`Delete "${generation.title}"? This removes it from the app too.`)) void remove(generation);
@@ -149,6 +158,7 @@ export function TrackList({ generations, emptyText }: { generations: Generation[
                     className="rounded-full p-2 transition hover:text-danger">
                     <IconTrash size={18} />
                   </button>
+                  )}
                 </div>
               )}
             </li>

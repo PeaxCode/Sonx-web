@@ -6,6 +6,7 @@ import { isInsufficientBalance } from "@/lib/api";
 import { decodeAudio, formatTime, sliceToWav } from "@/lib/audio";
 import { VIDEO_CREDIT_COSTS, type VideoDuration } from "@/lib/billing-config";
 import { MUSIC_FEATURES, newRequestId, startGeneration } from "@/lib/generations";
+import { SAMPLE_GENERATIONS } from "@/lib/samples";
 import { uploadForGeneration } from "@/lib/uploads";
 import { useBilling } from "./billing";
 import { useFeedback } from "./feedback";
@@ -16,15 +17,19 @@ const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 type Source = { kind: "library"; generationId: string } | { kind: "file"; file: File };
 
+// Like the app, the example songs can be used as a video's soundtrack.
+const SAMPLE_SONGS = SAMPLE_GENERATIONS.filter((item) => MUSIC_FEATURES.includes(item.feature));
+
 export function CreateVideoForm() {
   const { accessFor, billing } = useBilling();
   const { notify, openPaywall } = useFeedback();
   const { generations, track } = useLibrary();
 
-  const songs = useMemo(
+  const ownSongs = useMemo(
     () => generations.filter((item) => MUSIC_FEATURES.includes(item.feature) && item.status === "completed" && item.output_url),
     [generations],
   );
+  const songs = useMemo(() => [...ownSongs, ...SAMPLE_SONGS], [ownSongs]);
 
   const [image, setImage] = useState<File | null>(null);
   const [source, setSource] = useState<Source | null>(null);
@@ -146,8 +151,15 @@ export function CreateVideoForm() {
             onChange={(event) => event.target.value && void chooseSource({ kind: "library", generationId: event.target.value })}
             className="rounded-[var(--radius-control)] border border-line bg-plum px-4 py-3 focus:border-violet focus:outline-none"
           >
-            <option value="">Pick one of your songs</option>
-            {songs.map((song) => <option key={song.id} value={song.id}>{song.title}</option>)}
+            <option value="">Pick a song</option>
+            {ownSongs.length > 0 && (
+              <optgroup label="Your songs">
+                {ownSongs.map((song) => <option key={song.id} value={song.id}>{song.title}</option>)}
+              </optgroup>
+            )}
+            <optgroup label="Examples">
+              {SAMPLE_SONGS.map((song) => <option key={song.id} value={song.id}>{song.title}</option>)}
+            </optgroup>
           </select>
         )}
         <label className="cursor-pointer rounded-[var(--radius-control)] border border-line px-4 py-3 text-sm text-fog transition hover:text-paper focus-within:border-violet">

@@ -39,5 +39,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|images/|favicon.ico).*)"],
+  // Static media (images, bundled examples) never needs the session check.
+  matcher: ["/((?!_next/static|_next/image|images/|samples/|favicon.ico).*)"],
 };

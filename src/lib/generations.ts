@@ -19,6 +19,10 @@ export interface Generation {
   is_favorite: boolean;
   created_at: string;
   completed_at: string | null;
+  /** Bundled example from the Sonx app, not a row in the user's library. */
+  is_sample?: boolean;
+  /** Real artwork when one exists (sample video thumbnails); otherwise CoverArt. */
+  cover_url?: string;
 }
 
 export const MUSIC_FEATURES: Feature[] = ["PROMPT_MUSIC", "PHOTO_MUSIC", "LYRICS_MUSIC", "AI_SINGING"];

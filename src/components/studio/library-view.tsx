@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { MUSIC_FEATURES, type Generation } from "@/lib/generations";
+import { SAMPLE_GENERATIONS } from "@/lib/samples";
 import { useLibrary } from "./library";
 import { TrackList } from "./track-list";
 
@@ -34,6 +35,15 @@ export function LibraryView() {
           generations={generations.filter(active.match)}
           emptyText={filter === "favorites" ? "Tap the heart on a song to keep it here." : "Nothing here yet. Create a song to get started."}
         />
+      )}
+
+      {/* The same examples the mobile app shows in its library. */}
+      {filter !== "favorites" && SAMPLE_GENERATIONS.some(active.match) && (
+        <section aria-labelledby="samples-title" className="mt-12">
+          <h2 id="samples-title" className="font-display text-lg font-semibold">Examples from Sonx</h2>
+          <p className="mb-2 mt-1 text-sm text-fog">Made with Sonx. Play them to hear what you can create.</p>
+          <TrackList generations={SAMPLE_GENERATIONS.filter(active.match)} emptyText="" />
+        </section>
       )}
     </>
   );
