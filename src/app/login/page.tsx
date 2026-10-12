@@ -1,0 +1,55 @@
+import Image from "next/image";
+import { Suspense } from "react";
+import Link from "next/link";
+import { GoogleSignInButton } from "@/components/google-button";
+
+export const metadata = { title: "Sign in" };
+
+const safeNext = (value?: string) => (value && value.startsWith("/") && !value.startsWith("//") ? value : "/create");
+
+type LoginSearchParams = Promise<{ next?: string; error?: string }>;
+
+async function SignInError({ searchParams }: { searchParams: LoginSearchParams }) {
+  const { error } = await searchParams;
+  if (!error) return null;
+  return (
+    <p role="alert" className="mt-6 rounded-[var(--radius-control)] border border-danger/40 px-4 py-3 text-sm">
+      Sign-in did not finish. Try again.
+    </p>
+  );
+}
+
+async function SignInButton({ searchParams }: { searchParams: LoginSearchParams }) {
+  const { next } = await searchParams;
+  return <GoogleSignInButton next={safeNext(next)} />;
+}
+
+export default function LoginPage({ searchParams }: { searchParams: LoginSearchParams }) {
+  return (
+    <main className="flex min-h-dvh items-center justify-center px-4">
+      <div className="w-full max-w-sm">
+        <Link href="/" className="mb-10 flex items-center justify-center gap-2.5">
+          <Image src="/images/sonx-icon.png" alt="" width={40} height={40} className="rounded-xl" />
+          <span className="font-display text-xl font-semibold">Sonx</span>
+        </Link>
+        <h1 className="text-center font-display text-2xl font-semibold">Sign in to make songs</h1>
+        <p className="mt-3 text-center text-fog">
+          Use the same account as the Sonx app and your songs, credits and plan are already here.
+        </p>
+        <Suspense fallback={null}>
+          <SignInError searchParams={searchParams} />
+        </Suspense>
+        <div className="mt-8">
+          <Suspense fallback={<GoogleSignInButton />}>
+            <SignInButton searchParams={searchParams} />
+          </Suspense>
+        </div>
+        <p className="mt-6 text-center text-xs text-fog">
+          By continuing you agree to the{" "}
+          <a href="https://www.getsonx.com/terms.html" className="underline hover:text-paper">terms</a> and{" "}
+          <a href="https://www.getsonx.com/privacy.html" className="underline hover:text-paper">privacy policy</a>.
+        </p>
+      </div>
+    </main>
+  );
+}

@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sonx Web
 
-## Getting Started
+The web version of the Sonx app: create songs and music videos, with the same
+account, library, credits and plan as the mobile app.
 
-First, run the development server:
+## Run locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local   # fill in the public Supabase URL and publishable key
+npm install
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Sign in with Google. `http://localhost:3000/**` is in the Supabase Auth redirect
+allow list; add every new domain (Vercel previews, production) there too.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## How it fits together
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The web app has no backend of its own. It uses the Supabase project and Edge
+Functions that live in the mobile repo (`ai-music-generator/supabase`):
 
-## Learn More
+- **Auth**: Supabase Auth with Google (PKCE). `src/proxy.ts` refreshes the
+  session cookie and keeps `/create`, `/video`, `/library` and `/account`
+  behind sign-in. `/auth/callback` exchanges the OAuth code.
+- **Generation**: `provider-proxy` `generate` starts a billed generation; the
+  server picks the model, charges quota or credits, and EachLabs reports back
+  through `eachlabs-webhook`. The browser reads the `generations` row (Row
+  Level Security limits it to the user) and calls `generation-refresh` only
+  when a webhook is late.
+- **Billing**: read-only on the web. The first visit calls `billing-migrate`,
+  which marks a web account migrated; purchases happen in the mobile app.
+- **Uploads** (music video): files go to the `ai-uploads` bucket under
+  `<userId>/images|audio/` and are removed after ten minutes. Audio is trimmed
+  in the browser to the chosen 15 or 30 seconds and uploaded as WAV.
 
-To learn more about Next.js, take a look at the following resources:
+## Notes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Next.js 16 with Cache Components: anything that reads cookies or search
+  params must sit behind `<Suspense>`. See `AGENTS.md`.
+- Sign in with Apple on the web needs an Apple Services ID and key configured
+  in Supabase before it can be added.

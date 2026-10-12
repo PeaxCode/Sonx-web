@@ -1,26 +1,51 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Sonx palette, shared with the mobile app (constants/theme.ts). */
+@theme {
+  --color-night: #030303;
+  --color-plum: #0f1220;
+  --color-raised: #181d31;
+  --color-line: rgb(255 255 255 / 0.08);
+  --color-violet: #c94bff;
+  --color-orchid: #e563f1;
+  --color-iris: #9a57ff;
+  --color-fog: #b7acd3;
+  --color-paper: #fafafa;
+  --color-danger: #ff6b8a;
+
+  --font-display: var(--font-unbounded), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-control: 14px;
+  --radius-panel: 22px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-night);
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The orchid-to-iris gradient is reserved for the primary action and playback progress. */
+.bg-signature {
+  background-image: linear-gradient(100deg, var(--color-orchid), var(--color-violet) 45%, var(--color-iris));
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-violet);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

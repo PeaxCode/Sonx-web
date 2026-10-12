@@ -1,69 +1,99 @@
 import Image from "next/image";
+import Link from "next/link";
+import { QRCodeSVG } from "qrcode.react";
+import { Hero } from "@/components/landing/hero";
+import { STORE_LINKS } from "@/lib/billing-config";
+import { HeaderAction } from "@/components/landing/header-action";
+
+const FEATURES = [
+  {
+    image: "/images/feature-song.png",
+    title: "Songs from a sentence",
+    text: "Describe a mood, a moment or a story. Sonx writes the lyrics, picks the voice and produces the track.",
+  },
+  {
+    image: "/images/feature-lyrics.png",
+    title: "Lyrics written for you",
+    text: "Bring your own words or start from a topic and edit what comes back.",
+  },
+  {
+    image: "/images/feature-video.png",
+    title: "Music videos from a photo",
+    text: "Pick a portrait and a song. The photo sings along.",
+  },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <>
+      <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5 md:px-8">
+        <Link href="/" className="flex items-center gap-2.5">
+          <Image src="/images/sonx-icon.png" alt="" width={34} height={34} className="rounded-lg" />
+          <span className="font-display text-lg font-semibold">Sonx</span>
+        </Link>
+        <HeaderAction />
+      </header>
+
+      <main>
+        <Hero />
+
+        <section aria-labelledby="features-title" className="mx-auto max-w-6xl px-4 py-20 md:px-8">
+          <h2 id="features-title" className="max-w-xl font-display text-3xl font-semibold leading-tight md:text-4xl">
+            One idea, three ways to hear it
+          </h2>
+          <div className="mt-10 grid gap-4 md:grid-cols-5 md:grid-rows-2">
+            {FEATURES.map((feature, index) => (
+              <article key={feature.title}
+                className={`group relative flex min-h-72 flex-col justify-end overflow-hidden border border-line ${
+                  index === 0 ? "rounded-[28px] md:col-span-3 md:row-span-2 md:min-h-[34rem]" : "rounded-[var(--radius-panel)] md:col-span-2"
+                }`}>
+                <Image src={feature.image} alt="" fill sizes={index === 0 ? "(min-width: 768px) 60vw, 100vw" : "(min-width: 768px) 40vw, 100vw"}
+                  className="object-cover opacity-70" />
+                <div className="absolute inset-0 bg-gradient-to-t from-night via-night/60 to-transparent" />
+                <div className="relative p-6 md:p-8">
+                  <h3 className={`font-display font-semibold ${index === 0 ? "text-2xl md:text-3xl" : "text-xl"}`}>{feature.title}</h3>
+                  <p className="mt-2 max-w-md text-fog">{feature.text}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section aria-labelledby="app-title" className="mx-auto max-w-6xl px-4 pb-24 md:px-8">
+          <div className="flex flex-col gap-8 rounded-[28px] bg-plum p-8 md:flex-row md:items-center md:justify-between md:p-12">
+            <div className="max-w-lg">
+              <h2 id="app-title" className="font-display text-2xl font-semibold md:text-3xl">The same songs on your phone</h2>
+              <p className="mt-3 text-fog">
+                Sign in with the same account in the Sonx app. Everything you make here is there, and the other way around.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a href={STORE_LINKS.ios} target="_blank" rel="noreferrer"
+                  className="rounded-[var(--radius-control)] bg-paper px-5 py-3 text-sm font-semibold text-night">
+                  Download on the App Store
+                </a>
+                <a href={STORE_LINKS.android} target="_blank" rel="noreferrer"
+                  className="rounded-[var(--radius-control)] border border-line px-5 py-3 text-sm font-semibold">
+                  Get it on Google Play
+                </a>
+              </div>
+            </div>
+            <div className="hidden shrink-0 items-center gap-4 md:flex">
+              <div className="rounded-2xl bg-paper p-3"><QRCodeSVG value={STORE_LINKS.ios} size={112} /></div>
+              <p className="max-w-32 text-sm text-fog">Scan with your iPhone camera</p>
+            </div>
+          </div>
+        </section>
       </main>
-    </div>
+
+      <footer className="border-t border-line">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 text-sm text-fog md:px-8">
+          <p>© Sonx</p>
+          <nav className="flex gap-6">
+            <a href="https://www.getsonx.com/privacy.html" className="hover:text-paper">Privacy</a>
+            <a href="https://www.getsonx.com/terms.html" className="hover:text-paper">Terms</a>
+          </nav>
+        </div>
+      </footer>
+    </>
   );
 }

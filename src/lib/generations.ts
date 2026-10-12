@@ -1,0 +1,99 @@
+import { callProxy, ProxyError } from "@/lib/api";
+import type { Feature } from "@/lib/billing-config";
+import { getSupabase } from "@/lib/supabase/client";
+
+export type GenerationStatus = "processing" | "completed" | "failed";
+
+/** A row of the shared `generations` table (the same library the mobile app shows). */
+export interface Generation {
+  id: string;
+  client_request_id: string;
+  feature: Feature;
+  title: string;
+  genre: string | null;
+  prompt: string | null;
+  lyrics: string | null;
+  status: GenerationStatus;
+  output_url: string | null;
+  error: string | null;
+  is_favorite: boolean;
+  created_at: string;
+  completed_at: string | null;
+}
+
+export const MUSIC_FEATURES: Feature[] = ["PROMPT_MUSIC", "PHOTO_MUSIC", "LYRICS_MUSIC", "AI_SINGING"];
+
+const COLUMNS =
+  "id,client_request_id,feature,title,genre,prompt,lyrics,status,output_url,error,is_favorite,created_at,completed_at";
+
+export const newRequestId = (prefix: string) => `${prefix}_${crypto.randomUUID().replaceAll("-", "")}`;
+
+/** First call on the web marks the account migrated (there is no on-device wallet). */
+export async function syncBillingAccount() {
+  return callProxy<ServerBilling>("billing-migrate", {});
+}
+
+export interface ServerBilling {
+  isPro: boolean;
+  currentPlan: "FREE" | "WEEKLY" | "MONTHLY" | "YEARLY";
+  credits: number;
+  usage: Partial<Record<Feature, number>>;
+  periodStart: number;
+  periodEnd: number;
+}
+
+export async function fetchBilling() {
+  return callProxy<ServerBilling>("billing-state");
+}
+
+/**
+ * Starts a billed generation. The server picks the model, charges quota or
+ * credits and returns the existing generation when the request ID repeats.
+ */
+export async function startGeneration(
+  request: { feature: Feature; clientRequestId: string; title: string; genre?: string } & Record<string, unknown>,
+): Promise<{ generationId: string; status: GenerationStatus }> {
+  try {
+    return await callProxy("generate", request);
+  } catch (error) {
+    if (!(error instanceof ProxyError) || error.code !== "billing_migration_required") throw error;
+    await syncBillingAccount();
+    return callProxy("generate", request);
+  }
+}
+
+export async function fetchGenerations(): Promise<Generation[]> {
+  const { data, error } = await getSupabase()
+    .from("generations")
+    .select(COLUMNS)
+    .order("created_at", { ascending: false })
+    .limit(500);
+  if (error) throw error;
+  return (data ?? []) as Generation[];
+}
+
+export async function fetchGeneration(id: string): Promise<Generation | null> {
+  const { data, error } = await getSupabase().from("generations").select(COLUMNS).eq("id", id).maybeSingle();
+  if (error) throw error;
+  return data as Generation | null;
+}
+
+/** Asks the server to check the provider when a webhook is late. */
+export async function refreshGeneration(id: string) {
+  return callProxy<{ status: GenerationStatus }>("generation-refresh", { generationId: id });
+}
+
+export async function setFavorite(id: string, isFavorite: boolean) {
+  const { error } = await getSupabase().from("generations").update({ is_favorite: isFavorite }).eq("id", id);
+  if (error) throw error;
+}
+
+export async function renameGeneration(id: string, title: string) {
+  const { error } = await getSupabase().from("generations").update({ title }).eq("id", id);
+  if (error) throw error;
+}
+
+export async function deleteGeneration(id: string) {
+  const { error } = await getSupabase().from("generations").delete().eq("id", id);
+  if (error) throw error;
+}
