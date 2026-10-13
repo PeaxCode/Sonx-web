@@ -1,0 +1,404 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1F8ZGT6QEJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1F8ZGT6QEJ');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sonx Journal — AI Music Insights, Comparisons & Guides</title>
+<meta name="description" content="Long-form articles, original data studies and practical guides on AI music generation — from the team behind Sonx.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://getsonx.com/blog/">
+
+<meta property="og:title" content="Sonx Journal — AI Music Insights">
+<meta property="og:description" content="Long-form articles on AI music generation, app comparisons, and practical guides.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://getsonx.com/blog/">
+<meta property="og:image" content="https://getsonx.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": "Sonx Journal",
+  "url": "https://getsonx.com/blog/",
+  "description": "Long-form articles on AI music generation, app comparisons, and practical guides.",
+  "publisher": {
+    "@type": "Organization",
+    "@id": "https://getsonx.com/#organization",
+    "name": "Sonx",
+    "logo": { "@type": "ImageObject", "url": "https://getsonx.com/og-image.png" },
+    "sameAs": [
+      "https://apps.apple.com/us/app/ai-song-generator-sonx/id6757523434",
+      "https://play.google.com/store/apps/details?id=com.app.sonx",
+      "https://www.instagram.com/sonxaisong/",
+      "https://www.tiktok.com/@sonxofficial"
+    ]
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#060606;--surface:#0f0f0f;--surface2:#171717;--surface3:#1f1f1f;
+  --border:rgba(255,255,255,0.06);--border-hover:rgba(255,255,255,0.12);
+  --text:#f8f8f8;--muted:rgba(248,248,248,0.55);--muted2:rgba(248,248,248,0.30);
+  --accent:#c084fc;--accent2:#f472b6;
+  --accent-grad:linear-gradient(135deg,#c084fc 0%,#f472b6 100%);
+  --r:12px;--r-lg:20px;--r-xl:32px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 40px;height:64px;background:rgba(6,6,6,0.75);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:'Instrument Serif',serif;font-size:22px;letter-spacing:0.5px;background:var(--accent-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;justify-self:start}
+.nav-links{display:flex;gap:32px;list-style:none;justify-self:center}
+.nav-links a{font-size:14px;color:var(--muted);transition:color .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
+.nav-cta{display:flex;align-items:center;gap:10px;justify-self:end}
+.btn-nav{display:inline-flex;align-items:center;gap:7px;background:var(--text);color:var(--black);padding:9px 20px;border-radius:100px;font-size:13px;font-weight:600;transition:opacity .2s,transform .15s}
+.btn-nav:hover{opacity:.88;transform:translateY(-1px)}
+.btn-nav-ghost{font-size:13px;color:var(--muted);padding:9px 16px;border-radius:100px;border:1px solid var(--border);transition:color .2s,border-color .2s}
+.btn-nav-ghost:hover{color:var(--text);border-color:var(--border-hover)}
+
+/* Mobile hamburger + menu */
+.nav-toggle{display:none}
+.mobile-menu{display:none}
+@media (max-width: 768px){
+  .nav-toggle{
+    display:inline-flex;flex-direction:column;justify-content:center;align-items:center;
+    width:38px;height:38px;border-radius:50%;
+    background:transparent;border:1px solid var(--border);
+    cursor:pointer;padding:0;gap:4px;
+    transition:border-color .2s,background .2s;
+  }
+  .nav-toggle:hover{border-color:var(--border-hover)}
+  .nav-toggle span{
+    display:block;width:14px;height:1.5px;background:var(--text);
+    border-radius:2px;transition:transform .25s,opacity .2s;
+  }
+  .nav-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(2.75px) rotate(45deg)}
+  .nav-toggle[aria-expanded="true"] span:nth-child(2){transform:translateY(-2.75px) rotate(-45deg)}
+  .mobile-menu{
+    display:block;position:fixed;top:56px;left:0;right:0;z-index:999;
+    background:rgba(6,6,6,0.96);
+    backdrop-filter:blur(20px) saturate(180%);
+    border-bottom:1px solid var(--border);
+    padding:8px 24px 28px;
+    transform:translateY(-110%);transition:transform .3s ease;
+  }
+  .mobile-menu.open{transform:translateY(0)}
+  .mobile-menu ul{list-style:none;padding:0;margin:0}
+  .mobile-menu li a{
+    display:block;padding:16px 0;font-size:17px;color:var(--muted);
+    border-bottom:1px solid var(--border);transition:color .2s;
+  }
+  .mobile-menu li:last-child a{border-bottom:none}
+  .mobile-menu li a:hover,.mobile-menu li a.active{color:var(--text)}
+  .mobile-menu-signup{
+    display:block;margin-top:16px;padding:13px 22px;
+    border-radius:100px;border:1px solid var(--border);
+    text-align:center;color:var(--text);font-size:14px;font-weight:500;
+  }
+}
+.blog-header{padding:140px 24px 60px;text-align:center;position:relative;border-bottom:1px solid var(--border)}
+.blog-header::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 700px 400px at 50% 0%,rgba(192,132,252,0.08) 0%,transparent 60%)}
+.blog-eyebrow{position:relative;display:inline-block;font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+.blog-title{position:relative;font-family:'Instrument Serif',serif;font-size:clamp(48px,7vw,84px);line-height:1;letter-spacing:-0.02em;font-weight:400}
+.blog-title .accent{background:var(--accent-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:italic}
+.blog-tagline{position:relative;margin:24px auto 0;max-width:560px;font-size:17px;color:var(--muted);line-height:1.6}
+.posts{max-width:720px;margin:0 auto;padding:60px 24px 100px}
+.post-item{display:block;padding:36px 0;border-bottom:1px solid var(--border);transition:transform .2s}
+.post-item:last-child{border-bottom:none}
+.post-item:hover{transform:translateX(2px)}
+.post-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;font-size:13px;color:var(--muted2)}
+.post-tag{display:inline-block;padding:4px 10px;border-radius:100px;background:rgba(192,132,252,0.08);border:1px solid rgba(192,132,252,0.18);color:var(--accent);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;font-weight:500}
+.post-meta .dot{width:3px;height:3px;border-radius:50%;background:var(--muted2)}
+.post-title{font-family:'Instrument Serif',serif;font-size:clamp(28px,3.5vw,38px);line-height:1.15;letter-spacing:-0.01em;font-weight:400;margin-bottom:12px;transition:color .2s}
+.post-item:hover .post-title{background:var(--accent-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.post-excerpt{font-size:16px;line-height:1.65;color:var(--muted);max-width:640px}
+.post-readmore{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:13px;font-weight:500;color:var(--text)}
+.post-readmore .arr{transition:transform .2s}
+.post-item:hover .post-readmore .arr{transform:translateX(3px)}
+.subscribe{max-width:720px;margin:0 auto 80px;padding:36px 32px;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--border);text-align:center}
+.subscribe h3{font-family:'Instrument Serif',serif;font-size:28px;font-weight:400;line-height:1.2;margin-bottom:8px}
+.subscribe p{font-size:14px;color:var(--muted);margin-bottom:20px}
+.subscribe-cta{display:inline-flex;align-items:center;gap:7px;background:var(--text);color:var(--black);padding:11px 22px;border-radius:100px;font-size:13px;font-weight:600;transition:opacity .2s,transform .15s}
+.subscribe-cta:hover{opacity:.88;transform:translateY(-1px)}
+footer{display:flex;flex-direction:column;align-items:center;text-align:center;gap:20px;padding:40px;border-top:1px solid var(--border)}
+.footer-logo{font-family:'Instrument Serif',serif;font-size:24px;background:var(--accent-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;font-size:13px;color:var(--muted)}
+.footer-links a:hover{color:var(--text)}
+.footer-copy{font-size:12px;color:var(--muted2)}
+@media(max-width:720px){nav{padding:0 20px;grid-template-columns:1fr auto}.nav-links{display:none}.blog-header{padding:120px 20px 50px}.posts{padding:40px 20px 80px}.post-item{padding:28px 0}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><a href="/">Sonx</a></div>
+  <ul class="nav-links">
+    <li><a href="/create">Create</a></li>
+    <li><a href="/video">Music videos</a></li>
+    <li><a href="/library">Library</a></li>
+    <li><a href="/blog/" class="active">Journal</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="/login" class="btn-nav-ghost">Sign in</a>
+    <a href="https://aimusicgeneratorsonx.go.link/iCF6Q" class="btn-nav" target="_blank">
+      <span>⬇</span> Download
+    </a>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <ul>
+    <li><a href="/create">Create</a></li>
+    <li><a href="/video">Music videos</a></li>
+    <li><a href="/library">Library</a></li>
+    <li><a href="/blog/" class="active">Journal</a></li>
+  </ul>
+  <a href="/login" class="mobile-menu-signup">Sign in</a>
+</div>
+
+<header class="blog-header">
+  <div class="blog-eyebrow">The Sonx Journal</div>
+  <h1 class="blog-title">Notes on <span class="accent">AI&nbsp;music</span></h1>
+  <p class="blog-tagline">Long-form essays, app comparisons, and plain-English guides on how AI music actually works — from the team building Sonx.</p>
+</header>
+
+<main class="posts">
+
+  <a href="/blog/how-ai-music-generation-works-2026/" class="post-item">
+    <div class="post-meta">
+      <span class="post-tag">AI Music Tech</span>
+      <span>May 7, 2026</span>
+      <span class="dot"></span>
+      <span>9 min read</span>
+    </div>
+    <h2 class="post-title">How AI Music Generation Actually Works in 2026</h2>
+    <p class="post-excerpt">From a text prompt to a finished song in under a minute — what's really happening inside the model? We break down diffusion, transformers, voice cloning and the new wave of multi-stage AI music systems, without the math.</p>
+    <span class="post-readmore">Read essay <span class="arr">→</span></span>
+  </a>
+
+  <a href="/blog/suno-alternatives-2026/" class="post-item">
+    <div class="post-meta">
+      <span class="post-tag">App Comparison</span>
+      <span>May 21, 2026</span>
+      <span class="dot"></span>
+      <span>12 min read</span>
+    </div>
+    <h2 class="post-title">Suno Alternatives in 2026: Which AI Music App Is Right for You?</h2>
+    <p class="post-excerpt">Suno is where most people start, and for good reason. But "best" depends on what you're making. An honest map of Suno, Udio, Sonx and the rest of the field — written by a team that builds one of them.</p>
+    <span class="post-readmore">Read guide <span class="arr">→</span></span>
+  </a>
+
+  <a href="/blog/how-to-make-a-tiktok-song/" class="post-item">
+    <div class="post-meta">
+      <span class="post-tag">Guide</span>
+      <span>June 4, 2026</span>
+      <span class="dot"></span>
+      <span>8 min read</span>
+    </div>
+    <h2 class="post-title">How to Make a TikTok-Ready Song from a Single Sentence</h2>
+    <p class="post-excerpt">A step-by-step on writing prompts that produce hook-first, vertical-friendly tracks — including the structure, length, and lyric tricks that work on short-form video.</p>
+    <span class="post-readmore">Read guide <span class="arr">→</span></span>
+  </a>
+
+  <a href="/blog/can-grok-generate-music/" class="post-item">
+    <div class="post-meta">
+      <span class="post-tag">AI Music Tools</span>
+      <span>June 20, 2026</span>
+      <span class="dot"></span>
+      <span>8 min read</span>
+    </div>
+    <h2 class="post-title">Can Grok Make Music? What xAI's Grok Can and Can't Do in 2026</h2>
+    <p class="post-excerpt">Grok writes lyrics, not finished songs. Here's what xAI's Grok and Grok Imagine actually do with music, why the "Grok Music" sites aren't really xAI — and the fastest way to turn a Grok lyric into a real track.</p>
+    <span class="post-readmore">Read guide <span class="arr">→</span></span>
+  </a>
+
+  <a href="/blog/ai-music-prompts-analyzed/" class="post-item">
+    <div class="post-meta">
+      <span class="post-tag">Data Study</span>
+      <span>July 30, 2026</span>
+      <span class="dot"></span>
+      <span>11 min read</span>
+    </div>
+    <h2 class="post-title">We Analyzed 1,136 AI Music Prompts. Most of Them Are Too Short.</h2>
+    <p class="post-excerpt">The median AI music prompt published online is seven words. Only 21.6% name a tempo, 69% say nothing about the voice, and fewer than one in forty asks for a chorus. Here is the data, plus 170 original prompts built the other way.</p>
+    <span class="post-readmore">Read study <span class="arr">&#8594;</span></span>
+  </a>
+
+  <a href="/blog/how-to-make-a-song-with-ai/" class="post-item">
+    <div class="post-meta">
+      <span class="post-tag">Guide</span>
+      <span>August 5, 2026</span>
+      <span class="dot"></span>
+      <span>10 min read</span>
+    </div>
+    <h2 class="post-title">How to Make a Song with AI in 2026 (Step by Step, Free)</h2>
+    <p class="post-excerpt">From a one-line idea to a finished track with vocals in about a minute. The five-step workflow, what separates a professional-sounding AI song from a generic one, and what you actually need to pay for.</p>
+    <span class="post-readmore">Read guide <span class="arr">&#8594;</span></span>
+  </a>
+
+  <a href="/blog/can-you-make-money-with-ai-music/" class="post-item">
+    <div class="post-meta">
+      <span class="post-tag">Monetization</span>
+      <span>August 5, 2026</span>
+      <span class="dot"></span>
+      <span>10 min read</span>
+    </div>
+    <h2 class="post-title">Can You Make Money with AI Music? 7 Real Ways to Earn (2026)</h2>
+    <p class="post-excerpt">Yes — but not the way most videos promise. Who owns an AI song, what streaming actually pays, seven realistic ways people earn with AI music, and the mistakes that get accounts banned.</p>
+    <span class="post-readmore">Read guide <span class="arr">&#8594;</span></span>
+  </a>
+
+  <a href="/blog/is-ai-music-allowed-on-spotify/" class="post-item">
+    <div class="post-meta">
+      <span class="post-tag">Platform Policy</span>
+      <span>August 5, 2026</span>
+      <span class="dot"></span>
+      <span>9 min read</span>
+    </div>
+    <h2 class="post-title">Is AI Music Allowed on Spotify? What Gets Banned in 2026</h2>
+    <p class="post-excerpt">Spotify doesn't ban AI music — it bans impersonation, spam, and fake streams. What Spotify, Apple Music, YouTube, and Deezer actually allow, how disclosure works, and how to upload without getting removed.</p>
+    <span class="post-readmore">Read guide <span class="arr">&#8594;</span></span>
+  </a>
+
+  <a href="/blog/can-chatgpt-make-music/" class="post-item">
+    <div class="post-meta">
+      <span class="post-tag">AI Music Tools</span>
+      <span>August 16, 2026</span>
+      <span class="dot"></span>
+      <span>8 min read</span>
+    </div>
+    <h2 class="post-title">Can ChatGPT Make Music? What It Can and Can't Do in 2026</h2>
+    <p class="post-excerpt">ChatGPT writes lyrics, chords, and song structures — but it can't produce a second of audio, and Sora 2 doesn't change that. What OpenAI's tools really do with music, and the two-minute workflow that turns a ChatGPT lyric into a finished song.</p>
+    <span class="post-readmore">Read guide <span class="arr">&#8594;</span></span>
+  </a>
+
+  <a href="/blog/can-gemini-make-music/" class="post-item">
+    <div class="post-meta">
+      <span class="post-tag">AI Music Tools</span>
+      <span>August 16, 2026</span>
+      <span class="dot"></span>
+      <span>8 min read</span>
+    </div>
+    <h2 class="post-title">Can Gemini Make Music? Lyria 3's Real Limits (2026)</h2>
+    <p class="post-excerpt">Yes — Gemini now generates real music with Lyria 3: 30-second tracks free, up to 3 minutes on Pro. What you actually get, the SynthID watermark, the rights fine print, and where a dedicated music app still wins.</p>
+    <span class="post-readmore">Read guide <span class="arr">&#8594;</span></span>
+  </a>
+
+  <a href="/blog/can-claude-make-music/" class="post-item">
+    <div class="post-meta">
+      <span class="post-tag">AI Music Tools</span>
+      <span>August 16, 2026</span>
+      <span class="dot"></span>
+      <span>8 min read</span>
+    </div>
+    <h2 class="post-title">Can Claude Make Music? The Honest 2026 Answer</h2>
+    <p class="post-excerpt">No audio — but the most interesting "no" in the series. Claude writes the best lyrics of the major chatbots, generates music as code (MIDI, browser synths), and can operate music tools through connectors. Something else still has to sing.</p>
+    <span class="post-readmore">Read guide <span class="arr">&#8594;</span></span>
+  </a>
+
+</main>
+
+<section class="subscribe">
+  <h3>New essays every other week</h3>
+  <p>Get the next deep-dive in your inbox — no fluff, no spam.</p>
+  <a href="https://aimusicgeneratorsonx.go.link/iCF6Q" class="subscribe-cta" target="_blank">Try Sonx free <span>→</span></a>
+</section>
+
+<footer>
+  <div class="footer-logo">Sonx</div>
+  <div class="footer-links">
+    <a href="/privacy.html">Privacy Policy</a>
+    <a href="/terms.html">Terms of Service</a>
+    <a href="https://www.instagram.com/sonxaisong" target="_blank">Instagram</a>
+    <a href="https://www.tiktok.com/@sonxofficial" target="_blank" rel="noopener">TikTok</a>
+  </div>
+  <div class="footer-copy">© 2026 Sonx. All rights reserved.</div>
+</footer>
+
+<script>
+(function(){
+  const toggle = document.querySelector('.nav-toggle');
+  const menu = document.getElementById('mobileMenu');
+  if(!toggle || !menu) return;
+  function close(){
+    toggle.setAttribute('aria-expanded','false');
+    menu.classList.remove('open');
+    menu.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+  }
+  function open(){
+    toggle.setAttribute('aria-expanded','true');
+    menu.classList.add('open');
+    menu.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+  }
+  toggle.addEventListener('click', () => {
+    if(toggle.getAttribute('aria-expanded')==='true') close(); else open();
+  });
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
+  document.addEventListener('keydown', e => { if(e.key==='Escape') close(); });
+})();
+</script>
+
+<!-- CTA click tracking (GA4) -->
+<script>
+(function(){
+  var HOST = 'aimusicgeneratorsonx.go.link';
+  var MAP = [
+    ['btn-nav-ghost',      'nav_signup'],
+    ['btn-nav',            'nav_download'],
+    ['mobile-menu-signup', 'mobile_menu'],
+    ['store-badge',        'store_badge'],
+    ['music-see-all',      'music_see_all'],
+    ['subscribe-cta',      'subscribe_cta'],
+    ['btn-primary',        'article_cta']
+  ];
+  function label(a){
+    if (a.dataset && a.dataset.cta) return a.dataset.cta;
+    var c = typeof a.className === 'string' ? a.className : '';
+    for (var i = 0; i < MAP.length; i++) {
+      if (c.indexOf(MAP[i][0]) > -1) return MAP[i][1];
+    }
+    return 'other';
+  }
+  window.trackCta = function(location){
+    if (typeof gtag !== 'function') return;
+    gtag('event', 'cta_click', {
+      cta_location: location,
+      page_path: window.location.pathname
+    });
+  };
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    if (!t || !t.closest) return;
+    var a = t.closest('a[href*="' + HOST + '"]');
+    if (a) window.trackCta(label(a));
+  }, true);
+})();
+</script>
+</body>
+</html>

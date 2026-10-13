@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1F8ZGT6QEJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1F8ZGT6QEJ');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Can Claude Make Music? The Honest 2026 Answer | Sonx Journal</title>
+<meta name="description" content="Claude writes standout lyrics and can even generate music as code — MIDI, browser synths, tool connectors — but it produces no audio of its own. What Anthropic's Claude really does with songs in 2026, and how to hear the results.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="author" content="Sonx Team">
+<link rel="canonical" href="https://getsonx.com/blog/can-claude-make-music/">
+
+<meta property="og:title" content="Can Claude Make Music? The Honest 2026 Answer">
+<meta property="og:description" content="Claude writes standout lyrics and can generate music as code — but no audio of its own. What Anthropic's Claude really does with songs, and how to hear the results.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://getsonx.com/blog/can-claude-make-music/">
+<meta property="og:image" content="https://getsonx.com/blog/img/can-claude-make-music-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="Sonx Journal">
+<meta property="article:published_time" content="2026-08-16">
+<meta property="article:author" content="Sonx Team">
+<meta property="article:section" content="AI Music Tools">
+<meta property="article:tag" content="Claude music">
+<meta property="article:tag" content="can Claude make music">
+<meta property="article:tag" content="AI music tools">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Can Claude Make Music? The Honest 2026 Answer">
+<meta name="twitter:description" content="Claude writes standout lyrics and can generate music as code — but no audio of its own. Here's the full picture.">
+<meta name="twitter:image" content="https://getsonx.com/blog/img/can-claude-make-music-cover.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Can Claude Make Music? The Honest 2026 Answer",
+  "description": "Claude writes standout lyrics and can even generate music as code — MIDI, browser synths, tool connectors — but it produces no audio of its own. What Anthropic's Claude really does with songs in 2026, and how to hear the results.",
+  "image": "https://getsonx.com/blog/img/can-claude-make-music-cover.png",
+  "author": { "@type": "Organization", "name": "Sonx Team", "url": "https://getsonx.com" },
+  "publisher": {
+    "@type": "Organization",
+    "@id": "https://getsonx.com/#organization",
+    "name": "Sonx",
+    "logo": { "@type": "ImageObject", "url": "https://getsonx.com/og-image.png" },
+    "sameAs": [
+      "https://apps.apple.com/us/app/ai-song-generator-sonx/id6757523434",
+      "https://play.google.com/store/apps/details?id=com.app.sonx",
+      "https://www.instagram.com/sonxaisong/",
+      "https://www.tiktok.com/@sonxofficial"
+    ]
+  },
+  "datePublished": "2026-08-16",
+  "dateModified": "2026-08-16",
+  "mainEntityOfPage": "https://getsonx.com/blog/can-claude-make-music/"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://getsonx.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Journal", "item": "https://getsonx.com/blog/" },
+    { "@type": "ListItem", "position": 3, "name": "Can Claude Make Music?" }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Can Claude generate actual audio or songs?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Claude produces no audio of its own — no vocals, no instruments, no sound files. Anthropic has no music-generation model, and Claude's voice mode talks rather than sings. For a finished song you need a dedicated AI music app like Sonx, Suno, or Udio." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Claude good at writing song lyrics?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes — in our testing it's arguably the strongest lyricist of the major chatbots, especially for nuance, restraint, and lines that don't sound AI-written. Give it mood, genre, story, and structure, then edit the draft into your own voice." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can't Claude make music through code or connectors?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Sort of — and it's the interesting asterisk. Claude can write music as code (MIDI files, browser synth sketches) and, via tool connectors, can operate external music generators on your behalf. In both cases the sound comes from another system; Claude supplies the words and the instructions, not the audio." }
+    },
+    {
+      "@type": "Question",
+      "name": "What's the best way to turn Claude lyrics into a real song?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Draft and refine the lyrics in Claude, then paste them into a dedicated AI music app like Sonx, pick a genre or describe the sound, and generate. You get a full track with vocals singing your words in about a minute, ready to export." }
+    }
+  ]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#060606;--surface:#0f0f0f;--surface2:#171717;--surface3:#1f1f1f;
+  --border:rgba(255,255,255,0.06);--border-hover:rgba(255,255,255,0.12);
+  --text:#f8f8f8;--muted:rgba(248,248,248,0.55);--muted2:rgba(248,248,248,0.30);
+  --accent:#c084fc;--accent2:#f472b6;
+  --accent-grad:linear-gradient(135deg,#c084fc 0%,#f472b6 100%);
+  --r:12px;--r-lg:20px;--r-xl:32px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 40px;height:64px;background:rgba(6,6,6,0.75);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:'Instrument Serif',serif;font-size:22px;letter-spacing:0.5px;background:var(--accent-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;justify-self:start}
+.nav-links{display:flex;gap:32px;list-style:none;justify-self:center}
+.nav-links a{font-size:14px;color:var(--muted);transition:color .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
+.nav-cta{display:flex;align-items:center;gap:10px;justify-self:end}
+.btn-nav{display:inline-flex;align-items:center;gap:7px;background:var(--text);color:var(--black);padding:9px 20px;border-radius:100px;font-size:13px;font-weight:600;transition:opacity .2s,transform .15s}
+.btn-nav:hover{opacity:.88;transform:translateY(-1px)}
+.btn-nav-ghost{font-size:13px;color:var(--muted);padding:9px 16px;border-radius:100px;border:1px solid var(--border);transition:color .2s,border-color .2s}
+.btn-nav-ghost:hover{color:var(--text);border-color:var(--border-hover)}
+
+/* Mobile hamburger + menu */
+.nav-toggle{display:none}
+.mobile-menu{display:none}
+@media (max-width: 768px){
+  .nav-toggle{
+    display:inline-flex;flex-direction:column;justify-content:center;align-items:center;
+    width:38px;height:38px;border-radius:50%;
+    background:transparent;border:1px solid var(--border);
+    cursor:pointer;padding:0;gap:4px;
+    transition:border-color .2s,background .2s;
+  }
+  .nav-toggle:hover{border-color:var(--border-hover)}
+  .nav-toggle span{
+    display:block;width:14px;height:1.5px;background:var(--text);
+    border-radius:2px;transition:transform .25s,opacity .2s;
+  }
+  .nav-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(2.75px) rotate(45deg)}
+  .nav-toggle[aria-expanded="true"] span:nth-child(2){transform:translateY(-2.75px) rotate(-45deg)}
+  .mobile-menu{
+    display:block;position:fixed;top:56px;left:0;right:0;z-index:999;
+    background:rgba(6,6,6,0.96);
+    backdrop-filter:blur(20px) saturate(180%);
+    border-bottom:1px solid var(--border);
+    padding:8px 24px 28px;
+    transform:translateY(-110%);transition:transform .3s ease;
+  }
+  .mobile-menu.open{transform:translateY(0)}
+  .mobile-menu ul{list-style:none;padding:0;margin:0}
+  .mobile-menu li a{
+    display:block;padding:16px 0;font-size:17px;color:var(--muted);
+    border-bottom:1px solid var(--border);transition:color .2s;
+  }
+  .mobile-menu li:last-child a{border-bottom:none}
+  .mobile-menu li a:hover,.mobile-menu li a.active{color:var(--text)}
+  .mobile-menu-signup{
+    display:block;margin-top:16px;padding:13px 22px;
+    border-radius:100px;border:1px solid var(--border);
+    text-align:center;color:var(--text);font-size:14px;font-weight:500;
+  }
+}
+
+.progress{position:fixed;top:64px;left:0;height:2px;background:var(--accent-grad);z-index:999;width:0;transition:width .1s}
+
+.article-head{padding:120px 24px 40px;max-width:860px;margin:0 auto;position:relative}
+.breadcrumb{font-size:13px;color:var(--muted2);margin-bottom:32px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.breadcrumb a{color:var(--muted)}
+.breadcrumb a:hover{color:var(--text)}
+.breadcrumb .sep{color:var(--muted2)}
+.article-tag{display:inline-block;padding:4px 12px;border-radius:100px;background:rgba(192,132,252,0.08);border:1px solid rgba(192,132,252,0.18);color:var(--accent);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;font-weight:500;margin-bottom:24px}
+.article-h1{font-family:'Instrument Serif',serif;font-size:clamp(40px,6vw,68px);line-height:1.05;letter-spacing:-0.015em;font-weight:400;margin-bottom:20px}
+.article-dek{font-size:20px;line-height:1.55;color:var(--muted);max-width:680px;margin-bottom:36px}
+.article-meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted2);padding-bottom:32px;border-bottom:1px solid var(--border)}
+.article-meta strong{color:var(--text);font-weight:500}
+.article-meta .dot{width:3px;height:3px;border-radius:50%;background:var(--muted2)}
+
+.hero-image{max-width:1080px;margin:0 auto;padding:0 24px}
+.hero-image img{display:block;width:100%;height:auto;border-radius:var(--r-lg);border:1px solid var(--border)}
+
+.article-wrap{max-width:1080px;margin:0 auto;padding:60px 24px 80px;display:grid;grid-template-columns:220px 1fr;gap:60px;position:relative}
+.toc{position:sticky;top:100px;align-self:start;font-size:13px;max-height:calc(100vh - 120px);overflow-y:auto}
+.toc-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted2);margin-bottom:14px}
+.toc ul{list-style:none}
+.toc a{display:block;padding:7px 0 7px 12px;color:var(--muted);border-left:1px solid var(--border);transition:color .2s,border-color .2s;line-height:1.4}
+.toc a:hover,.toc a.active{color:var(--text);border-left-color:var(--accent)}
+
+.article-body{max-width:680px;font-size:18px;line-height:1.78;color:rgba(248,248,248,0.90)}
+.article-body > *+*{margin-top:1.4em}
+.article-body h2{font-family:'Instrument Serif',serif;font-size:36px;line-height:1.15;letter-spacing:-0.01em;font-weight:400;margin-top:2.4em;color:var(--text)}
+.article-body h3{font-size:22px;font-weight:600;letter-spacing:-0.005em;margin-top:2em;color:var(--text)}
+.article-body p{font-size:18px;line-height:1.78}
+.article-body a{color:var(--text);background:linear-gradient(transparent 60%, rgba(192,132,252,0.30) 60%);transition:background .2s}
+.article-body a:hover{background:linear-gradient(transparent 0%, rgba(192,132,252,0.45) 0%)}
+.article-body strong{color:var(--text);font-weight:600}
+.article-body em{color:var(--text)}
+.article-body ul,.article-body ol{padding-left:24px}
+.article-body li{margin-bottom:.5em}
+.article-body blockquote{border-left:2px solid var(--accent);padding:8px 0 8px 24px;font-family:'Instrument Serif',serif;font-size:24px;line-height:1.4;color:var(--text);font-style:italic}
+.callout{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 22px;font-size:16px;color:var(--muted);line-height:1.6}
+.callout strong{color:var(--text)}
+.callout::before{content:"→";color:var(--accent);font-weight:700;margin-right:8px}
+
+.figure{margin:2em 0;border-radius:var(--r);overflow:hidden;border:1px solid var(--border)}
+.figure img{display:block;width:100%;height:auto;background:var(--surface2)}
+.figure-caption{padding:14px 20px;font-size:13px;color:var(--muted);background:var(--surface)}
+
+.inline-cta{margin:60px 0;padding:36px;border-radius:var(--r-lg);background:radial-gradient(ellipse at 100% 0%, rgba(244,114,182,0.10) 0%, transparent 60%),radial-gradient(ellipse at 0% 100%, rgba(192,132,252,0.10) 0%, transparent 60%),var(--surface);border:1px solid var(--border)}
+.inline-cta h4{font-family:'Instrument Serif',serif;font-size:28px;font-weight:400;line-height:1.2;margin-bottom:8px}
+.inline-cta p{font-size:15px;color:var(--muted);margin-bottom:18px;line-height:1.6}
+.inline-cta-buttons{display:flex;gap:10px;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--text);color:var(--black);padding:11px 22px;border-radius:100px;font-size:13px;font-weight:600;transition:opacity .2s,transform .15s}
+.btn-primary:hover{opacity:.88;transform:translateY(-1px)}
+
+.faq{margin-top:60px;padding-top:40px;border-top:1px solid var(--border)}
+.faq h2{font-family:'Instrument Serif',serif;font-size:36px;font-weight:400;margin-bottom:24px}
+.faq-item{padding:20px 0;border-bottom:1px solid var(--border)}
+.faq-item:last-child{border-bottom:none}
+.faq-q{font-size:18px;font-weight:600;margin-bottom:8px;color:var(--text)}
+.faq-a{font-size:16px;line-height:1.65;color:var(--muted)}
+
+.related{max-width:1080px;margin:0 auto;padding:60px 24px 100px;border-top:1px solid var(--border)}
+.related-label{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted2);margin-bottom:24px}
+.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.related-card{padding:24px;border-radius:var(--r);background:var(--surface);border:1px solid var(--border);transition:border-color .2s,transform .2s}
+.related-card:hover{border-color:var(--border-hover);transform:translateY(-2px)}
+.related-card .post-tag{margin-bottom:12px}
+.related-card h3{font-family:'Instrument Serif',serif;font-size:20px;font-weight:400;line-height:1.25;margin-bottom:10px}
+.related-card p{font-size:14px;color:var(--muted);line-height:1.55}
+
+footer{display:flex;flex-direction:column;align-items:center;text-align:center;gap:20px;padding:40px;border-top:1px solid var(--border)}
+.footer-logo{font-family:'Instrument Serif',serif;font-size:24px;background:var(--accent-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;font-size:13px;color:var(--muted)}
+.footer-links a:hover{color:var(--text)}
+.footer-copy{font-size:12px;color:var(--muted2)}
+
+@media(max-width:900px){
+  .article-wrap{grid-template-columns:1fr;gap:0}
+  .toc{display:none}
+}
+@media(max-width:720px){
+  nav{padding:0 20px;grid-template-columns:1fr auto}
+  .nav-links{display:none}
+  .article-head{padding:100px 20px 30px}
+  .article-h1{font-size:36px}
+  .article-dek{font-size:17px}
+  .article-body{font-size:17px}
+  .article-body p{font-size:17px}
+  .article-body h2{font-size:28px}
+  .related-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><a href="/">Sonx</a></div>
+  <ul class="nav-links">
+    <li><a href="/create">Create</a></li>
+    <li><a href="/video">Music videos</a></li>
+    <li><a href="/library">Library</a></li>
+    <li><a href="/blog/" class="active">Journal</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="/login" class="btn-nav-ghost">Sign in</a>
+    <a href="https://aimusicgeneratorsonx.go.link/iCF6Q" class="btn-nav" target="_blank">
+      <span>⬇</span> Download
+    </a>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <ul>
+    <li><a href="/create">Create</a></li>
+    <li><a href="/video">Music videos</a></li>
+    <li><a href="/library">Library</a></li>
+    <li><a href="/blog/" class="active">Journal</a></li>
+  </ul>
+  <a href="/login" class="mobile-menu-signup">Sign in</a>
+</div>
+
+<div class="progress" id="progress"></div>
+
+<header class="article-head">
+  <div class="breadcrumb">
+    <a href="/">Home</a><span class="sep">/</span>
+    <a href="/blog/">Journal</a><span class="sep">/</span>
+    <span>Can Claude Make Music?</span>
+  </div>
+  <span class="article-tag">AI Music Tools</span>
+  <h1 class="article-h1">Can Claude Make Music?</h1>
+  <p class="article-dek">The honest 2026 answer: no audio — but the most interesting "no" in this series. Claude writes the best lyrics of the major chatbots, generates music as <em>code</em>, and can even operate music tools on your behalf. Here's the full picture, and how to actually hear the results.</p>
+  <div class="article-meta">
+    <strong>Sonx Team</strong>
+    <span class="dot"></span>
+    <span>Published August 16, 2026</span>
+    <span class="dot"></span>
+    <span>8 min read</span>
+  </div>
+</header>
+
+<div class="hero-image">
+  <img src="/blog/img/can-claude-make-music-cover.svg" alt="Can Claude make music? What Anthropic's Claude really does with songs in 2026 — Sonx Journal cover" />
+</div>
+
+<div class="article-wrap">
+  <aside class="toc">
+    <div class="toc-label">On this page</div>
+    <ul>
+      <li><a href="#short-answer">The 60-second answer</a></li>
+      <li><a href="#lyrics">Claude the lyricist</a></li>
+      <li><a href="#code">The asterisk: music as code</a></li>
+      <li><a href="#connectors">Claude the operator</a></li>
+      <li><a href="#workflow">The Claude + Sonx workflow</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </aside>
+
+  <article class="article-body">
+
+    <p>This is the fourth time we've asked "can this chatbot make music?" — after <a href="/blog/can-grok-generate-music/">Grok</a>, <a href="/blog/can-chatgpt-make-music/">ChatGPT</a>, and <a href="/blog/can-gemini-make-music/">Gemini</a> — and Claude turns out to be the strangest case of the four. The headline answer is the same as ChatGPT's: no audio. But the details underneath it are different enough, and interesting enough, that copying our ChatGPT verdict over would miss what Claude actually is. We build an <a href="/">AI music app</a>, we use these assistants daily, and yes — we're aware of the comedy of fact-checking an article about Claude partly by asking Claude. We verified against what Anthropic has actually shipped instead.</p>
+
+    <h2 id="short-answer">The 60-second answer</h2>
+
+    <ul>
+      <li><strong>Claude produces no audio. Full stop.</strong> No vocals, no instruments, no sound files. Anthropic has no music model — no equivalent of Google's Lyria, xAI's Grok Imagine, or OpenAI's Sora — and none has been announced. Claude's voice mode talks; it doesn't sing.</li>
+      <li><strong>As a lyricist, it's arguably the best of the chatbots.</strong> That's our team's testing opinion, and we'll defend it below.</li>
+      <li><strong>The asterisk: Claude can make music as <em>code</em>.</strong> MIDI files, notation, browser-synth sketches. The sound then comes from whatever runs the code — an instrument, a plugin, a browser — not from Claude.</li>
+      <li><strong>The 2026 twist: Claude can <em>operate</em> music tools.</strong> Through tool connectors, Claude can send prompts to external music generators and hand you back results. Conductor, not singer.</li>
+      <li><strong>For a finished song, the answer is unchanged:</strong> a dedicated AI music app — <a href="/">Sonx</a>, Suno, Udio — is where the actual track comes from.</li>
+    </ul>
+
+    <blockquote>Claude is the session writer who can also read the mixing desk manual. What it still can't do is make a single sound.</blockquote>
+
+    <h2 id="lyrics">Claude the lyricist</h2>
+
+    <p>Every major chatbot writes lyrics. In our internal testing, Claude's are the ones that most often survive contact with a real song. The difference is restraint: where other models reach for the biggest rhyme and the third repetition of the hook, Claude is better at the unglamorous parts of lyric writing — lines that scan naturally when sung, images that are specific instead of grand, verses that leave room for the melody to do work. Ask the models for "a sad song that doesn't say the word sad" and you'll hear the difference quickly.</p>
+
+    <p>It's not magic, and it still needs an editor — every AI lyric does. The same rules we gave for ChatGPT apply here: be specific about mood, genre, story, and structure; push back on the first draft; cut anything that sounds like it was written by a committee of greeting cards. And Claude is just as good at the sleeper job we keep banging on about: turning a vague idea into a detailed <em>music prompt</em>. Our <a href="/blog/ai-music-prompts-analyzed/">study of 1,136 real AI music prompts</a> found the median prompt is seven words long — a chatbot that expands those seven words into tempo, instrumentation, and vocal direction fixes the single most common AI-music mistake before you've generated anything.</p>
+
+    <h2 id="code">The asterisk: music as code</h2>
+
+    <p>Here's where Claude genuinely differs from the rest of this series. Claude has a reputation as the strongest coding assistant of the major models, and music, it turns out, is something you can code.</p>
+
+    <p>Ask Claude for a chord progression and it can hand you a <strong>MIDI file</strong> — actual note data you can drop into GarageBand, Logic, or any DAW and hear played by real instruments. There's a small ecosystem built on exactly this: plugins that sit inside your DAW and use Claude to generate editable melodies, chords, basslines, and drum patterns as MIDI. Ask it for a <strong>browser synth sketch</strong> and it writes a small web page that actually plays a loop out loud. Ask for notation, and you get something a musician can read.</p>
+
+    <p>Be clear about what this is and isn't. MIDI is instructions, not sound — the audio comes from whatever synth or sampler plays it. Nothing in this pipeline sings, and nothing produces a finished, mixed track. But if you're a producer who wants raw material to shape yourself, "Claude, give me a melancholy chord loop in F minor as MIDI" is a legitimately useful trick that Grok, ChatGPT, and Gemini users mostly don't get in this form.</p>
+
+    <div class="callout"><strong>Why can't it just sing?</strong> Same reason as every chatbot in this series: language models predict text, and singing requires an audio-synthesis stack — a different family of models entirely. We walk through that pipeline in plain English in <a href="/blog/how-ai-music-generation-works-2026/">How AI Music Generation Actually Works</a>.</div>
+
+    <h2 id="connectors">Claude the operator</h2>
+
+    <p>The other 2026-specific wrinkle: Claude has become the assistant most associated with <em>using tools</em> — connectors that let it operate other software on your behalf. Music services are on that list. Wire a music generator up to Claude and you can type "make me a dreamy synth-pop track about leaving the city" into a chat; Claude refines the idea, sends it to the connected service, and hands back the result.</p>
+
+    <p>It's a glimpse of a real future — assistants as producers who hire the right specialist for each job. But notice who's doing the singing: not Claude. The audio still comes from a dedicated music model at the end of the chain, and the connector route adds setup friction that only makes sense if you're already living in Claude all day. If what you want is simply <em>a song</em>, opening a music app remains the shortest path between the idea and the sound — the same conclusion this series keeps arriving at, because it keeps being true.</p>
+
+    <div class="inline-cta">
+      <h4>Give your Claude lyrics a voice</h4>
+      <p>Paste your words into Sonx, pick a genre, and get a full track with vocals in about a minute. Text-to-song, voice cloning, and music video — free on iOS and Android.</p>
+      <div class="inline-cta-buttons">
+        <a href="https://aimusicgeneratorsonx.go.link/iCF6Q" class="btn-primary" target="_blank">Download Sonx <span>→</span></a>
+      </div>
+    </div>
+
+    <h2 id="workflow">The Claude + Sonx workflow</h2>
+
+    <ol>
+      <li><strong>Draft lyrics in Claude.</strong> Mood, genre, story, structure — and ask for restraint: "specific images, no clichés, lines that scan when sung."</li>
+      <li><strong>Edit ruthlessly.</strong> Claude's drafts need less surgery than most, but the song still has to sound like you.</li>
+      <li><strong>Have Claude write the music prompt too.</strong> Tempo, instrumentation, vocal style, mood, one paragraph. This is the seven-word-prompt fix.</li>
+      <li><strong>Paste both into <a href="/">Sonx</a>.</strong> Lyrics in the lyrics field, description as the prompt, pick a genre, generate.</li>
+      <li><strong>Iterate and export.</strong> Regenerate the chorus until it lands, add a music video if it's headed for social — our <a href="/blog/how-to-make-a-tiktok-song/">TikTok guide</a> covers the hook-first structure — then export and post.</li>
+    </ol>
+
+    <h2>TL;DR</h2>
+
+    <p>Claude can't make music — no audio, no singing voice mode, no Anthropic music model. What it can do is write the most usable lyrics of the major chatbots, generate music as code (MIDI and browser sketches whose sound comes from other software), and operate external music tools through connectors. Every road still ends at the same place: a dedicated AI music app turns the words into an actual track. Claude writes; something else has to sing.</p>
+
+    <section class="faq" id="faq">
+      <h2>FAQ</h2>
+      <div class="faq-item">
+        <div class="faq-q">Can Claude generate actual audio or songs?</div>
+        <div class="faq-a">No. Claude produces no audio of its own — no vocals, no instruments, no sound files. Anthropic has no music-generation model, and Claude's voice mode talks rather than sings. For a finished song you need a dedicated AI music app like Sonx, Suno, or Udio.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Is Claude good at writing song lyrics?</div>
+        <div class="faq-a">Yes — in our testing it's arguably the strongest lyricist of the major chatbots, especially for nuance, restraint, and lines that don't sound AI-written. Give it mood, genre, story, and structure, then edit the draft into your own voice.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can't Claude make music through code or connectors?</div>
+        <div class="faq-a">Sort of — and it's the interesting asterisk. Claude can write music as code (MIDI files, browser synth sketches) and, via tool connectors, can operate external music generators on your behalf. In both cases the sound comes from another system; Claude supplies the words and the instructions, not the audio.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What's the best way to turn Claude lyrics into a real song?</div>
+        <div class="faq-a">Draft and refine the lyrics in Claude, then paste them into a dedicated AI music app like Sonx, pick a genre or describe the sound, and generate. You get a full track with vocals singing your words in about a minute, ready to export.</div>
+      </div>
+    </section>
+
+  </article>
+</div>
+
+<section class="related">
+  <div class="related-label">Keep reading</div>
+  <div class="related-grid">
+    <a href="/blog/can-chatgpt-make-music/" class="related-card">
+      <span class="post-tag" style="display:inline-block;padding:4px 10px;border-radius:100px;background:rgba(192,132,252,0.08);border:1px solid rgba(192,132,252,0.18);color:var(--accent);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;font-weight:500">AI Music Tools</span>
+      <h3>Can ChatGPT Make Music? What It Can and Can't Do in 2026</h3>
+      <p>The same honest test, applied to OpenAI's chatbot and Sora 2.</p>
+    </a>
+    <a href="/blog/can-gemini-make-music/" class="related-card">
+      <span class="post-tag" style="display:inline-block;padding:4px 10px;border-radius:100px;background:rgba(192,132,252,0.08);border:1px solid rgba(192,132,252,0.18);color:var(--accent);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;font-weight:500">AI Music Tools</span>
+      <h3>Can Gemini Make Music? Lyria 3's Real Limits (2026)</h3>
+      <p>The one chatbot that actually generates music — and where it stops.</p>
+    </a>
+    <a href="/blog/can-grok-generate-music/" class="related-card">
+      <span class="post-tag" style="display:inline-block;padding:4px 10px;border-radius:100px;background:rgba(192,132,252,0.08);border:1px solid rgba(192,132,252,0.18);color:var(--accent);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;font-weight:500">AI Music Tools</span>
+      <h3>Can Grok Make Music? What xAI's Grok Can and Can't Do in 2026</h3>
+      <p>What Grok and Grok Imagine actually do with music.</p>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Sonx</div>
+  <div class="footer-links">
+    <a href="/privacy.html">Privacy Policy</a>
+    <a href="/terms.html">Terms of Service</a>
+    <a href="https://www.instagram.com/sonxaisong" target="_blank">Instagram</a>
+    <a href="https://www.tiktok.com/@sonxofficial" target="_blank" rel="noopener">TikTok</a>
+  </div>
+  <div class="footer-copy">© 2026 Sonx. All rights reserved.</div>
+</footer>
+
+<script>
+(function(){
+  const toggle = document.querySelector('.nav-toggle');
+  const menu = document.getElementById('mobileMenu');
+  if(!toggle || !menu) return;
+  function close(){
+    toggle.setAttribute('aria-expanded','false');
+    menu.classList.remove('open');
+    menu.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+  }
+  function open(){
+    toggle.setAttribute('aria-expanded','true');
+    menu.classList.add('open');
+    menu.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+  }
+  toggle.addEventListener('click', () => {
+    if(toggle.getAttribute('aria-expanded')==='true') close(); else open();
+  });
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
+  document.addEventListener('keydown', e => { if(e.key==='Escape') close(); });
+})();
+</script>
+
+<script>
+const progress = document.getElementById('progress');
+window.addEventListener('scroll',()=>{
+  const h = document.documentElement;
+  const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  progress.style.width = scrolled + '%';
+});
+
+const tocLinks = document.querySelectorAll('.toc a');
+const sections = [...tocLinks].map(a => document.querySelector(a.getAttribute('href')));
+window.addEventListener('scroll',()=>{
+  let current = sections[0];
+  for(const s of sections){
+    if(s && s.getBoundingClientRect().top < 120) current = s;
+  }
+  tocLinks.forEach(a => a.classList.toggle('active', current && a.getAttribute('href')==='#'+current.id));
+});
+</script>
+
+<!-- CTA click tracking (GA4) -->
+<script>
+(function(){
+  var HOST = 'aimusicgeneratorsonx.go.link';
+  var MAP = [
+    ['btn-nav-ghost',      'nav_signup'],
+    ['btn-nav',            'nav_download'],
+    ['mobile-menu-signup', 'mobile_menu'],
+    ['store-badge',        'store_badge'],
+    ['music-see-all',      'music_see_all'],
+    ['subscribe-cta',      'subscribe_cta'],
+    ['btn-primary',        'article_cta']
+  ];
+  function label(a){
+    if (a.dataset && a.dataset.cta) return a.dataset.cta;
+    var c = typeof a.className === 'string' ? a.className : '';
+    for (var i = 0; i < MAP.length; i++) {
+      if (c.indexOf(MAP[i][0]) > -1) return MAP[i][1];
+    }
+    return 'other';
+  }
+  window.trackCta = function(location){
+    if (typeof gtag !== 'function') return;
+    gtag('event', 'cta_click', {
+      cta_location: location,
+      page_path: window.location.pathname
+    });
+  };
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    if (!t || !t.closest) return;
+    var a = t.closest('a[href*="' + HOST + '"]');
+    if (a) window.trackCta(label(a));
+  }, true);
+})();
+</script>
+</body>
+</html>

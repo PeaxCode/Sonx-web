@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
@@ -6,6 +7,71 @@ import { Hero } from "@/components/home/hero";
 import { ExamplesShelf, RecentShelf, StyleGrid } from "@/components/home/shelves";
 import { StoreBadges } from "@/components/store-badges";
 import { STORE_LINKS } from "@/lib/billing-config";
+import { SITE_URL } from "@/lib/journal";
+
+// Title and description carried over from the old getsonx.com landing page, which ranks on them.
+const TITLE = "Sonx AI — AI Song Generator App";
+const DESCRIPTION =
+  "Sonx AI turns any idea into a full song in seconds — AI music, lyrics, voice cloning, and music videos. Free on the web, iOS and Android.";
+
+export const metadata: Metadata = {
+  title: { absolute: TITLE },
+  description: DESCRIPTION,
+  alternates: { canonical: "/" },
+  openGraph: { title: TITLE, description: DESCRIPTION, url: "/", images: [{ url: "/og-image.png", width: 1200, height: 630 }] },
+  twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION, images: ["/og-image.png"] },
+};
+
+// Same @id values as the Journal posts' publisher, so search engines tie them to one organization.
+const ORGANIZATION_GRAPH = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: "Sonx",
+      alternateName: ["Sonx AI", "Sonx Music"],
+      url: `${SITE_URL}/`,
+      logo: `${SITE_URL}/android-chrome-512x512.png`,
+      sameAs: [
+        STORE_LINKS.ios,
+        STORE_LINKS.android,
+        "https://www.instagram.com/sonxaisong/",
+        "https://www.tiktok.com/@sonxofficial",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: `${SITE_URL}/`,
+      name: "Sonx",
+      publisher: { "@id": `${SITE_URL}/#organization` },
+    },
+    {
+      "@type": "WebApplication",
+      name: "Sonx",
+      alternateName: "Sonx AI",
+      description: "AI song generator — turn any idea into a full song in seconds, with AI vocals, lyrics, and music videos.",
+      url: `${SITE_URL}/create`,
+      applicationCategory: "MusicApplication",
+      operatingSystem: "Web",
+      publisher: { "@id": `${SITE_URL}/#organization` },
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    },
+    {
+      "@type": "MobileApplication",
+      name: "Sonx",
+      alternateName: "Sonx AI",
+      description: "AI song generator — turn any idea into a full song in seconds, with AI vocals, lyrics, and music videos.",
+      url: `${SITE_URL}/`,
+      applicationCategory: "MusicApplication",
+      operatingSystem: "iOS, Android",
+      publisher: { "@id": `${SITE_URL}/#organization` },
+      installUrl: [STORE_LINKS.ios, STORE_LINKS.android],
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    },
+  ],
+};
 
 /** Home inside the studio: a prompt to start from, music to listen to, ways in. */
 export default function Home() {
@@ -85,10 +151,16 @@ export default function Home() {
       <footer className="flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6 text-sm text-fog">
         <p>© Sonx</p>
         <nav className="flex gap-6">
-          <a href="https://www.getsonx.com/privacy.html" className="hover:text-paper">Privacy</a>
-          <a href="https://www.getsonx.com/terms.html" className="hover:text-paper">Terms</a>
+          {/* Plain links: the Journal and legal pages are static HTML, not app routes. */}
+          <a href="/blog/" className="hover:text-paper">Journal</a>
+          <a href="/privacy.html" className="hover:text-paper">Privacy</a>
+          <a href="/terms.html" className="hover:text-paper">Terms</a>
         </nav>
       </footer>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_GRAPH).replace(/</g, "\\u003c") }}
+      />
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { AccountView } from "@/components/studio/account-view";
 import { createServerSupabase } from "@/lib/supabase/server";
 
-export const metadata = { title: "Account" };
+export const metadata = { title: "Account", robots: { index: false } };
 
 const metadataString = (metadata: Record<string, unknown>, ...keys: string[]) =>
   keys.map((key) => metadata[key]).find((value): value is string => typeof value === "string" && value.length > 0) ?? null;

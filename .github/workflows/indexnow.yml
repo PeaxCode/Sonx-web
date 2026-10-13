@@ -1,0 +1,37 @@
+name: IndexNow
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'public/**.html'
+      - 'src/lib/journal.ts'
+  workflow_dispatch:
+    inputs:
+      all:
+        description: 'Submit every URL in sitemap.xml'
+        type: boolean
+        default: true
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: false
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Waits for Vercel to serve the key file and changed pages before pinging.
+      - name: Submit changed pages
+        if: github.event_name == 'push'
+        run: node scripts/indexnow.mjs --wait --changed ${{ github.event.before }}
+      - name: Submit sitemap
+        if: github.event_name == 'workflow_dispatch' && inputs.all
+        run: node scripts/indexnow.mjs --wait --all

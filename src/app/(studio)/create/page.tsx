@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { CreateMusicForm } from "@/components/studio/create-music-form";
 import { MusicList } from "@/components/studio/music-list";
 
-export const metadata = { title: "Create a song" };
+export const metadata = { title: "Create a song", alternates: { canonical: "/create" } };
 
 /** A prompt handed over from the landing page fills the form. */
 async function PrefilledForm({ searchParams }: { searchParams: Promise<{ prompt?: string }> }) {

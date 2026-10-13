@@ -4,7 +4,7 @@ import Link from "next/link";
 import { AppleSignInButton } from "@/components/apple-button";
 import { GoogleSignInButton } from "@/components/google-button";
 
-export const metadata = { title: "Sign in" };
+export const metadata = { title: "Sign in", robots: { index: false } };
 
 const safeNext = (value?: string) => (value && value.startsWith("/") && !value.startsWith("//") ? value : "/create");
 
