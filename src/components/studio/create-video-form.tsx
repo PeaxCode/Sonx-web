@@ -11,6 +11,7 @@ import { uploadForGeneration } from "@/lib/uploads";
 import { useBilling } from "./billing";
 import { useFeedback } from "./feedback";
 import { useLibrary } from "./library";
+import { useSession } from "./session";
 
 const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -24,6 +25,7 @@ export function CreateVideoForm() {
   const { accessFor, billing } = useBilling();
   const { notify, openPaywall } = useFeedback();
   const { generations, track } = useLibrary();
+  const { signedIn, requestSignIn } = useSession();
 
   const ownSongs = useMemo(
     () => generations.filter((item) => MUSIC_FEATURES.includes(item.feature) && item.status === "completed" && item.output_url),
@@ -84,6 +86,17 @@ export function CreateVideoForm() {
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!canSubmit) return;
+    if (!signedIn) {
+      // A picked photo cannot survive the OAuth redirect, so the visitor adds it again after.
+      if (signedIn === false) {
+        requestSignIn({
+          next: "/video",
+          title: "Sign in to make your video",
+          text: "Your first video is free. After signing in, add your photo again and it starts right away.",
+        });
+      }
+      return;
+    }
     if (access === "none") {
       openPaywall();
       return;
@@ -118,7 +131,8 @@ export function CreateVideoForm() {
     }
   };
 
-  const costHint = !billing ? "" : access === "quota"
+  const costHint = signedIn === false ? "Your first video is free. You sign in when you create it."
+    : !billing ? "" : access === "quota"
     ? billing.currentPlan === "FREE" ? "Uses your free video" : "Uses 1 video from your plan"
     : access === "credits" ? `Uses ${VIDEO_CREDIT_COSTS[length]} credits` : "Get Pro or credits in the app to create videos";
 

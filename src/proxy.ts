@@ -1,9 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const STUDIO_PATHS = ["/create", "/video", "/library", "/account"];
+// The studio is open to visitors and asks for sign-in when they create
+// (components/studio/session.tsx); only the account page needs a session up front.
+const PROTECTED_PATHS = ["/account"];
 
-/** Refreshes the Supabase session and keeps the studio behind sign-in. */
+/** Refreshes the Supabase session and keeps the account page behind sign-in. */
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
@@ -27,7 +29,7 @@ export async function proxy(request: NextRequest) {
   const signedIn = Boolean(user && !user.is_anonymous);
   const { pathname, search } = request.nextUrl;
 
-  if (!signedIn && STUDIO_PATHS.some((path) => pathname.startsWith(path))) {
+  if (!signedIn && PROTECTED_PATHS.some((path) => pathname.startsWith(path))) {
     const login = new URL("/login", request.url);
     login.searchParams.set("next", `${pathname}${search}`);
     return NextResponse.redirect(login);

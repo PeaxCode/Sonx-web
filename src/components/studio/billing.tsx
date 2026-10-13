@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { CREDIT_COSTS, PLAN_LIMITS, type Feature } from "@/lib/billing-config";
 import { fetchBilling, syncBillingAccount, type ServerBilling } from "@/lib/generations";
+import { useSession } from "./session";
 
 /** How a generation will be paid for, decided the same way the server does. */
 export type Access = "quota" | "credits" | "none" | "unknown";
@@ -17,9 +18,13 @@ interface BillingValue {
 const BillingContext = createContext<BillingValue | null>(null);
 
 export function BillingProvider({ children }: { children: React.ReactNode }) {
-  const [billing, setBilling] = useState<ServerBilling | null>(null);
+  const { signedIn } = useSession();
+  const [fetched, setBilling] = useState<ServerBilling | null>(null);
+  // Visitors have no account to bill; the balance loads once they sign in.
+  const billing = signedIn ? fetched : null;
 
   useEffect(() => {
+    if (!signedIn) return;
     let active = true;
     // The first call marks a web account migrated; later calls just read it.
     syncBillingAccount()
@@ -28,7 +33,7 @@ export function BillingProvider({ children }: { children: React.ReactNode }) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [signedIn]);
 
   const refresh = useCallback(async () => {
     try {

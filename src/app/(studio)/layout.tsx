@@ -1,8 +1,8 @@
 import { StudioShell } from "@/components/studio/shell";
 
-// proxy.ts keeps signed-out visitors out of the studio, and every query is
-// limited to the signed-in user by Row Level Security, so the shell itself
-// prerenders without reading the session.
+// The studio is open to visitors: the shell reads the session in the browser
+// and asks for sign-in when they create. Every query is limited to the
+// signed-in user by Row Level Security, so the shell prerenders without it.
 export default function StudioLayout({ children }: { children: React.ReactNode }) {
   return <StudioShell>{children}</StudioShell>;
 }

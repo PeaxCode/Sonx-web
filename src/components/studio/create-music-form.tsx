@@ -1,24 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { isInsufficientBalance } from "@/lib/api";
 import { CREDIT_COSTS, GENRES, type Feature } from "@/lib/billing-config";
 import { newRequestId, startGeneration } from "@/lib/generations";
+import { saveDraft, takeDraft, type DraftMode, type DraftVoice } from "@/lib/draft";
 import { generateLyrics } from "@/lib/lyrics";
 import { useBilling } from "./billing";
 import { useFeedback } from "./feedback";
 import { useLibrary } from "./library";
+import { useSession } from "./session";
 
-type Mode = "describe" | "lyrics";
-type Voice = "random" | "female" | "male";
+type Mode = DraftMode;
+type Voice = DraftVoice;
 
 const PROMPT_LIMIT = 500;
 const LYRICS_LIMIT = 3000;
 
-export function CreateMusicForm({ initialPrompt = "" }: { initialPrompt?: string }) {
+/** `restoreDraft` is off for the Suspense placeholder, so only the real form picks up a saved draft. */
+export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { initialPrompt?: string; restoreDraft?: boolean }) {
   const { accessFor, remaining, billing } = useBilling();
   const { notify, openPaywall } = useFeedback();
   const { track } = useLibrary();
+  const { signedIn, requestSignIn } = useSession();
+  const formRef = useRef<HTMLFormElement>(null);
+  // Set when the visitor pressed Create before signing in; the song starts once billing is known.
+  const resumeRef = useRef(false);
 
   const [mode, setMode] = useState<Mode>("describe");
   const [prompt, setPrompt] = useState(initialPrompt.slice(0, PROMPT_LIMIT));
@@ -29,6 +36,31 @@ export function CreateMusicForm({ initialPrompt = "" }: { initialPrompt?: string
   const [title, setTitle] = useState("");
   const [busy, setBusy] = useState<null | "lyrics" | "song">(null);
 
+  // Restore a draft saved before sign-in. sessionStorage is browser-only, so this runs after hydration.
+  useEffect(() => {
+    if (!restoreDraft) return;
+    const draft = takeDraft();
+    const params = new URLSearchParams(window.location.search);
+    const resuming = params.has("resume");
+    if (resuming) {
+      params.delete("resume");
+      const query = params.toString();
+      window.history.replaceState(null, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
+    }
+    if (!draft) return;
+    // Storage is only readable after hydration, so the saved draft is applied here.
+    /* eslint-disable react-hooks/set-state-in-effect */
+    setMode(draft.mode);
+    setPrompt(draft.prompt);
+    setLyrics(draft.lyrics);
+    setInstrumental(draft.instrumental);
+    setVoice(draft.voice);
+    setGenre(draft.genre);
+    setTitle(draft.title);
+    /* eslint-enable react-hooks/set-state-in-effect */
+    resumeRef.current = resuming;
+  }, [restoreDraft]);
+
   // A described song with vocals gets lyrics first, so it bills as a song with vocals.
   const feature: Feature = mode === "lyrics" || !instrumental ? "LYRICS_MUSIC" : "PROMPT_MUSIC";
   const access = accessFor(feature);
@@ -37,7 +69,20 @@ export function CreateMusicForm({ initialPrompt = "" }: { initialPrompt?: string
   const text = mode === "describe" ? prompt : lyrics;
   const canSubmit = !busy && (mode === "describe" ? prompt.trim().length > 0 : lyrics.trim().length >= 10);
 
+  // Back from sign-in with a draft: start the song they asked for once the balance has loaded.
+  useEffect(() => {
+    if (!resumeRef.current || !signedIn || access === "unknown") return;
+    resumeRef.current = false;
+    formRef.current?.requestSubmit();
+  }, [signedIn, access]);
+
+  const askToSignIn = (next: string) => {
+    saveDraft({ mode, prompt, lyrics, instrumental, voice, genre, title });
+    requestSignIn({ next });
+  };
+
   const costHint = (() => {
+    if (signedIn === false) return "Your first song is free. You sign in when you create it.";
     if (!billing) return "";
     if (access === "quota") {
       const left = remaining(feature);
@@ -50,6 +95,10 @@ export function CreateMusicForm({ initialPrompt = "" }: { initialPrompt?: string
   const writeLyricsForMe = async () => {
     if (!lyrics.trim()) {
       notify("Type a topic first, like a summer road trip.", "error");
+      return;
+    }
+    if (!signedIn) {
+      if (signedIn === false) askToSignIn("/create");
       return;
     }
     setBusy("lyrics");
@@ -65,6 +114,10 @@ export function CreateMusicForm({ initialPrompt = "" }: { initialPrompt?: string
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!canSubmit) return;
+    if (!signedIn) {
+      if (signedIn === false) askToSignIn("/create?resume=1");
+      return;
+    }
     if (access === "none") {
       openPaywall();
       return;
@@ -99,7 +152,7 @@ export function CreateMusicForm({ initialPrompt = "" }: { initialPrompt?: string
   };
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-6">
+    <form ref={formRef} onSubmit={submit} className="flex flex-col gap-6">
       <div role="radiogroup" aria-label="How to start" className="grid grid-cols-2 rounded-[var(--radius-control)] bg-plum p-1">
         {([["describe", "Describe it"], ["lyrics", "My lyrics"]] as const).map(([value, label]) => (
           <button key={value} type="button" role="radio" aria-checked={mode === value} onClick={() => setMode(value)}

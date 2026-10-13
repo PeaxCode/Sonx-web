@@ -4,6 +4,7 @@ import { useState } from "react";
 import { MUSIC_FEATURES, type Generation } from "@/lib/generations";
 import { SAMPLE_GENERATIONS } from "@/lib/samples";
 import { useLibrary } from "./library";
+import { useSession } from "./session";
 import { TrackList } from "./track-list";
 
 const FILTERS = [
@@ -15,6 +16,7 @@ const FILTERS = [
 
 export function LibraryView() {
   const { generations, loading } = useLibrary();
+  const { signedIn, requestSignIn } = useSession();
   const [filter, setFilter] = useState<(typeof FILTERS)[number]["id"]>("all");
   const active = FILTERS.find((item) => item.id === filter)!;
 
@@ -28,7 +30,16 @@ export function LibraryView() {
           </button>
         ))}
       </div>
-      {loading ? (
+      {signedIn === false ? (
+        <div className="rounded-[var(--radius-panel)] border border-line p-6">
+          <p className="font-medium">Your songs and videos live here</p>
+          <p className="mt-1 text-sm text-fog">Sign in to see what you made, on the web and in the Sonx app.</p>
+          <button type="button" onClick={() => requestSignIn({ next: "/library", title: "Sign in to see your library" })}
+            className="bg-signature mt-4 rounded-[var(--radius-control)] px-5 py-2.5 text-sm font-semibold transition hover:brightness-110">
+            Sign in
+          </button>
+        </div>
+      ) : loading || signedIn === null ? (
         <p className="text-fog">Loading your library</p>
       ) : (
         <TrackList

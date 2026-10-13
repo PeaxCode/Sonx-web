@@ -12,7 +12,6 @@ export default function VideoPage() {
         <CreateVideoForm />
       </section>
       <section aria-labelledby="videos-title">
-        <h2 id="videos-title" className="mb-4 font-display text-lg font-semibold">Your videos</h2>
         <VideoList />
       </section>
     </div>

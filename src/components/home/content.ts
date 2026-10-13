@@ -1,17 +1,23 @@
-// Landing page copy. Answers describe how Sonx actually behaves today.
+// Home page copy. Answers describe how Sonx actually behaves today.
 
-export const STEPS = [
+export const WAYS = [
   {
-    title: "Describe it",
-    text: "A mood, a memory, a joke for a friend. Or paste lyrics you already wrote.",
+    href: "/create",
+    image: "/images/feature-song.png",
+    title: "Songs from a sentence",
+    text: "Describe a mood, a moment or a story. Sonx writes the lyrics, picks the voice and produces the track.",
   },
   {
-    title: "Sonx makes it",
-    text: "Lyrics are written for you, a voice is chosen and the track is produced. It takes about a minute.",
+    href: "/create",
+    image: "/images/feature-lyrics.png",
+    title: "Lyrics written for you",
+    text: "Bring your own words or start from a topic and edit what comes back.",
   },
   {
-    title: "Play it anywhere",
-    text: "Listen here, download the MP3, or open the Sonx app and find it in your library.",
+    href: "/video",
+    image: "/images/feature-video.png",
+    title: "Music videos from a photo",
+    text: "Pick a portrait and a song. The photo sings along.",
   },
 ];
 

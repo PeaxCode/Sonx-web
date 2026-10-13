@@ -10,9 +10,9 @@ import type { Generation } from "@/lib/generations";
 import { useLibrary } from "./library";
 import { usePlayer } from "./player";
 
-const genreName = (id: string | null) => GENRES.find((genre) => genre.id === id)?.name ?? id ?? "";
+export const genreName = (id: string | null) => GENRES.find((genre) => genre.id === id)?.name ?? id ?? "";
 
-const kindLabel = (generation: Generation) => {
+export const kindLabel = (generation: Generation) => {
   switch (generation.feature) {
     case "AI_MUSIC_VIDEO": return "Music video";
     case "LYRICS_MUSIC": return "Song with vocals";
@@ -35,7 +35,7 @@ function Writing() {
   );
 }
 
-function VideoDialog({ generation, onClose }: { generation: Generation; onClose: () => void }) {
+export function VideoDialog({ generation, onClose }: { generation: Generation; onClose: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
   useGSAP(() => {
     if (prefersReducedMotion()) return;

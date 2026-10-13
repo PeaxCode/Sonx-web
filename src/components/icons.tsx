@@ -11,6 +11,12 @@ function Icon({ size = 20, children, ...props }: IconProps & { children: React.R
   );
 }
 
+export const IconHome = (props: IconProps) => (
+  <Icon {...props}><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1v-9.5Z" /></Icon>
+);
+export const IconArrow = (props: IconProps) => (
+  <Icon {...props}><path d="M5 12h14m-5-5 5 5-5 5" /></Icon>
+);
 export const IconCreate = (props: IconProps) => (
   <Icon {...props}><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></Icon>
 );

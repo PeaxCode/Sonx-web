@@ -11,6 +11,7 @@ import {
   type Generation,
 } from "@/lib/generations";
 import { useBilling } from "./billing";
+import { useSession } from "./session";
 
 const POLL_INTERVAL_MS = 5000;
 // The EachLabs webhook normally finishes a generation; only ask the server
@@ -32,8 +33,12 @@ const LibraryContext = createContext<LibraryValue | null>(null);
 
 export function LibraryProvider({ children }: { children: React.ReactNode }) {
   const { refresh: refreshBilling } = useBilling();
-  const [generations, setGenerations] = useState<Generation[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { signedIn } = useSession();
+  const [fetched, setGenerations] = useState<Generation[]>([]);
+  const [fetching, setLoading] = useState(true);
+  // Visitors have an empty library; the studio shows the examples instead.
+  const generations = useMemo(() => (signedIn ? fetched : []), [signedIn, fetched]);
+  const loading = signedIn === null || (signedIn && fetching);
   const lastRefresh = useRef(new Map<string, number>());
 
   const reload = useCallback(async () => {
@@ -43,6 +48,7 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (!signedIn) return;
     let active = true;
     fetchGenerations()
       .then((rows) => {
@@ -54,7 +60,7 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [signedIn]);
 
   const processingIds = useMemo(
     () => generations.filter((generation) => generation.status === "processing").map((generation) => generation.id),
