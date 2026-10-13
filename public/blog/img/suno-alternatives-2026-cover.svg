@@ -1,0 +1,51 @@
+<svg viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="bgPurple" cx="20%" cy="25%" r="50%">
+      <stop offset="0%" stop-color="#c084fc" stop-opacity="0.45"/>
+      <stop offset="60%" stop-color="#c084fc" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#c084fc" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bgPink" cx="85%" cy="80%" r="55%">
+      <stop offset="0%" stop-color="#f472b6" stop-opacity="0.40"/>
+      <stop offset="60%" stop-color="#f472b6" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#f472b6"/>
+    </linearGradient>
+    <filter id="noise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.04 0"/>
+    </filter>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=DM+Sans:wght@400;500;600&amp;display=swap');
+      .serif{font-family:'Instrument Serif',Georgia,serif;font-weight:400}
+      .sans{font-family:'DM Sans',Helvetica,sans-serif}
+    </style>
+  </defs>
+
+  <rect width="1200" height="630" fill="#060606"/>
+  <rect width="1200" height="630" fill="url(#bgPurple)"/>
+  <rect width="1200" height="630" fill="url(#bgPink)"/>
+  <rect width="1200" height="630" filter="url(#noise)" opacity="0.6"/>
+
+  <text x="80" y="120" class="sans" fill="#c084fc" font-size="13" letter-spacing="4" font-weight="500">SONX JOURNAL · APP COMPARISON</text>
+
+  <text x="80" y="235" class="serif" fill="#f8f8f8" font-size="66" letter-spacing="-1.2">Suno alternatives,</text>
+  <text x="80" y="315" class="serif" fill="#f8f8f8" font-size="66" letter-spacing="-1.2">honestly</text>
+  <text x="80" y="410" class="serif" fill="url(#textGrad)" font-size="66" font-style="italic" letter-spacing="-1.2">compared.</text>
+
+  <text x="80" y="480" class="sans" fill="rgba(248,248,248,0.55)" font-size="18" letter-spacing="0.3">Suno vs Udio vs Sonx: which AI music app is actually right for you in 2026?</text>
+
+  <!-- Three bars motif: representing 3 apps compared -->
+  <g transform="translate(980, 250)" opacity="0.9">
+    <rect x="0"   y="40"  width="34" height="90"  rx="6" fill="rgba(248,248,248,0.25)"/>
+    <rect x="52"  y="0"   width="34" height="130" rx="6" fill="rgba(248,248,248,0.40)"/>
+    <rect x="104" y="-30" width="34" height="160" rx="6" fill="url(#textGrad)"/>
+  </g>
+
+  <text x="1120" y="590" text-anchor="end" class="serif" fill="url(#textGrad)" font-size="28">Sonx</text>
+  <line x1="80" y1="555" x2="1120" y2="555" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <text x="80" y="590" class="sans" fill="rgba(248,248,248,0.30)" font-size="13" letter-spacing="0.5">getsonx.com/blog</text>
+</svg>

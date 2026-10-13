@@ -1,7 +1,7 @@
 import { CreateVideoForm } from "@/components/studio/create-video-form";
 import { VideoList } from "@/components/studio/video-list";
 
-export const metadata = { title: "Create a music video" };
+export const metadata = { title: "Create a music video", alternates: { canonical: "/video" } };
 
 export default function VideoPage() {
   return (

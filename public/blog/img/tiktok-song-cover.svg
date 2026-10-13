@@ -1,0 +1,70 @@
+<svg viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="bgPurple" cx="20%" cy="25%" r="50%">
+      <stop offset="0%" stop-color="#c084fc" stop-opacity="0.45"/>
+      <stop offset="60%" stop-color="#c084fc" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#c084fc" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bgPink" cx="85%" cy="80%" r="55%">
+      <stop offset="0%" stop-color="#f472b6" stop-opacity="0.40"/>
+      <stop offset="60%" stop-color="#f472b6" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#f472b6"/>
+    </linearGradient>
+    <linearGradient id="phoneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#171717"/>
+      <stop offset="100%" stop-color="#0f0f0f"/>
+    </linearGradient>
+    <filter id="noise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.04 0"/>
+    </filter>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=DM+Sans:wght@400;500;600&amp;display=swap');
+      .serif{font-family:'Instrument Serif',Georgia,serif;font-weight:400}
+      .sans{font-family:'DM Sans',Helvetica,sans-serif}
+    </style>
+  </defs>
+
+  <rect width="1200" height="630" fill="#060606"/>
+  <rect width="1200" height="630" fill="url(#bgPurple)"/>
+  <rect width="1200" height="630" fill="url(#bgPink)"/>
+  <rect width="1200" height="630" filter="url(#noise)" opacity="0.6"/>
+
+  <text x="80" y="120" class="sans" fill="#c084fc" font-size="13" letter-spacing="4" font-weight="500">SONX JOURNAL · GUIDE</text>
+
+  <text x="80" y="235" class="serif" fill="#f8f8f8" font-size="66" letter-spacing="-1.2">One sentence in.</text>
+  <text x="80" y="315" class="serif" fill="#f8f8f8" font-size="66" letter-spacing="-1.2">A whole</text>
+  <text x="80" y="410" class="serif" fill="url(#textGrad)" font-size="66" font-style="italic" letter-spacing="-1.2">TikTok song out.</text>
+
+  <text x="80" y="480" class="sans" fill="rgba(248,248,248,0.55)" font-size="18" letter-spacing="0.3">Hook-first prompts, short-form structure, and the lyric tricks that stop the scroll.</text>
+
+  <!-- Vertical video / phone motif with waveform + play -->
+  <g transform="translate(958, 150)">
+    <rect x="0" y="0" width="168" height="300" rx="22" fill="url(#phoneGrad)" stroke="rgba(255,255,255,0.10)" stroke-width="1.5"/>
+    <rect x="14" y="14" width="140" height="272" rx="12" fill="rgba(192,132,252,0.06)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+    <!-- play button -->
+    <circle cx="84" cy="120" r="30" fill="none" stroke="url(#textGrad)" stroke-width="2.5"/>
+    <polygon points="75,106 75,134 100,120" fill="url(#textGrad)"/>
+    <!-- waveform -->
+    <g transform="translate(36, 210)">
+      <rect x="0"   y="-8"  width="4" height="16" rx="2" fill="rgba(248,248,248,0.40)"/>
+      <rect x="10"  y="-18" width="4" height="36" rx="2" fill="rgba(248,248,248,0.55)"/>
+      <rect x="20"  y="-5"  width="4" height="10" rx="2" fill="rgba(248,248,248,0.35)"/>
+      <rect x="30"  y="-24" width="4" height="48" rx="2" fill="url(#textGrad)"/>
+      <rect x="40"  y="-14" width="4" height="28" rx="2" fill="url(#textGrad)"/>
+      <rect x="50"  y="-22" width="4" height="44" rx="2" fill="url(#textGrad)"/>
+      <rect x="60"  y="-9"  width="4" height="18" rx="2" fill="rgba(248,248,248,0.40)"/>
+      <rect x="70"  y="-18" width="4" height="36" rx="2" fill="rgba(248,248,248,0.55)"/>
+      <rect x="80"  y="-6"  width="4" height="12" rx="2" fill="rgba(248,248,248,0.30)"/>
+      <rect x="90"  y="-15" width="4" height="30" rx="2" fill="rgba(248,248,248,0.45)"/>
+    </g>
+  </g>
+
+  <text x="1120" y="590" text-anchor="end" class="serif" fill="url(#textGrad)" font-size="28">Sonx</text>
+  <line x1="80" y1="555" x2="1120" y2="555" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <text x="80" y="590" class="sans" fill="rgba(248,248,248,0.30)" font-size="13" letter-spacing="0.5">getsonx.com/blog</text>
+</svg>

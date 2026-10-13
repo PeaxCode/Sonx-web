@@ -1,0 +1,61 @@
+<svg viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="bgPurple" cx="20%" cy="25%" r="50%">
+      <stop offset="0%" stop-color="#c084fc" stop-opacity="0.45"/>
+      <stop offset="60%" stop-color="#c084fc" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#c084fc" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bgPink" cx="85%" cy="80%" r="55%">
+      <stop offset="0%" stop-color="#f472b6" stop-opacity="0.40"/>
+      <stop offset="60%" stop-color="#f472b6" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#f472b6"/>
+    </linearGradient>
+    <filter id="noise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.04 0"/>
+    </filter>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=DM+Sans:wght@400;500;600&amp;display=swap');
+      .serif{font-family:'Instrument Serif',Georgia,serif;font-weight:400}
+      .sans{font-family:'DM Sans',Helvetica,sans-serif}
+    </style>
+  </defs>
+
+  <rect width="1200" height="630" fill="#060606"/>
+  <rect width="1200" height="630" fill="url(#bgPurple)"/>
+  <rect width="1200" height="630" fill="url(#bgPink)"/>
+  <rect width="1200" height="630" filter="url(#noise)" opacity="0.6"/>
+
+  <text x="80" y="120" class="sans" fill="#c084fc" font-size="13" letter-spacing="4" font-weight="500">SONX JOURNAL · AI MUSIC TOOLS</text>
+
+  <text x="80" y="245" class="serif" fill="#f8f8f8" font-size="86" letter-spacing="-1.5">Can Grok</text>
+  <text x="80" y="335" class="serif" fill="#f8f8f8" font-size="86" letter-spacing="-1.5">make music?</text>
+  <text x="80" y="425" class="serif" fill="url(#textGrad)" font-size="86" font-style="italic" letter-spacing="-1.5">Honestly — no.</text>
+
+  <text x="80" y="490" class="sans" fill="rgba(248,248,248,0.55)" font-size="18" letter-spacing="0.3">What xAI's Grok really does with songs — and how to get a finished track anyway.</text>
+
+  <g transform="translate(960, 315)" opacity="0.85">
+    <rect x="0"   y="-30"  width="4" height="60"  fill="rgba(248,248,248,0.30)" rx="2"/>
+    <rect x="14"  y="-55"  width="4" height="110" fill="rgba(248,248,248,0.45)" rx="2"/>
+    <rect x="28"  y="-80"  width="4" height="160" fill="url(#textGrad)"         rx="2"/>
+    <rect x="42"  y="-95"  width="4" height="190" fill="url(#textGrad)"         rx="2"/>
+    <rect x="56"  y="-70"  width="4" height="140" fill="rgba(248,248,248,0.55)" rx="2"/>
+    <rect x="70"  y="-110" width="4" height="220" fill="url(#textGrad)"         rx="2"/>
+    <rect x="84"  y="-85"  width="4" height="170" fill="rgba(248,248,248,0.50)" rx="2"/>
+    <rect x="98"  y="-45"  width="4" height="90"  fill="rgba(248,248,248,0.35)" rx="2"/>
+    <rect x="112" y="-100" width="4" height="200" fill="url(#textGrad)"         rx="2"/>
+    <rect x="126" y="-60"  width="4" height="120" fill="rgba(248,248,248,0.45)" rx="2"/>
+    <rect x="140" y="-40"  width="4" height="80"  fill="rgba(248,248,248,0.35)" rx="2"/>
+    <rect x="154" y="-90"  width="4" height="180" fill="url(#textGrad)"         rx="2"/>
+    <rect x="168" y="-55"  width="4" height="110" fill="rgba(248,248,248,0.45)" rx="2"/>
+    <rect x="182" y="-25"  width="4" height="50"  fill="rgba(248,248,248,0.30)" rx="2"/>
+  </g>
+
+  <text x="1120" y="590" text-anchor="end" class="serif" fill="url(#textGrad)" font-size="28">Sonx</text>
+  <line x1="80" y1="555" x2="1120" y2="555" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <text x="80" y="590" class="sans" fill="rgba(248,248,248,0.30)" font-size="13" letter-spacing="0.5">getsonx.com/blog</text>
+</svg>

@@ -1,0 +1,80 @@
+<svg viewBox="0 0 1080 520" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#f472b6"/>
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#171717"/>
+      <stop offset="100%" stop-color="#0f0f0f"/>
+    </linearGradient>
+    <radialGradient id="cardGlow" cx="50%" cy="0%" r="100%">
+      <stop offset="0%" stop-color="#c084fc" stop-opacity="0.10"/>
+      <stop offset="60%" stop-color="#c084fc" stop-opacity="0"/>
+    </radialGradient>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=DM+Sans:wght@400;500;600&amp;display=swap');
+      .serif{font-family:'Instrument Serif',Georgia,serif;font-weight:400}
+      .sans{font-family:'DM Sans',Helvetica,sans-serif}
+    </style>
+  </defs>
+
+  <rect width="1080" height="520" fill="#060606"/>
+
+  <!-- Eyebrow + the full example sentence -->
+  <text x="40" y="50" class="sans" fill="#c084fc" font-size="12" letter-spacing="3" font-weight="600">ONE SENTENCE, FOUR JOBS</text>
+  <text x="40" y="104" class="serif" fill="#f8f8f8" font-size="29">&#8220;A <tspan fill="#f472b6">euphoric</tspan> <tspan fill="#c084fc">hyperpop track</tspan> about finally <tspan fill="#c084fc">blocking your ex</tspan>,</text>
+  <text x="40" y="146" class="serif" fill="#f8f8f8" font-size="29">built around <tspan fill="#f472b6">one chant-able line</tspan>.&#8221;</text>
+
+  <!-- Four component cards -->
+  <!-- Card 1: Genre -->
+  <g transform="translate(40, 200)">
+    <rect width="220" height="248" rx="16" fill="url(#cardGrad)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+    <rect width="220" height="248" rx="16" fill="url(#cardGlow)"/>
+    <text x="22" y="40" class="sans" fill="#c084fc" font-size="11" letter-spacing="2" font-weight="600">01 · GENRE + STYLE</text>
+    <text x="22" y="86" class="serif" fill="#f8f8f8" font-size="24">hyperpop</text>
+    <text x="22" y="116" class="serif" fill="#f8f8f8" font-size="24">track</text>
+    <text x="22" y="158" class="sans" fill="rgba(248,248,248,0.55)" font-size="13.5">Name the genre and</text>
+    <text x="22" y="178" class="sans" fill="rgba(248,248,248,0.55)" font-size="13.5">the production feel.</text>
+    <text x="22" y="198" class="sans" fill="rgba(248,248,248,0.55)" font-size="13.5">Specific beats</text>
+    <text x="22" y="218" class="sans" fill="rgba(248,248,248,0.55)" font-size="13.5">generic, every time.</text>
+  </g>
+
+  <!-- Card 2: Mood -->
+  <g transform="translate(300, 200)">
+    <rect width="220" height="248" rx="16" fill="url(#cardGrad)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+    <rect width="220" height="248" rx="16" fill="url(#cardGlow)"/>
+    <text x="22" y="40" class="sans" fill="#c084fc" font-size="11" letter-spacing="2" font-weight="600">02 · MOOD</text>
+    <text x="22" y="86" class="serif" fill="#f8f8f8" font-size="24">euphoric</text>
+    <text x="22" y="158" class="sans" fill="rgba(248,248,248,0.55)" font-size="13.5">One emotion, not</text>
+    <text x="22" y="178" class="sans" fill="rgba(248,248,248,0.55)" font-size="13.5">three. It sets the</text>
+    <text x="22" y="198" class="sans" fill="rgba(248,248,248,0.55)" font-size="13.5">energy, the tempo,</text>
+    <text x="22" y="218" class="sans" fill="rgba(248,248,248,0.55)" font-size="13.5">and the key.</text>
+  </g>
+
+  <!-- Card 3: Subject -->
+  <g transform="translate(560, 200)">
+    <rect width="220" height="248" rx="16" fill="url(#cardGrad)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+    <rect width="220" height="248" rx="16" fill="url(#cardGlow)"/>
+    <text x="22" y="40" class="sans" fill="#c084fc" font-size="11" letter-spacing="2" font-weight="600">03 · SUBJECT / POV</text>
+    <text x="22" y="86" class="serif" fill="#f8f8f8" font-size="24">blocking</text>
+    <text x="22" y="116" class="serif" fill="#f8f8f8" font-size="24">your ex</text>
+    <text x="22" y="158" class="sans" fill="rgba(248,248,248,0.55)" font-size="13.5">A specific, relatable</text>
+    <text x="22" y="178" class="sans" fill="rgba(248,248,248,0.55)" font-size="13.5">moment. The thing</text>
+    <text x="22" y="198" class="sans" fill="rgba(248,248,248,0.55)" font-size="13.5">someone captions</text>
+    <text x="22" y="218" class="sans" fill="rgba(248,248,248,0.55)" font-size="13.5">with &#8220;this is so me.&#8221;</text>
+  </g>
+
+  <!-- Card 4: Hook -->
+  <g transform="translate(820, 200)">
+    <rect width="220" height="248" rx="16" fill="url(#cardGrad)" stroke="url(#grad)" stroke-width="1.5"/>
+    <rect width="220" height="248" rx="16" fill="url(#cardGlow)"/>
+    <text x="22" y="40" class="sans" fill="#f472b6" font-size="11" letter-spacing="2" font-weight="600">04 · THE HOOK</text>
+    <text x="22" y="86" class="serif" fill="#f8f8f8" font-size="24">one chant-</text>
+    <text x="22" y="116" class="serif" fill="#f8f8f8" font-size="24">able line</text>
+    <text x="22" y="158" class="sans" fill="rgba(248,248,248,0.55)" font-size="13.5">Ask for a single</text>
+    <text x="22" y="178" class="sans" fill="rgba(248,248,248,0.55)" font-size="13.5">repeated line. This is</text>
+    <text x="22" y="198" class="sans" fill="rgba(248,248,248,0.55)" font-size="13.5">the part people</text>
+    <text x="22" y="218" class="sans" fill="rgba(248,248,248,0.55)" font-size="13.5">actually post.</text>
+  </g>
+</svg>

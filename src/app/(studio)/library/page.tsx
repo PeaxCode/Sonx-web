@@ -1,6 +1,6 @@
 import { LibraryView } from "@/components/studio/library-view";
 
-export const metadata = { title: "Library" };
+export const metadata = { title: "Library", robots: { index: false } };
 
 export default function LibraryPage() {
   return (
