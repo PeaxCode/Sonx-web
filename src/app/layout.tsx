@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Plus_Jakarta_Sans, Unbounded } from "next/font/google";
+import { AuthEvents } from "@/components/auth-events";
 import "./globals.css";
 
 const unbounded = Unbounded({ subsets: ["latin"], variable: "--font-unbounded" });
@@ -21,7 +22,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${unbounded.variable} ${jakarta.variable}`}>
-      <body className="min-h-dvh">{children}</body>
+      <body className="min-h-dvh">
+        {children}
+        <AuthEvents />
+      </body>
       {/* Same GA4 property as the static Journal and legal pages in public/, so all traffic lands in one report. */}
       <GoogleAnalytics gaId="G-1F8ZGT6QEJ" />
     </html>
