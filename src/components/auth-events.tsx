@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { trackEvent } from "@/lib/analytics";
 import { AUTH_EVENT_COOKIE } from "@/lib/auth-event";
 
 /**
@@ -15,16 +16,7 @@ export function AuthEvents() {
 
     const [name, method] = decodeURIComponent(match[1]).split(":");
     if (name !== "sign_up" && name !== "login") return clear();
-    // <GoogleAnalytics /> runs gtag('config') after hydration, i.e. after this
-    // effect. An event queued before config has no destination and is dropped,
-    // so wait for its inline script to define window.gtag (config runs with it).
-    let tries = 0;
-    const timer = window.setInterval(() => {
-      const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
-      if (gtag) gtag("event", name, { method });
-      if (gtag || ++tries > 50) { clear(); window.clearInterval(timer); }
-    }, 200);
-    return () => window.clearInterval(timer);
+    return trackEvent(name, { method }, clear);
   }, []);
 
   return null;

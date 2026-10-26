@@ -8,7 +8,8 @@ import { IconCreate, IconPause, IconPlay } from "@/components/icons";
 import { usePlayer } from "@/components/studio/player";
 import { useSession } from "@/components/studio/session";
 import { GENRES } from "@/lib/billing-config";
-import { saveDraft } from "@/lib/draft";
+import { trackEvent } from "@/lib/analytics";
+import { readLinkedPrompt, saveDraft, saveLinkedPrompt } from "@/lib/draft";
 import { MUSIC_FEATURES } from "@/lib/generations";
 import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
 import { SAMPLE_GENERATIONS } from "@/lib/samples";
@@ -203,6 +204,8 @@ export function Hero() {
   const pulseRef = useRef<() => void>(() => undefined);
   const gainRef = useRef({ value: 0 });
   const sectionRef = useRef<HTMLElement>(null);
+  // The prompt as it arrived by link, to tell whether the visitor edited it before creating.
+  const linkedRef = useRef<string | null>(null);
 
   const genreName = GENRES.find((item) => item.id === genre)?.name ?? "Pop";
   const steps = ["Writing the lyrics", "Composing the music", instrumental ? "Producing the track" : "Recording the vocals", "Mixing it down"];
@@ -240,6 +243,31 @@ export function Hero() {
     return () => clearInterval(pulse);
   }, [phase]);
 
+  // ?prompt= from another site (Beatintel's "Try it in Sonx") fills the box as
+  // plain text. It never starts a song: the visitor edits it and presses Create.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    // URLSearchParams never throws, malformed %-escapes are kept as typed.
+    const fromLink = params.get("prompt")?.trim().slice(0, PROMPT_LIMIT) || null;
+    if (params.has("prompt")) {
+      // Out of the address bar so a reload is not counted again and GA's page_location stays short; UTMs stay.
+      params.delete("prompt");
+      const query = params.toString();
+      window.history.replaceState(null, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
+    }
+    if (fromLink) {
+      saveLinkedPrompt(fromLink);
+      trackEvent("prompt_prefilled", { source: params.get("utm_source") ?? "(none)", prompt_length: fromLink.length });
+    }
+    // Without one in the URL, a prompt kept from before a sign-in round trip.
+    const linked = fromLink ?? readLinkedPrompt();
+    if (!linked) return;
+    linkedRef.current = linked;
+    // URL and storage are only readable after hydration.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPrompt(linked);
+  }, []);
+
   const askToSignIn = () =>
     requestSignIn({
       next: "/create?resume=1",
@@ -254,6 +282,12 @@ export function Hero() {
     // Nothing typed yet: the button is disabled and Enter does nothing.
     if (!canCreate) return;
     const text = prompt.trim().slice(0, PROMPT_LIMIT);
+    if (linkedRef.current) {
+      // The other half of prompt_prefilled: how many linked prompts become a song.
+      trackEvent("prompt_prefilled_create", { edited: text !== linkedRef.current });
+      linkedRef.current = null;
+      saveLinkedPrompt(null);
+    }
     // The create form picks this draft up and starts the song (create-music-form.tsx).
     saveDraft({ mode: "describe", prompt: text, lyrics: "", instrumental, voice: "random", genre, title: titleFrom(text) });
     if (signedIn) {

@@ -33,3 +33,24 @@ export function takeDraft(): Draft | null {
     return null;
   }
 }
+
+// A prompt handed over by link (?prompt=) stays here until the visitor creates
+// with it, so a sign-in that returns to the home page still shows it.
+const LINKED_PROMPT_KEY = "sonx:linked-prompt";
+
+export function saveLinkedPrompt(prompt: string | null) {
+  try {
+    if (prompt) sessionStorage.setItem(LINKED_PROMPT_KEY, prompt);
+    else sessionStorage.removeItem(LINKED_PROMPT_KEY);
+  } catch {
+    // Without storage the prompt only lives in the box.
+  }
+}
+
+export function readLinkedPrompt(): string | null {
+  try {
+    return sessionStorage.getItem(LINKED_PROMPT_KEY);
+  } catch {
+    return null;
+  }
+}
