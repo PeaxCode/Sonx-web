@@ -92,7 +92,7 @@ export function CreateVideoForm() {
         requestSignIn({
           next: "/video",
           title: "Sign in to make your video",
-          text: "Your first video is free. After signing in, add your photo again and it starts right away.",
+          text: "After signing in, add your photo again and it starts right away.",
         });
       }
       return;
@@ -131,9 +131,9 @@ export function CreateVideoForm() {
     }
   };
 
-  const costHint = signedIn === false ? "Your first video is free. You sign in when you create it."
+  const costHint = signedIn === false ? "You sign in when you create it."
     : !billing ? "" : access === "quota"
-    ? billing.currentPlan === "FREE" ? "Uses your free video" : "Uses 1 video from your plan"
+    ? "Uses 1 video from your plan"
     : access === "credits" ? `Uses ${VIDEO_CREDIT_COSTS[length]} credits` : "Get Pro or credits in the app to create videos";
 
   return (

@@ -12,7 +12,7 @@ import { SITE_URL } from "@/lib/journal";
 // Title and description carried over from the old getsonx.com landing page, which ranks on them.
 const TITLE = "Sonx AI — AI Song Generator App";
 const DESCRIPTION =
-  "Sonx AI turns any idea into a full song in seconds — AI music, lyrics and vocals. Free on the web, iOS and Android.";
+  "Sonx AI turns any idea into a full song in seconds — AI music, lyrics and vocals. On the web, iOS and Android.";
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },

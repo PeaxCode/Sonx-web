@@ -37,7 +37,7 @@ export const FAQ = [
   {
     question: "How much does Sonx cost?",
     answer:
-      "Your first instrumental and your first song with vocals are free. After that, subscribe or buy credits in the Sonx app. Your plan works on the web as soon as you sign in with the same account.",
+      "Creating songs needs Sonx Pro or credits, which you get in the Sonx app. Your plan works on the web as soon as you sign in with the same account.",
   },
   {
     question: "Do I need the app to use the website?",

@@ -54,7 +54,7 @@ function SignInDialog({ request, onClose }: { request: SignInRequest; onClose: (
           {request.title ?? "Sign in to create your song"}
         </h2>
         <p className="mt-3 text-fog">
-          {request.text ?? "Your first song is free. Use the same account as the Sonx app and everything stays in sync."}
+          {request.text ?? "Use the same account as the Sonx app and everything stays in sync."}
         </p>
         <div className="mt-6 flex flex-col gap-3">
           <AppleSignInButton next={request.next} />

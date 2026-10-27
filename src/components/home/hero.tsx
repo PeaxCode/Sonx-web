@@ -272,7 +272,7 @@ export function Hero() {
     requestSignIn({
       next: "/create?resume=1",
       title: "Your song is almost ready",
-      text: "Sign in free to hear it. Your first song is on us, and it is waiting in the Sonx app too.",
+      text: "Sign in with your Sonx account to make it. Your songs are waiting in the Sonx app too.",
     });
 
   const canCreate = prompt.trim().length > 0;
@@ -380,7 +380,7 @@ export function Hero() {
                 </span>
               </div>
             </form>
-            <p className="hero-reveal mt-4 text-sm text-fog">Your first song is free. Lyrics and vocals included.</p>
+            <p className="hero-reveal mt-4 text-sm text-fog">Lyrics and vocals included.</p>
           </div>
         </>
       )}
@@ -429,7 +429,7 @@ export function Hero() {
           </button>
           <button type="button" onClick={askToSignIn}
             className="bg-signature mt-8 rounded-full px-8 py-3.5 font-display text-sm font-semibold tracking-wide transition hover:brightness-110">
-            Sign in free to listen
+            Sign in to listen
           </button>
           <button type="button" onClick={() => setPhase("idle")} className="mt-3 text-sm text-fog hover:text-paper">
             Change the prompt

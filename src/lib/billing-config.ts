@@ -1,5 +1,6 @@
 // Mirrors constants/BillingConfig.ts in the mobile app and the server's
 // provider-proxy limits. The server is authoritative; these drive the UI only.
+// FREE has no trial: creating requires Pro or credits bought in the app.
 
 export type Feature =
   | "PROMPT_MUSIC"
@@ -12,7 +13,7 @@ export type Feature =
 export type Plan = "FREE" | "WEEKLY" | "MONTHLY" | "YEARLY";
 
 export const PLAN_LIMITS: Record<Plan, Record<Feature, number>> = {
-  FREE: { PROMPT_MUSIC: 1, PHOTO_MUSIC: 0, LYRICS_MUSIC: 1, AI_SINGING: 0, AI_MUSIC_VIDEO: 1, VOICE_TRAINING: 0 },
+  FREE: { PROMPT_MUSIC: 0, PHOTO_MUSIC: 0, LYRICS_MUSIC: 0, AI_SINGING: 0, AI_MUSIC_VIDEO: 0, VOICE_TRAINING: 0 },
   WEEKLY: { PROMPT_MUSIC: 5, PHOTO_MUSIC: 5, LYRICS_MUSIC: 5, AI_SINGING: 3, AI_MUSIC_VIDEO: 0, VOICE_TRAINING: 3 },
   MONTHLY: { PROMPT_MUSIC: 40, PHOTO_MUSIC: 20, LYRICS_MUSIC: 20, AI_SINGING: 15, AI_MUSIC_VIDEO: 1, VOICE_TRAINING: 15 },
   YEARLY: { PROMPT_MUSIC: 250, PHOTO_MUSIC: 100, LYRICS_MUSIC: 100, AI_SINGING: 50, AI_MUSIC_VIDEO: 5, VOICE_TRAINING: 50 },

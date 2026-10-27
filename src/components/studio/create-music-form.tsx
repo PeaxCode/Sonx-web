@@ -82,14 +82,14 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
   };
 
   const costHint = (() => {
-    if (signedIn === false) return "Your first song is free. You sign in when you create it.";
+    if (signedIn === false) return "You sign in when you create it.";
     if (!billing) return "";
     if (access === "quota") {
       const left = remaining(feature);
-      return billing.currentPlan === "FREE" ? `Uses your free ${hasVocals ? "song" : "instrumental"}` : `Uses 1 of ${left} left this period`;
+      return `Uses 1 of ${left} left this period`;
     }
     if (access === "credits") return `Uses ${CREDIT_COSTS[feature]} credits`;
-    return "Get Pro or credits in the app to create more";
+    return "Get Pro or credits in the Sonx app to create songs";
   })();
 
   const writeLyricsForMe = async () => {

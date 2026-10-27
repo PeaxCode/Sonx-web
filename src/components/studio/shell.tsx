@@ -28,8 +28,8 @@ function Balance() {
   if (signedIn === false) {
     return (
       <div className="rounded-[var(--radius-control)] border border-line p-3">
-        <p className="text-sm font-medium">Your first song is free</p>
-        <p className="mt-0.5 text-xs text-fog">Sign in when you are ready to create.</p>
+        <p className="text-sm font-medium">Sign in to create</p>
+        <p className="mt-0.5 text-xs text-fog">Use your Sonx Pro account from the app.</p>
         <button type="button" onClick={() => requestSignIn({ next: pathname, title: "Sign in to Sonx" })}
           className="bg-signature mt-3 w-full rounded-[10px] py-2 text-sm font-semibold transition hover:brightness-110">
           Sign in
