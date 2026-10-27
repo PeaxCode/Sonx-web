@@ -55,3 +55,6 @@ export const IconDownload = (props: IconProps) => (
 export const IconClose = (props: IconProps) => (
   <Icon {...props}><path d="M6 6l12 12M18 6 6 18" /></Icon>
 );
+export const IconChevronDown = (props: IconProps) => (
+  <Icon {...props}><path d="m6 9 6 6 6-6" /></Icon>
+);

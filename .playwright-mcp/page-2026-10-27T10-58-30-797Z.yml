@@ -1,0 +1,147 @@
+- generic [active] [ref=f1e1]:
+  - complementary [ref=f1e2]:
+    - link "Sonx" [ref=f1e3] [cursor=pointer]:
+      - /url: /
+    - navigation [ref=f1e5]:
+      - link "Home" [ref=f1e6] [cursor=pointer]:
+        - /url: /
+      - link "Create" [ref=f1e9] [cursor=pointer]:
+        - /url: /create
+      - link "Library" [ref=f1e14] [cursor=pointer]:
+        - /url: /library
+      - link "Account" [ref=f1e18] [cursor=pointer]:
+        - /url: /account
+  - main [ref=f1e24]:
+    - generic [ref=f1e26]:
+      - region "Make a song" [ref=f1e27]:
+        - generic [ref=f1e31]:
+          - heading [level=1] [ref=f1e32]:
+            - text: Make a pop song about
+            - generic [ref=f1e33]: a rainy drive home at 2am
+          - paragraph [ref=f1e35]: Describe a mood, a moment or a story. Sonx writes the lyrics, picks the voice and produces the track.
+          - generic [ref=f1e36]:
+            - generic [ref=f1e37]: Describe your song
+            - textbox "Describe your song" [ref=f1e38]:
+              - /placeholder: Describe your song, like a rainy drive home at 2am
+            - generic [ref=f1e39]:
+              - generic [ref=f1e40]:
+                - generic [ref=f1e41]: Genre
+                - combobox "Genre" [ref=f1e42] [cursor=pointer]:
+                  - option "Pop" [selected]
+                  - option "Hip-hop"
+                  - option "EDM"
+                  - option "Jazz"
+                  - option "Lo-fi"
+                  - option "Rock"
+                  - option "Classical"
+                  - option "Country"
+                  - option "Blues"
+                  - option "Reggae"
+                  - option "Latin"
+                  - option "Metal"
+                  - option "Folk"
+                  - option "Afrobeat"
+                  - option "Indie"
+                  - option "Punk"
+                  - option "R&B"
+                  - option "K-pop"
+              - button "Instrumental" [ref=f1e43]
+              - generic [ref=f1e44]:
+                - button "Surprise me with a prompt" [ref=f1e45]
+                - button "Create" [disabled] [ref=f1e52]
+          - paragraph [ref=f1e57]: Lyrics and vocals included.
+      - region [ref=f1e58]:
+        - heading "Made with Sonx" [level=2] [ref=f1e60]
+        - list [ref=f1e61]:
+          - listitem [ref=f1e62]:
+            - button "Play Midnight Wanderer" [ref=f1e63]:
+              - generic [ref=f1e83]: Midnight Wanderer
+              - generic [ref=f1e84]: Song with vocals, Pop
+          - listitem [ref=f1e85]:
+            - button "Play Stable Diffusion Beats" [ref=f1e86]:
+              - generic [ref=f1e106]: Stable Diffusion Beats
+              - generic [ref=f1e107]: Instrumental
+      - region [ref=f1e108]:
+        - generic [ref=f1e109]:
+          - heading "Start from a style" [level=2] [ref=f1e110]
+          - link "Blank song" [ref=f1e111] [cursor=pointer]:
+            - /url: /create
+        - list [ref=f1e114]:
+          - listitem [ref=f1e115]:
+            - link "Lo-fi to study to" [ref=f1e116] [cursor=pointer]:
+              - /url: /create?prompt=A%20calm%20lo-fi%20beat%20for%20a%20late%20study%20session%2C%20soft%20rain%20and%20warm%20keys
+          - listitem [ref=f1e134]:
+            - link "Pop about summer love" [ref=f1e135] [cursor=pointer]:
+              - /url: /create?prompt=An%20upbeat%20pop%20song%20about%20falling%20in%20love%20on%20a%20summer%20trip
+          - listitem [ref=f1e153]:
+            - link "Rock anthem for game day" [ref=f1e154] [cursor=pointer]:
+              - /url: /create?prompt=A%20loud%20rock%20anthem%20for%20game%20day%20with%20a%20chant-along%20chorus
+          - listitem [ref=f1e172]:
+            - link "Jazz for a rainy café" [ref=f1e173] [cursor=pointer]:
+              - /url: /create?prompt=Smooth%20jazz%20for%20a%20rainy%20afternoon%20in%20a%20small%20caf%C3%A9
+          - listitem [ref=f1e191]:
+            - link "EDM for a night out" [ref=f1e192] [cursor=pointer]:
+              - /url: /create?prompt=An%20energetic%20EDM%20track%20for%20getting%20ready%20for%20a%20night%20out
+          - listitem [ref=f1e210]:
+            - link "Afrobeat beach party" [ref=f1e211] [cursor=pointer]:
+              - /url: /create?prompt=A%20sunny%20afrobeat%20song%20for%20a%20beach%20party%20with%20friends
+          - listitem [ref=f1e229]:
+            - link "R&B slow jam" [ref=f1e230] [cursor=pointer]:
+              - /url: /create?prompt=A%20slow%20R%26B%20love%20song%20with%20a%20smooth%2C%20soulful%20voice
+          - listitem [ref=f1e248]:
+            - link "Country road trip" [ref=f1e249] [cursor=pointer]:
+              - /url: /create?prompt=A%20feel-good%20country%20song%20about%20a%20road%20trip%20with%20old%20friends
+      - region [ref=f1e267]:
+        - heading "Three ways to create" [level=2] [ref=f1e268]
+        - list [ref=f1e269]:
+          - listitem [ref=f1e270]:
+            - link "Songs from a sentence Describe a mood, a moment or a story. Sonx writes the lyrics, picks the voice and produces the track." [ref=f1e271] [cursor=pointer]:
+              - /url: /create
+              - generic [ref=f1e273]:
+                - generic [ref=f1e274]: Songs from a sentence
+                - generic [ref=f1e275]: Describe a mood, a moment or a story. Sonx writes the lyrics, picks the voice and produces the track.
+          - listitem [ref=f1e276]:
+            - link "Lyrics written for you Bring your own words or start from a topic and edit what comes back." [ref=f1e277] [cursor=pointer]:
+              - /url: /create
+              - generic [ref=f1e279]:
+                - generic [ref=f1e280]: Lyrics written for you
+                - generic [ref=f1e281]: Bring your own words or start from a topic and edit what comes back.
+      - region [ref=f1e282]:
+        - generic [ref=f1e283]:
+          - heading "The same songs on your phone" [level=2] [ref=f1e284]
+          - paragraph [ref=f1e285]: Sign in with the same account in the Sonx app. Everything you make here is there, and the other way around.
+          - generic [ref=f1e286]:
+            - link "Download on the App Store" [ref=f1e287] [cursor=pointer]:
+              - /url: https://apps.apple.com/us/app/ai-song-music-generator-sonx/id6757523434
+              - img "Download on the App Store" [ref=f1e288]
+            - link "Get it on Google Play" [ref=f1e289] [cursor=pointer]:
+              - /url: https://play.google.com/store/apps/details?id=com.app.sonx
+              - img "Get it on Google Play" [ref=f1e290]
+        - paragraph [ref=f1e296]: Scan with your iPhone camera
+      - region [ref=f1e297]:
+        - heading "Questions, answered" [level=2] [ref=f1e298]
+        - generic [ref=f1e299]:
+          - group [ref=f1e300]:
+            - generic "How much does Sonx cost?" [ref=f1e301] [cursor=pointer]
+          - group [ref=f1e303]:
+            - generic "Do I need the app to use the website?" [ref=f1e304] [cursor=pointer]
+          - group [ref=f1e306]:
+            - generic "How long does a song take?" [ref=f1e307] [cursor=pointer]
+          - group [ref=f1e309]:
+            - generic "Are my songs the same on my phone?" [ref=f1e310] [cursor=pointer]
+          - group [ref=f1e312]:
+            - generic "Can I download what I make?" [ref=f1e313] [cursor=pointer]
+          - group [ref=f1e315]:
+            - generic "Can I use my own lyrics?" [ref=f1e316] [cursor=pointer]
+          - group [ref=f1e318]:
+            - generic "How do I delete my account?" [ref=f1e319] [cursor=pointer]
+      - generic [ref=f1e321]:
+        - paragraph [ref=f1e322]: © Sonx
+        - navigation [ref=f1e323]:
+          - link "Journal" [ref=f1e324] [cursor=pointer]:
+            - /url: /blog/
+          - link "Privacy" [ref=f1e325] [cursor=pointer]:
+            - /url: /privacy.html
+          - link "Terms" [ref=f1e326] [cursor=pointer]:
+            - /url: /terms.html
+  - alert [ref=f1e327]

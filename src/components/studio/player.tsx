@@ -13,6 +13,8 @@ interface PlayerValue {
   seek: (seconds: number) => void;
   next: () => void;
   previous: () => void;
+  /** Stops playback and hides the player. */
+  close: () => void;
   hasNext: boolean;
   hasPrevious: boolean;
 }
@@ -91,6 +93,18 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     next,
     previous: () => {
       if (index > 0) load(queue[index - 1]);
+    },
+    close: () => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.removeAttribute("src");
+        audio.load();
+      }
+      setCurrent(null);
+      setQueue([]);
+      setTime(0);
+      setDuration(0);
     },
   }), [current, playing, time, duration, index, queue, load, next]);
 
