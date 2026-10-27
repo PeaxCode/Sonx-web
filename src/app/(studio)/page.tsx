@@ -12,7 +12,7 @@ import { SITE_URL } from "@/lib/journal";
 // Title and description carried over from the old getsonx.com landing page, which ranks on them.
 const TITLE = "Sonx AI — AI Song Generator App";
 const DESCRIPTION =
-  "Sonx AI turns any idea into a full song in seconds — AI music, lyrics, voice cloning, and music videos. Free on the web, iOS and Android.";
+  "Sonx AI turns any idea into a full song in seconds — AI music, lyrics and vocals. Free on the web, iOS and Android.";
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
@@ -51,7 +51,7 @@ const ORGANIZATION_GRAPH = {
       "@type": "WebApplication",
       name: "Sonx",
       alternateName: "Sonx AI",
-      description: "AI song generator — turn any idea into a full song in seconds, with AI vocals, lyrics, and music videos.",
+      description: "AI song generator — turn any idea into a full song in seconds, with AI vocals and lyrics.",
       url: `${SITE_URL}/create`,
       applicationCategory: "MusicApplication",
       operatingSystem: "Web",
@@ -62,7 +62,7 @@ const ORGANIZATION_GRAPH = {
       "@type": "MobileApplication",
       name: "Sonx",
       alternateName: "Sonx AI",
-      description: "AI song generator — turn any idea into a full song in seconds, with AI vocals, lyrics, and music videos.",
+      description: "AI song generator — turn any idea into a full song in seconds, with AI vocals and lyrics.",
       url: `${SITE_URL}/`,
       applicationCategory: "MusicApplication",
       operatingSystem: "iOS, Android",
@@ -84,7 +84,7 @@ export default function Home() {
 
       <section aria-labelledby="ways-title">
         <h2 id="ways-title" className="mb-4 font-display text-xl font-semibold">Three ways to create</h2>
-        <ul className="grid gap-4 md:grid-cols-3">
+        <ul className="grid gap-4 md:grid-cols-2">
           {WAYS.map((way) => (
             <li key={way.title}>
               <Link href={way.href}

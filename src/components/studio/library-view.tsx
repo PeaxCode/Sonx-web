@@ -10,7 +10,8 @@ import { TrackList } from "./track-list";
 const FILTERS = [
   { id: "all", label: "All", match: () => true },
   { id: "songs", label: "Songs", match: (item: Generation) => MUSIC_FEATURES.includes(item.feature) },
-  { id: "videos", label: "Videos", match: (item: Generation) => item.feature === "AI_MUSIC_VIDEO" },
+  // Hidden with music video, pending payment provider review:
+  // { id: "videos", label: "Videos", match: (item: Generation) => item.feature === "AI_MUSIC_VIDEO" },
   { id: "favorites", label: "Favorites", match: (item: Generation) => item.is_favorite },
 ] as const;
 
@@ -32,7 +33,7 @@ export function LibraryView() {
       </div>
       {signedIn === false ? (
         <div className="rounded-[var(--radius-panel)] border border-line p-6">
-          <p className="font-medium">Your songs and videos live here</p>
+          <p className="font-medium">Your songs live here</p>
           <p className="mt-1 text-sm text-fog">Sign in to see what you made, on the web and in the Sonx app.</p>
           <button type="button" onClick={() => requestSignIn({ next: "/library", title: "Sign in to see your library" })}
             className="bg-signature mt-4 rounded-[var(--radius-control)] px-5 py-2.5 text-sm font-semibold transition hover:brightness-110">

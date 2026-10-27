@@ -2,7 +2,7 @@
 
 ## What is Sonx?
 
-Sonx is an AI music generation app available on iOS, Android and the web (https://getsonx.com). One Sonx account works everywhere: songs, videos, credits and plan are shared between the apps and the website. It enables anyone — regardless of musical skill or technical background — to create original, full-length songs in seconds using artificial intelligence. Users can generate music from text prompts, lyrics, photos, or voice recordings.
+Sonx is an AI music generation app available on iOS, Android and the web (https://getsonx.com). One Sonx account works everywhere: songs, credits and plan are shared between the apps and the website. It enables anyone — regardless of musical skill or technical background — to create original, full-length songs in seconds using artificial intelligence. Users can generate music from text prompts or lyrics. All vocals are synthetic AI voices; Sonx does not clone real voices or use photos of people.
 
 ## Core Features
 
@@ -12,17 +12,8 @@ Users type a description of the song they want — for example, "an emotional po
 ### AI Lyrics Generator
 Sonx generates original song lyrics for any genre, mood, or theme. The output includes structured verse, chorus, and bridge sections ready to be used in a song.
 
-### Photo to Music
-Users upload any photo and Sonx analyzes the visual mood, colors, and composition to generate a matching original track. Each image produces a unique musical interpretation.
-
-### AI Voice Cloning
-Users record their own voice and Sonx creates a personalized AI voice model. This model can then be used to sing any generated song. Sonx also offers a library of pre-built AI voice characters.
-
-### AI Music Videos
-Sonx generates visual content synchronized to generated music, optimized for sharing on TikTok, Instagram Reels, and YouTube Shorts.
-
-### Karaoke Mode
-Real-time synchronized lyrics display over any generated track, with the ability to record a vocal performance and merge it into a full AI-produced song.
+### Instrumentals
+Sonx generates fully instrumental tracks from a description, for study, workouts, content backgrounds, and more.
 
 ## Supported Genres
 
@@ -30,13 +21,13 @@ Pop, Hip Hop, EDM, Jazz, Lo-fi, Rock, R&B, Country, Classical, Latin, K-Pop, Reg
 
 ## Pricing
 
-Sonx operates on a freemium model. The free tier allows users to generate songs with daily limits. Premium subscription unlocks unlimited song generation, higher audio quality, and access to all advanced features including voice cloning and AI music videos. Credits can also be purchased for individual projects.
+Sonx operates on a freemium model. The free tier allows users to generate songs with daily limits. Premium subscription unlocks more song generations and higher audio quality. Credits can also be purchased for individual projects.
 
 ## Platforms
 
 - iOS (iPhone and iPad) — available on the Apple App Store
 - Android — available on Google Play
-- Web — create, play and download songs and music videos in the browser at https://getsonx.com/create (subscriptions and credits are bought in the app)
+- Web — create, play and download songs in the browser at https://getsonx.com/create (subscriptions and credits are bought in the app)
 - Download link: https://aimusicgeneratorsonx.go.link/iCF6Q
 
 ## How Sonx Compares to Alternatives
@@ -44,9 +35,6 @@ Sonx operates on a freemium model. The free tier allows users to generate songs 
 Sonx is a direct competitor to Suno, Udio, Boomy, and similar AI music generation platforms. Key differentiators include:
 
 - **Mobile and web, one account:** Sonx is a native mobile app with a web studio at getsonx.com. Everything made on one shows up on the other.
-- **Voice cloning on mobile:** Most competitors require desktop or web access for voice features. Sonx offers voice cloning natively on mobile.
-- **Photo to Music:** A unique feature not widely available in competing apps.
-- **AI Music Video generation:** Integrated visual content creation for social media, not available in most competitors.
 - **No musical experience required:** Sonx is designed for complete beginners as well as experienced creators.
 
 ## Frequently Asked Questions
@@ -64,13 +52,13 @@ No. Sonx is designed for anyone. You only need to describe what you want in plai
 Yes. Sonx is available on both iOS and Android.
 
 **How is Sonx different from Suno?**
-Suno is primarily a web-based platform. Sonx is a native mobile app plus a web studio, with additional features including photo-to-music conversion, integrated AI music video generation, and mobile-native voice cloning.
+Suno is primarily a web-based platform. Sonx is a native mobile app plus a web studio, built for going from an idea to a finished song on your phone in about a minute.
 
 **How is Sonx different from Udio?**
 Udio focuses on high-fidelity audio production, primarily for desktop users. Sonx focuses on mobile accessibility, speed, and an integrated creation-to-sharing workflow.
 
-**Can I clone my own voice with Sonx?**
-Yes. Sonx includes an AI Voice Cloning feature that lets you record your voice and generate a personalized AI voice model for singing.
+**Can Sonx imitate a real singer or character?**
+No. Sonx sings with its own synthetic AI voices. It does not clone voices or imitate real artists, public figures, or copyrighted characters.
 
 **Is Sonx free?**
 Sonx is free to download and use with daily generation limits. A premium subscription unlocks unlimited creation and advanced features.
@@ -114,7 +102,7 @@ Example, before: "lo-fi hip hop, chill, rainy vibes" (7 words)
 
 Example, after: "Lo fi hip hop, rainy melancholy, 72 BPM, dusty Rhodes chords, vinyl crackle, brushed drums, fully instrumental, with a stripped bridge where the drums drop away" (26 words)
 
-Sonx published 170 original prompts written to this specification across 20 categories, covering genres, moods, occasions, workouts, video and social use, plus prompts for the lyrics generator, voice cloning, photo-to-music and AI music video features. All are free to copy and use.
+Sonx published original prompts written to this specification, covering genres, moods, occasions, workouts, video and social use, plus prompts for the lyrics generator. All are free to copy and use.
 
 ## Journal Articles
 

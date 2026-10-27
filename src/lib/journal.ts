@@ -21,7 +21,7 @@ export const JOURNAL_POSTS: JournalPost[] = [
   {
     slug: "how-ai-music-generation-works-2026",
     title: "How AI Music Generation Actually Works in 2026",
-    summary: "Plain-English breakdown of the three-stage AI music pipeline — diffusion, transformers, and voice cloning.",
+    summary: "Plain-English breakdown of the three-stage AI music pipeline — diffusion, transformers, and audio synthesis.",
     updated: "2026-05-07",
     priority: 0.7,
   },
@@ -49,7 +49,7 @@ export const JOURNAL_POSTS: JournalPost[] = [
   {
     slug: "ai-music-prompts-analyzed",
     title: "We Analyzed 1,136 AI Music Prompts. Most of Them Are Too Short.",
-    summary: "Original frequency study of 1,136 AI music prompts published across 16 public sources. Median prompt length is 7 words, only 21.6% specify a tempo, 69% say nothing about vocals, and 2.4% mention song structure. Includes a six-layer prompt formula and 170 original copy-paste prompts across 20 categories.",
+    summary: "Original frequency study of 1,136 AI music prompts published across 16 public sources. Median prompt length is 7 words, only 21.6% specify a tempo, 69% say nothing about vocals, and 2.4% mention song structure. Includes a six-layer prompt formula and 143 original copy-paste prompts across 20 categories.",
     updated: "2026-07-30",
     priority: 0.8,
   },
@@ -84,7 +84,7 @@ export const JOURNAL_POSTS: JournalPost[] = [
   {
     slug: "can-gemini-make-music",
     title: "Can Gemini Make Music? Lyria 3's Real Limits (2026)",
-    summary: "Yes — Gemini generates real music with Lyria 3 (30-second tracks free, up to 3 minutes on Pro, vocals and image prompts), but every track is SynthID-watermarked, commercial rights are a license not ownership, and there is no section editing or voice cloning.",
+    summary: "Yes — Gemini generates real music with Lyria 3 (30-second tracks free, up to 3 minutes on Pro, vocals and image prompts), but every track is SynthID-watermarked, commercial rights are a license not ownership, and there is no section editing.",
     updated: "2026-08-16",
     priority: 0.8,
   },

@@ -11,7 +11,8 @@ import { useFeedback } from "./feedback";
 const USAGE_ROWS: { feature: Feature; label: string }[] = [
   { feature: "PROMPT_MUSIC", label: "Instrumentals" },
   { feature: "LYRICS_MUSIC", label: "Songs with vocals" },
-  { feature: "AI_MUSIC_VIDEO", label: "Music videos" },
+  // Hidden with music video, pending payment provider review:
+  // { feature: "AI_MUSIC_VIDEO", label: "Music videos" },
 ];
 
 export function AccountView({ email, name, avatarUrl }: { email: string | null; name: string | null; avatarUrl: string | null }) {
@@ -29,7 +30,7 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
 
   const deleteAccount = async () => {
     const confirmed = window.confirm(
-      "Delete your account? Your songs, videos and credits are deleted everywhere, including the app. " +
+      "Delete your account? Your songs and credits are deleted everywhere, including the app. " +
       "Subscriptions are billed by the App Store or Google Play: cancel yours there to stop future charges.",
     );
     if (!confirmed) return;

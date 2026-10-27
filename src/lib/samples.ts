@@ -2,7 +2,7 @@ import type { Generation } from "@/lib/generations";
 
 // The examples the mobile app ships in its library (constants/sampleSongs.ts
 // and sampleVideos.ts), served from /public/samples. The AI cover example is
-// left out while AI Voice is hidden.
+// left out while AI Voice is hidden, and the music videos while video is hidden.
 const sample = (fields: Pick<Generation, "id" | "feature" | "title" | "genre" | "output_url"> & Partial<Generation>): Generation => ({
   client_request_id: fields.id,
   prompt: null,
@@ -31,20 +31,21 @@ export const SAMPLE_GENERATIONS: Generation[] = [
     genre: null,
     output_url: "/samples/stable-diffusion-beats.mp3",
   }),
-  sample({
-    id: "sample_video_omnihuman_001",
-    feature: "AI_MUSIC_VIDEO",
-    title: "C-5 Demo",
-    genre: null,
-    output_url: "/samples/c-5.mp4",
-    cover_url: "/samples/c-5.jpg",
-  }),
-  sample({
-    id: "sample_video_omnihuman_002",
-    feature: "AI_MUSIC_VIDEO",
-    title: "G-5 Demo",
-    genre: null,
-    output_url: "/samples/g-5.mp4",
-    cover_url: "/samples/g-5.jpg",
-  }),
+  // Music video examples hidden pending payment provider review.
+  // sample({
+  //   id: "sample_video_omnihuman_001",
+  //   feature: "AI_MUSIC_VIDEO",
+  //   title: "C-5 Demo",
+  //   genre: null,
+  //   output_url: "/samples/c-5.mp4",
+  //   cover_url: "/samples/c-5.jpg",
+  // }),
+  // sample({
+  //   id: "sample_video_omnihuman_002",
+  //   feature: "AI_MUSIC_VIDEO",
+  //   title: "G-5 Demo",
+  //   genre: null,
+  //   output_url: "/samples/g-5.mp4",
+  //   cover_url: "/samples/g-5.jpg",
+  // }),
 ];

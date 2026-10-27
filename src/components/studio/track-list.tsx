@@ -16,7 +16,8 @@ export const kindLabel = (generation: Generation) => {
   switch (generation.feature) {
     case "AI_MUSIC_VIDEO": return "Music video";
     case "LYRICS_MUSIC": return "Song with vocals";
-    case "AI_SINGING": return "AI cover";
+    // AI Voice is hidden; older AI_SINGING rows read as a plain song.
+    case "AI_SINGING": return "Song with vocals";
     default: return "Instrumental";
   }
 };

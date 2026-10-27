@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconAccount, IconCreate, IconHome, IconLibrary, IconVideo } from "@/components/icons";
+import { IconAccount, IconCreate, IconHome, IconLibrary } from "@/components/icons";
 import { PLAN_LABELS } from "@/lib/billing-config";
 import { BillingProvider, useBilling } from "./billing";
 import { FeedbackProvider } from "./feedback";
@@ -15,7 +15,8 @@ import { SessionProvider, useSession } from "./session";
 const NAV = [
   { href: "/", label: "Home", icon: IconHome },
   { href: "/create", label: "Create", icon: IconCreate },
-  { href: "/video", label: "Video", icon: IconVideo },
+  // Hidden pending payment provider review (restore IconVideo import too):
+  // { href: "/video", label: "Video", icon: IconVideo },
   { href: "/library", label: "Library", icon: IconLibrary },
   { href: "/account", label: "Account", icon: IconAccount },
 ];
@@ -94,7 +95,7 @@ function Navigation() {
         <div className="mt-auto"><Balance /></div>
       </aside>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 grid h-16 grid-cols-5 border-t border-line bg-night md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 grid h-16 grid-cols-4 border-t border-line bg-night md:hidden">
         {items.map(({ href, label, icon: Icon }) => {
           const active = isActive(pathname, href);
           return (

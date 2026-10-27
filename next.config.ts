@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  // AI music video is hidden pending payment provider review; see app/(studio)/video/page.tsx.
+  async redirects() {
+    return [{ source: "/video", destination: "/create", permanent: false }];
+  },
   async rewrites() {
     return {
       // The Journal is static HTML carried over from the old landing site (public/blog).
