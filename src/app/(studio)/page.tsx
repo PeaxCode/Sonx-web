@@ -18,7 +18,10 @@ export const metadata: Metadata = {
   title: { absolute: TITLE },
   description: DESCRIPTION,
   alternates: { canonical: "/" },
+  // Replaces the layout's openGraph rather than merging with it, so type and siteName are repeated here.
   openGraph: {
+    siteName: "Sonx",
+    type: "website",
     title: TITLE,
     description: DESCRIPTION,
     url: "/",
