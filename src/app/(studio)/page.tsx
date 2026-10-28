@@ -18,7 +18,22 @@ export const metadata: Metadata = {
   title: { absolute: TITLE },
   description: DESCRIPTION,
   alternates: { canonical: "/" },
-  openGraph: { title: TITLE, description: DESCRIPTION, url: "/", images: [{ url: "/og-image.png", width: 1200, height: 630 }] },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: "/",
+    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+    // Brand video for share previews; only here and on the Journal index, so posts keep their own cover.
+    videos: [
+      {
+        url: "https://getsonx.com/og-video.mp4",
+        secureUrl: "https://getsonx.com/og-video.mp4",
+        type: "video/mp4",
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
   twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION, images: ["/og-image.png"] },
 };
 
