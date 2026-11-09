@@ -60,7 +60,7 @@
     ]
   },
   "datePublished": "2026-08-16",
-  "dateModified": "2026-08-16",
+  "dateModified": "2026-10-27",
   "mainEntityOfPage": "https://getsonx.com/blog/can-claude-make-music/"
 }
 </script>
@@ -266,6 +266,7 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
   .related-grid{grid-template-columns:1fr}
 }
 </style>
+<link rel="stylesheet" href="/blog/cta.css">
 </head>
 <body>
 
@@ -337,6 +338,14 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
   </aside>
 
   <article class="article-body">
+
+    <form class="blog-cta blog-cta--top" action="/create" method="get" data-position="top">
+      <input type="hidden" name="from" value="can-claude-make-music">
+      <label class="blog-cta-title" for="blog-cta-prompt-top">Claude can't sing. Sonx can.</label>
+      <p class="blog-cta-text">Describe your song and Sonx writes the lyrics, picks the voice and produces the track.</p>
+      <textarea id="blog-cta-prompt-top" name="prompt" rows="2" maxlength="500" placeholder="A dreamy synth-pop song about leaving the city"></textarea>
+      <button type="submit">Turn it into a song <span aria-hidden="true">→</span></button>
+    </form>
 
     <p>This is the fourth time we've asked "can this chatbot make music?" — after <a href="/blog/can-grok-generate-music/">Grok</a>, <a href="/blog/can-chatgpt-make-music/">ChatGPT</a>, and <a href="/blog/can-gemini-make-music/">Gemini</a> — and Claude turns out to be the strangest case of the four. The headline answer is the same as ChatGPT's: no audio. But the details underneath it are different enough, and interesting enough, that copying our ChatGPT verdict over would miss what Claude actually is. We build an <a href="/">AI music app</a>, we use these assistants daily, and yes — we're aware of the comedy of fact-checking an article about Claude partly by asking Claude. We verified against what Anthropic has actually shipped instead.</p>
 
@@ -415,6 +424,14 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
         <div class="faq-a">Draft and refine the lyrics in Claude, then paste them into a dedicated AI music app like Sonx, pick a genre or describe the sound, and generate. You get a full track with vocals singing your words in about a minute, ready to export.</div>
       </div>
     </section>
+
+    <form class="blog-cta blog-cta--bottom" action="/create" method="get" data-position="bottom">
+      <input type="hidden" name="from" value="can-claude-make-music">
+      <label class="blog-cta-title" for="blog-cta-prompt-bottom">Claude can't sing. Sonx can.</label>
+      <p class="blog-cta-text">Describe your song and Sonx writes the lyrics, picks the voice and produces the track.</p>
+      <textarea id="blog-cta-prompt-bottom" name="prompt" rows="2" maxlength="500" placeholder="A dreamy synth-pop song about leaving the city"></textarea>
+      <button type="submit">Turn it into a song <span aria-hidden="true">→</span></button>
+    </form>
 
   </article>
 </div>
@@ -531,5 +548,6 @@ window.addEventListener('scroll',()=>{
   }, true);
 })();
 </script>
+<script src="/blog/cta.js" defer></script>
 </body>
 </html>

@@ -274,6 +274,7 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
 /* four related cards: lay out 2x2 instead of 3+1 */
 @media(min-width:721px){.related-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
+<link rel="stylesheet" href="/blog/cta.css">
 </head>
 <body>
 
@@ -346,6 +347,14 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
   </aside>
 
   <article class="article-body">
+
+    <form class="blog-cta blog-cta--top" action="/create" method="get" data-position="top">
+      <input type="hidden" name="from" value="is-ai-music-allowed-on-spotify">
+      <label class="blog-cta-title" for="blog-cta-prompt-top">Make a track worth releasing</label>
+      <p class="blog-cta-text">Describe your song and Sonx writes the lyrics, picks the voice and produces the track.</p>
+      <textarea id="blog-cta-prompt-top" name="prompt" rows="2" maxlength="500" placeholder="A moody indie-pop song about city lights at 2am"></textarea>
+      <button type="submit">Turn it into a song <span aria-hidden="true">→</span></button>
+    </form>
 
     <p><strong>Yes — Spotify allows AI-generated music.</strong> There is no rule that bans a song because AI made it. What Spotify bans is <em>behavior</em>: impersonating a real artist's voice without permission, flooding the platform with spam uploads, faking streams, and lying in your metadata. Alongside that, it's rolling out disclosure standards so song credits can say where AI was involved. Follow the rules and an AI track sits on Spotify exactly like any other release — same profile, same playlists, same royalties.</p>
 
@@ -464,6 +473,14 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
         <div class="faq-a">Both allow it. Apple Music has no blanket ban on AI music. YouTube allows AI music too, but requires disclosure of realistic synthetic content and has policies around AI-cloned voices of real artists. On every major platform the same behavior gets you in trouble: impersonation, spam, and fake streams.</div>
       </div>
     </section>
+
+    <form class="blog-cta blog-cta--bottom" action="/create" method="get" data-position="bottom">
+      <input type="hidden" name="from" value="is-ai-music-allowed-on-spotify">
+      <label class="blog-cta-title" for="blog-cta-prompt-bottom">Make a track worth releasing</label>
+      <p class="blog-cta-text">Describe your song and Sonx writes the lyrics, picks the voice and produces the track.</p>
+      <textarea id="blog-cta-prompt-bottom" name="prompt" rows="2" maxlength="500" placeholder="A moody indie-pop song about city lights at 2am"></textarea>
+      <button type="submit">Turn it into a song <span aria-hidden="true">→</span></button>
+    </form>
 
   </article>
 </div>
@@ -585,5 +602,6 @@ window.addEventListener('scroll',()=>{
   }, true);
 })();
 </script>
+<script src="/blog/cta.js" defer></script>
 </body>
 </html>

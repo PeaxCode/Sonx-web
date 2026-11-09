@@ -1,0 +1,17 @@
+/* Prompt box on the "can X make music" posts. It leads to /create; see cta.js. */
+.blog-cta{padding:24px;border-radius:var(--r-lg);background:radial-gradient(ellipse at 100% 0%,rgba(244,114,182,.10) 0%,transparent 60%),radial-gradient(ellipse at 0% 100%,rgba(192,132,252,.10) 0%,transparent 60%),var(--surface);border:1px solid var(--border-hover)}
+.blog-cta--top{margin-bottom:36px}
+.blog-cta--bottom{margin-top:48px}
+.blog-cta-title{display:block;font-family:'Instrument Serif',serif;font-size:28px;line-height:1.2;color:var(--text)}
+.article-body p.blog-cta-text{margin:6px 0 16px;font-size:15px;line-height:1.55;color:var(--muted)}
+.blog-cta textarea{display:block;width:100%;padding:12px 14px;border-radius:var(--r);border:1px solid var(--border-hover);background:var(--black);color:var(--text);font:inherit;font-size:16px;line-height:1.5;resize:none}
+.blog-cta textarea::placeholder{color:var(--muted2)}
+.blog-cta textarea:focus{outline:none;border-color:var(--accent)}
+.blog-cta button{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:12px 24px;border:0;border-radius:100px;background:var(--accent-grad);color:var(--black);font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .2s,transform .15s}
+.blog-cta button:hover{opacity:.88;transform:translateY(-1px)}
+.blog-cta button:focus-visible{outline:2px solid var(--text);outline-offset:2px}
+@media(max-width:720px){
+  .blog-cta{padding:20px}
+  .blog-cta-title{font-size:24px}
+  .blog-cta button{width:100%;justify-content:center}
+}

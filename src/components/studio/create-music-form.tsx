@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { trackEvent } from "@/lib/analytics";
 import { isInsufficientBalance } from "@/lib/api";
 import { CREDIT_COSTS, GENRES, type Feature } from "@/lib/billing-config";
 import { newRequestId, startGeneration } from "@/lib/generations";
-import { saveDraft, takeDraft, type DraftMode, type DraftVoice } from "@/lib/draft";
+import { saveDraft, takeBlogSource, takeDraft, type DraftMode, type DraftVoice } from "@/lib/draft";
 import { generateLyrics } from "@/lib/lyrics";
 import { useBilling } from "./billing";
 import { useFeedback } from "./feedback";
@@ -47,7 +48,8 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
       const query = params.toString();
       window.history.replaceState(null, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
     }
-    if (!draft) return;
+    // A prompt that just arrived by link is newer than a draft left from an abandoned sign-in.
+    if (!draft || (initialPrompt && !resuming)) return;
     // Storage is only readable after hydration, so the saved draft is applied here.
     /* eslint-disable react-hooks/set-state-in-effect */
     setMode(draft.mode);
@@ -59,7 +61,7 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
     setTitle(draft.title);
     /* eslint-enable react-hooks/set-state-in-effect */
     resumeRef.current = resuming;
-  }, [restoreDraft]);
+  }, [restoreDraft, initialPrompt]);
 
   // A described song with vocals gets lyrics first, so it bills as a song with vocals.
   const feature: Feature = mode === "lyrics" || !instrumental ? "LYRICS_MUSIC" : "PROMPT_MUSIC";
@@ -114,6 +116,9 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!canSubmit) return;
+    // The other half of blog_cta_click. Taken once, so the submit that resumes after sign-in isn't counted again.
+    const blogPost = signedIn === null ? null : takeBlogSource();
+    if (blogPost) trackEvent("create_from_blog", { post_slug: blogPost });
     if (!signedIn) {
       if (signedIn === false) askToSignIn("/create?resume=1");
       return;

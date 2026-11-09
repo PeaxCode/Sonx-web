@@ -3,7 +3,7 @@ import { JOURNAL_POSTS, JOURNAL_UPDATED, SITE_URL, postUrl } from "@/lib/journal
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
-    { url: `${SITE_URL}/`, lastModified: "2026-10-13", changeFrequency: "weekly", priority: 1 },
+    { url: `${SITE_URL}/`, lastModified: "2026-11-09", changeFrequency: "weekly", priority: 1 },
     { url: `${SITE_URL}/create`, lastModified: "2026-10-13", changeFrequency: "monthly", priority: 0.9 },
     // Hidden pending payment provider review:
     // { url: `${SITE_URL}/video`, lastModified: "2026-10-13", changeFrequency: "monthly", priority: 0.8 },
@@ -14,7 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly" as const,
       priority: post.priority,
     })),
-    { url: `${SITE_URL}/privacy.html`, lastModified: "2026-10-27", changeFrequency: "monthly", priority: 0.3 },
-    { url: `${SITE_URL}/terms.html`, lastModified: "2026-10-27", changeFrequency: "monthly", priority: 0.3 },
+    { url: `${SITE_URL}/privacy.html`, lastModified: "2026-11-04", changeFrequency: "monthly", priority: 0.3 },
+    { url: `${SITE_URL}/terms.html`, lastModified: "2026-11-04", changeFrequency: "monthly", priority: 0.3 },
   ];
 }

@@ -319,13 +319,16 @@ export function Hero() {
           <FloatingSample side="right" />
           <div className="relative z-10 mx-auto max-w-3xl text-center">
             <h1 className="hero-reveal font-display text-3xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
+              AI Song Generator: Make Full Songs with Vocals from Text
+            </h1>
+            <p className="hero-reveal mt-4 font-display text-lg font-medium leading-snug md:text-2xl">
               Make {genrePhrase(genreName)} song about
-              {/* Two lines are reserved so the box below never jumps while typing. */}
-              <span className="mt-1 block min-h-[2.2em] text-violet" aria-live="off">
+              {/* Two lines are reserved on phones so the box below never jumps while typing. */}
+              <span className="block min-h-[2.75em] text-violet md:min-h-[1.375em]" aria-live="off">
                 {typed}
                 <span aria-hidden="true" className="ml-1 inline-block h-[0.9em] w-[3px] translate-y-[0.1em] animate-pulse bg-paper" />
               </span>
-            </h1>
+            </p>
             <p className="hero-reveal mx-auto mt-2 max-w-lg text-fog">
               Describe a mood, a moment or a story. Sonx writes the lyrics, picks the voice and produces the track.
             </p>

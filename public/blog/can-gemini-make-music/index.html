@@ -60,7 +60,7 @@
     ]
   },
   "datePublished": "2026-08-16",
-  "dateModified": "2026-08-16",
+  "dateModified": "2026-10-27",
   "mainEntityOfPage": "https://getsonx.com/blog/can-gemini-make-music/"
 }
 </script>
@@ -266,6 +266,7 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
   .related-grid{grid-template-columns:1fr}
 }
 </style>
+<link rel="stylesheet" href="/blog/cta.css">
 </head>
 <body>
 
@@ -337,6 +338,14 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
   </aside>
 
   <article class="article-body">
+
+    <form class="blog-cta blog-cta--top" action="/create" method="get" data-position="top">
+      <input type="hidden" name="from" value="can-gemini-make-music">
+      <label class="blog-cta-title" for="blog-cta-prompt-top">Make the full song, not the sketch</label>
+      <p class="blog-cta-text">Describe your song and Sonx writes the lyrics, picks the voice and produces the track.</p>
+      <textarea id="blog-cta-prompt-top" name="prompt" rows="2" maxlength="500" placeholder="An anthemic indie rock song about the last night of summer"></textarea>
+      <button type="submit">Turn it into a song <span aria-hidden="true">→</span></button>
+    </form>
 
     <p>We've now written this article three times — for <a href="/blog/can-grok-generate-music/">Grok</a>, for <a href="/blog/can-chatgpt-make-music/">ChatGPT</a>, and now for Gemini — and Gemini is the first one where the answer isn't "no." That alone makes it worth being precise about, because "Gemini can make music" and "Gemini can make <em>your song</em>" are two different claims, and only one of them is true. We build an <a href="/">AI music app</a>, so consider our bias declared — and our testing obsessive.</p>
 
@@ -419,6 +428,14 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
         <div class="faq-a">Gemini is great for quick, disposable soundtracks — a 30-second bed for a video or a mood sketch. A dedicated AI music app like Sonx is built for finished songs: full control over genre and lyrics, your own cloned voice, regeneration of individual sections, and an export path designed for releasing and sharing music.</div>
       </div>
     </section>
+
+    <form class="blog-cta blog-cta--bottom" action="/create" method="get" data-position="bottom">
+      <input type="hidden" name="from" value="can-gemini-make-music">
+      <label class="blog-cta-title" for="blog-cta-prompt-bottom">Make the full song, not the sketch</label>
+      <p class="blog-cta-text">Describe your song and Sonx writes the lyrics, picks the voice and produces the track.</p>
+      <textarea id="blog-cta-prompt-bottom" name="prompt" rows="2" maxlength="500" placeholder="An anthemic indie rock song about the last night of summer"></textarea>
+      <button type="submit">Turn it into a song <span aria-hidden="true">→</span></button>
+    </form>
 
   </article>
 </div>
@@ -535,5 +552,6 @@ window.addEventListener('scroll',()=>{
   }, true);
 })();
 </script>
+<script src="/blog/cta.js" defer></script>
 </body>
 </html>

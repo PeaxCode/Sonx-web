@@ -60,7 +60,7 @@
     ]
   },
   "datePublished": "2026-08-16",
-  "dateModified": "2026-08-16",
+  "dateModified": "2026-10-27",
   "mainEntityOfPage": "https://getsonx.com/blog/can-chatgpt-make-music/"
 }
 </script>
@@ -266,6 +266,7 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
   .related-grid{grid-template-columns:1fr}
 }
 </style>
+<link rel="stylesheet" href="/blog/cta.css">
 </head>
 <body>
 
@@ -337,6 +338,14 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
   </aside>
 
   <article class="article-body">
+
+    <form class="blog-cta blog-cta--top" action="/create" method="get" data-position="top">
+      <input type="hidden" name="from" value="can-chatgpt-make-music">
+      <label class="blog-cta-title" for="blog-cta-prompt-top">ChatGPT can't sing. Sonx can.</label>
+      <p class="blog-cta-text">Describe your song and Sonx writes the lyrics, picks the voice and produces the track.</p>
+      <textarea id="blog-cta-prompt-top" name="prompt" rows="2" maxlength="500" placeholder="A warm acoustic song about moving back to my hometown"></textarea>
+      <button type="submit">Turn it into a song <span aria-hidden="true">→</span></button>
+    </form>
 
     <p>"Can ChatGPT make music?" gets asked millions of times a year, and the answers floating around are muddier than they should be — partly because OpenAI now ships a video tool that <em>does</em> make sound, and partly because half the pages answering the question are trying to sell you something confusing. We build an <a href="/">AI music app</a>, so we test every tool in this space obsessively. Here's the precise answer, with the marketing stripped out.</p>
 
@@ -422,6 +431,14 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
         <div class="faq-a">Write and refine the lyrics in ChatGPT, then paste them into a dedicated AI music app like Sonx, pick a genre or describe the sound, and generate. You get a full track with vocals singing your words in about a minute, ready to export.</div>
       </div>
     </section>
+
+    <form class="blog-cta blog-cta--bottom" action="/create" method="get" data-position="bottom">
+      <input type="hidden" name="from" value="can-chatgpt-make-music">
+      <label class="blog-cta-title" for="blog-cta-prompt-bottom">ChatGPT can't sing. Sonx can.</label>
+      <p class="blog-cta-text">Describe your song and Sonx writes the lyrics, picks the voice and produces the track.</p>
+      <textarea id="blog-cta-prompt-bottom" name="prompt" rows="2" maxlength="500" placeholder="A warm acoustic song about moving back to my hometown"></textarea>
+      <button type="submit">Turn it into a song <span aria-hidden="true">→</span></button>
+    </form>
 
   </article>
 </div>
@@ -538,5 +555,6 @@ window.addEventListener('scroll',()=>{
   }, true);
 })();
 </script>
+<script src="/blog/cta.js" defer></script>
 </body>
 </html>

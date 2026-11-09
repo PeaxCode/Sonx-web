@@ -60,7 +60,7 @@
     ]
   },
   "datePublished": "2026-06-20",
-  "dateModified": "2026-06-20",
+  "dateModified": "2026-10-27",
   "mainEntityOfPage": "https://getsonx.com/blog/can-grok-generate-music/"
 }
 </script>
@@ -269,6 +269,7 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
 /* four related cards: lay out 2x2 instead of 3+1 */
 @media(min-width:721px){.related-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
+<link rel="stylesheet" href="/blog/cta.css">
 </head>
 <body>
 
@@ -341,6 +342,14 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
   </aside>
 
   <article class="article-body">
+
+    <form class="blog-cta blog-cta--top" action="/create" method="get" data-position="top">
+      <input type="hidden" name="from" value="can-grok-generate-music">
+      <label class="blog-cta-title" for="blog-cta-prompt-top">Grok writes the words. Sonx sings them.</label>
+      <p class="blog-cta-text">Describe your song and Sonx writes the lyrics, picks the voice and produces the track.</p>
+      <textarea id="blog-cta-prompt-top" name="prompt" rows="2" maxlength="500" placeholder="A punchy hip-hop track about starting over in a new city"></textarea>
+      <button type="submit">Turn it into a song <span aria-hidden="true">→</span></button>
+    </form>
 
     <p>"Can Grok make music?" is one of those searches that gets more popular every month, and the honest answer is more interesting than a flat yes or no. We build an <a href="/">AI music app</a>, which means we spend an unhealthy amount of time poking at every tool in this space to see what it actually does versus what its marketing says. Grok is worth being precise about, because the gap between the two is wide.</p>
 
@@ -448,6 +457,14 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
         <div class="faq-a">Write or refine the lyrics in Grok, then paste them into a dedicated AI music app like Sonx, pick a genre, and generate. You get a full track with vocals in about a minute, ready to export.</div>
       </div>
     </section>
+
+    <form class="blog-cta blog-cta--bottom" action="/create" method="get" data-position="bottom">
+      <input type="hidden" name="from" value="can-grok-generate-music">
+      <label class="blog-cta-title" for="blog-cta-prompt-bottom">Grok writes the words. Sonx sings them.</label>
+      <p class="blog-cta-text">Describe your song and Sonx writes the lyrics, picks the voice and produces the track.</p>
+      <textarea id="blog-cta-prompt-bottom" name="prompt" rows="2" maxlength="500" placeholder="A punchy hip-hop track about starting over in a new city"></textarea>
+      <button type="submit">Turn it into a song <span aria-hidden="true">→</span></button>
+    </form>
 
   </article>
 </div>
@@ -569,5 +586,6 @@ window.addEventListener('scroll',()=>{
   }, true);
 })();
 </script>
+<script src="/blog/cta.js" defer></script>
 </body>
 </html>

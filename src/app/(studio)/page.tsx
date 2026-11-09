@@ -9,10 +9,10 @@ import { StoreBadges } from "@/components/store-badges";
 import { STORE_LINKS } from "@/lib/billing-config";
 import { SITE_URL } from "@/lib/journal";
 
-// Title and description carried over from the old getsonx.com landing page, which ranks on them.
-const TITLE = "Sonx AI — AI Song Generator App";
+// Under 60 characters, so search results show it whole.
+const TITLE = "AI Song Generator — Full Songs with Vocals from Text | Sonx";
 const DESCRIPTION =
-  "Sonx AI turns any idea into a full song in seconds — AI music, lyrics and vocals. On the web, iOS and Android.";
+  "Sonx AI turns any idea into a full song in seconds, with AI lyrics and vocals. On the web, iOS and Android. Describe your song and start creating now.";
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },

@@ -54,3 +54,26 @@ export function readLinkedPrompt(): string | null {
     return null;
   }
 }
+
+// The Journal post a visitor came from, kept until they press Create so that
+// press can be credited to it (create_from_blog), even across a sign-in.
+const BLOG_SOURCE_KEY = "sonx:blog-source";
+
+export function saveBlogSource(slug: string) {
+  try {
+    sessionStorage.setItem(BLOG_SOURCE_KEY, slug);
+  } catch {
+    // Without storage the press just isn't credited to the post.
+  }
+}
+
+/** Reads and clears the post. */
+export function takeBlogSource(): string | null {
+  try {
+    const slug = sessionStorage.getItem(BLOG_SOURCE_KEY);
+    sessionStorage.removeItem(BLOG_SOURCE_KEY);
+    return slug;
+  } catch {
+    return null;
+  }
+}
