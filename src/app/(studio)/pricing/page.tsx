@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
+import { Aurora } from "@/components/aurora";
 import { FaqList, type FaqItem } from "@/components/faq-list";
 import { CreditPacks } from "@/components/pricing/credit-packs";
 import { PlanCards } from "@/components/pricing/plan-cards";
 import { CREDIT_COSTS } from "@/lib/billing-config";
 
-const TITLE = "Pricing — Sonx Pro Plans and Credit Packs";
+const TITLE = "Pricing — Sonx Pro and Studio Plans";
 const DESCRIPTION =
-  "Subscribe weekly, monthly or yearly for a set number of AI songs, or buy credits with no subscription. Works on the web and in the Sonx app.";
+  "Make AI songs with vocals from $4.99 a month. Pro and Studio plans bill monthly or yearly, with credit packs to top up. Works on the web and in the Sonx app.";
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
@@ -14,13 +15,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/pricing" },
   openGraph: { siteName: "Sonx", type: "website", title: TITLE, description: DESCRIPTION, url: "/pricing" },
 };
-
-const INCLUDED = [
-  { title: "Commercial use", text: "Paid plans include a license to use your songs commercially." },
-  { title: "MP3 downloads", text: "Download every song you make, straight from your library." },
-  { title: "Lyrics written for you", text: "Start from a topic or bring your own words." },
-  { title: "One account everywhere", text: "Your plan, songs and credits are the same in the Sonx app." },
-];
 
 // Each claim here matches terms.html (refunds, license) and how checkout behaves.
 const ASSURANCES = [
@@ -32,13 +26,18 @@ const ASSURANCES = [
 
 const PRICING_FAQ: FaqItem[] = [
   {
-    question: "What is the difference between a plan and credits?",
+    question: "What is the difference between Pro and Studio?",
     answer:
-      "A plan gives you a set number of songs every week, month or year and renews until you cancel. Credits are a one-time purchase you spend song by song, with no subscription. If you have both, your plan's songs are used first.",
+      "Both include every feature, commercial use and MP3 downloads. Studio gives you more songs every month at a lower price per song. Pick Pro to start.",
   },
   {
-    question: "How many credits does a song use?",
-    answer: `A song with vocals uses ${CREDIT_COSTS.LYRICS_MUSIC} credits and an instrumental uses ${CREDIT_COSTS.PROMPT_MUSIC}. Writing lyrics for you is free.`,
+    question: "Does a yearly plan give me all my songs at once?",
+    answer:
+      "No. Yearly plans are billed once a year at a lower price, and your songs renew every month, the same as a monthly plan.",
+  },
+  {
+    question: "How do credit packs work?",
+    answer: `Credit packs top up a plan when you run out of songs before the month ends. They are available to Pro and Studio members. A song with vocals uses ${CREDIT_COSTS.LYRICS_MUSIC} credits and an instrumental ${CREDIT_COSTS.PROMPT_MUSIC}. Your plan's songs are always used first.`,
   },
   {
     question: "I already subscribe in the app. Do I pay again here?",
@@ -46,9 +45,13 @@ const PRICING_FAQ: FaqItem[] = [
       "No. Sign in with the same Apple or Google account you use in the Sonx app and your plan and credits are already here. A plan bought on the web works in the app the same way.",
   },
   {
+    question: "What can I do for free?",
+    answer: "Listen to songs made with Sonx and write lyrics with AI. Creating songs needs a plan.",
+  },
+  {
     question: "How do I cancel?",
     answer:
-      "For a plan bought here, open Account and choose Manage subscription. Plans bought in the app are managed in the App Store or Google Play. You keep Pro until the end of the period you paid for.",
+      "For a plan bought here, open Account and choose Manage subscription. Plans bought in the app are managed in the App Store or Google Play. You keep your plan until the end of the period you paid for.",
   },
   {
     question: "Can I get a refund?",
@@ -57,47 +60,31 @@ const PRICING_FAQ: FaqItem[] = [
   },
   {
     question: "Can I use my songs commercially?",
-    answer:
-      "Yes, with a paid plan: subscribers get a license to use their songs commercially. Songs made without a plan are for personal use.",
-  },
-  {
-    question: "What happens when I run out of songs?",
-    answer:
-      "Buy a credit pack to keep going, or wait for your plan to renew. Your songs left for the period are shown on your Account page.",
+    answer: "Yes. Pro and Studio include a license to use the songs you make commercially.",
   },
 ];
 
 export default function PricingPage() {
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-16 px-4 py-8 md:px-8 lg:py-12">
-      <header className="max-w-2xl">
-        <h1 className="font-display text-3xl font-semibold leading-tight md:text-5xl">Plans and credits</h1>
-        <p className="mt-4 text-lg text-fog">
-          Subscribe for a set number of songs each period, or buy credits as you go. Both work here and in the Sonx app.
+      <header className="relative isolate -mx-4 overflow-hidden px-4 pb-16 pt-16 text-center md:mx-0 md:rounded-[32px] md:pt-24">
+        <Aurora />
+        <h1 className="text-5xl font-semibold leading-[0.98] tracking-[-0.045em] md:text-7xl">Make more music for less</h1>
+        <p className="mx-auto mt-4 max-w-xl text-lg text-fog">
+          Paid plans include commercial use and MP3 downloads, here and in the Sonx app.
         </p>
       </header>
 
-      <section aria-labelledby="plans-title" className="flex flex-col gap-6">
-        <div>
-          <h2 id="plans-title" className="font-display text-xl font-semibold md:text-2xl">Sonx Pro</h2>
-          <p className="mt-2 text-fog">Each dot is one song you can make in that period.</p>
-        </div>
+      <section aria-labelledby="plans-title" className="-mt-8 flex flex-col gap-6">
+        <h2 id="plans-title" className="sr-only">Plans</h2>
         <PlanCards />
-        <ul className="grid gap-x-8 gap-y-5 border-t border-line pt-6 sm:grid-cols-2 lg:grid-cols-4">
-          {INCLUDED.map((item) => (
-            <li key={item.title}>
-              <p className="font-medium">{item.title}</p>
-              <p className="mt-1 text-sm text-fog">{item.text}</p>
-            </li>
-          ))}
-        </ul>
       </section>
 
-      <section aria-labelledby="credits-title" className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-        <div>
-          <h2 id="credits-title" className="font-display text-xl font-semibold md:text-2xl">Credits, no subscription</h2>
-          <p className="mt-2 text-fog">
-            Pay once and spend them song by song. Good for a one-off project, or for more songs before your plan renews.
+      <section aria-labelledby="credits-title" className="flex flex-col gap-6">
+        <div className="max-w-2xl">
+          <h2 id="credits-title" className="text-3xl font-semibold tracking-[-0.035em] md:text-5xl">Top up with credits</h2>
+          <p className="mt-3 text-fog">
+            Ran out of songs before the month ends? Credit packs keep you going until your plan renews. For Pro and Studio members.
           </p>
         </div>
         <CreditPacks />

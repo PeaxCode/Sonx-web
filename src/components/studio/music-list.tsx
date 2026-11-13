@@ -6,7 +6,7 @@ import { useLibrary } from "./library";
 import { useSession } from "./session";
 import { TrackList } from "./track-list";
 
-const heading = "mb-4 font-display text-lg font-semibold";
+const heading = "mb-4 text-3xl font-semibold tracking-[-0.035em]";
 
 /** Songs only (no videos), newest first, including ones made in the app. Visitors hear the examples. */
 export function MusicList() {
@@ -25,7 +25,7 @@ export function MusicList() {
   return (
     <>
       <h2 id="songs-title" className={heading}>Your songs</h2>
-      {loading || signedIn === null ? <p className="text-fog">Loading your songs</p> : (
+      {loading || signedIn === null ? <p className="text-paper/60">Loading your songs</p> : (
         <TrackList
           generations={generations.filter((generation) => MUSIC_FEATURES.includes(generation.feature))}
           emptyText="Your songs show up here, along with the ones you make in the Sonx app."

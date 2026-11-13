@@ -17,6 +17,12 @@ interface PlayerValue {
   close: () => void;
   hasNext: boolean;
   hasPrevious: boolean;
+  /** Whether the full-screen player is open. */
+  expanded: boolean;
+  /** Plays the track (unless it is already the current one) and opens the full player. */
+  open: (track: Generation, queue?: Generation[]) => void;
+  expand: () => void;
+  minimize: () => void;
 }
 
 const PlayerContext = createContext<PlayerValue | null>(null);
@@ -28,6 +34,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const [playing, setPlaying] = useState(false);
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [expanded, setExpanded] = useState(false);
 
   const index = current ? queue.findIndex((track) => track.id === current.id) : -1;
 
@@ -71,6 +78,15 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     duration,
     hasNext: index >= 0 && index < queue.length - 1,
     hasPrevious: index > 0,
+    expanded,
+    expand: () => setExpanded(true),
+    minimize: () => setExpanded(false),
+    open: (track, newQueue) => {
+      setQueue(newQueue ?? [track]);
+      if (current?.id !== track.id) load(track);
+      else if (audioRef.current?.paused) void audioRef.current.play();
+      setExpanded(true);
+    },
     play: (track, newQueue) => {
       setQueue(newQueue ?? [track]);
       if (current?.id === track.id) {
@@ -102,11 +118,12 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         audio.load();
       }
       setCurrent(null);
+      setExpanded(false);
       setQueue([]);
       setTime(0);
       setDuration(0);
     },
-  }), [current, playing, time, duration, index, queue, load, next]);
+  }), [current, playing, time, duration, expanded, index, queue, load, next]);
 
   return (
     <PlayerContext.Provider value={value}>

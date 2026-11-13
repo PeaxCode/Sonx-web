@@ -4,9 +4,9 @@ export const metadata = { title: "Library", robots: { index: false } };
 
 export default function LibraryPage() {
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 md:px-8 lg:py-12">
-      <h1 className="mb-2 font-display text-2xl font-semibold">Library</h1>
-      <p className="mb-6 text-fog">Everything you made, on the web and in the Sonx app.</p>
+    <div className="mx-auto max-w-5xl px-4 py-8 md:px-8 lg:py-14">
+      <h1 className="text-5xl font-semibold tracking-[-0.045em] md:text-6xl">Library</h1>
+      <p className="mb-8 mt-3 text-lg text-paper/60">Everything you made, on the web and in the Sonx app.</p>
       <LibraryView />
     </div>
   );

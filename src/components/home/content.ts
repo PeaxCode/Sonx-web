@@ -44,7 +44,7 @@ export const FAQ = [
   {
     question: "How much does Sonx cost?",
     answer:
-      "Creating songs needs Sonx Pro or credits. Subscribe weekly, monthly or yearly, or buy a credit pack with no subscription, here or in the Sonx app. See Pricing for plans and prices.",
+      "Creating songs needs a plan. Pro and Studio bill monthly or yearly, here or in the Sonx app, and subscribers can top up with credit packs. Listening and the AI lyrics writer are free. See Pricing for plans and prices.",
   },
   {
     question: "Do I need the app to use the website?",
@@ -80,5 +80,35 @@ export const FAQ = [
     question: "How do I delete my account?",
     answer:
       "Open Account and choose Delete account. Your songs and credits are removed everywhere, including the app. Deleting does not cancel a subscription: cancel it first from Account (web plans) or in the App Store or Google Play.",
+  },
+];
+
+// Real App Store reviews of the Sonx app (US storefront), quoted as written.
+// Only ones about features the web has too; refresh from the App Store when updating.
+export const REVIEWS = [
+  { author: "Noriko_Lashondal", title: "I saved my first song", text: "Most apps like this get one try and then I delete them. I actually saved a track from this one, so yeah that says a lot." },
+  { author: "Khadijah_Waitec", title: "Actually made me smile", text: "Not even gonna lie, hearing my own silly idea turn into a full song made me smile." },
+  { author: "Librada Hiatt", title: "Late night prompt dump", text: "Used this when I had a random idea before bed and it turned into a full track lol. Kinda cool how fast it gives you something to hear." },
+  { author: "AhmadMeadowsq", title: "Simple and still fun", text: "The app does not bury you in stuff. You get to the fun part fast, which I really like." },
+  { author: "rider_hullp", title: "Better than a lot of apps like this", text: "I have tried a few song apps and a lot felt rough or slow. This one feels a lot smoother to use." },
+  { author: "Hedwig Tanner", title: "Kept pressing generate", text: "I said one more time like five times. It is weirdly hard to stop once you get a result you almost like." },
+];
+
+export const APP_STORE_RATING = { value: "4.5", count: 45 };
+
+export const FEATURES = [
+  {
+    image: "/images/feature-song.png",
+    title: "A whole song from one sentence",
+    text: "Describe a mood, a moment or a story. Sonx writes the lyrics, picks a voice and produces the track, in about a minute.",
+    points: ["18 genres, from lo-fi to K-pop", "Vocals or instrumental", "MP3 download for every song"],
+    cta: "Describe a song",
+  },
+  {
+    image: "/images/feature-lyrics.png",
+    title: "Your words, sung back to you",
+    text: "Paste lyrics you wrote, or start from a topic and edit what Sonx writes. Pick a male or female voice and hear it sung.",
+    points: ["Write lyrics with AI for free", "Keep full control of every line", "Commercial use on paid plans"],
+    cta: "Bring your lyrics",
   },
 ];

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
 import { QRCodeSVG } from "qrcode.react";
@@ -54,19 +53,15 @@ function PaywallDialog({ onClose, notify }: { onClose: () => void; notify: Feedb
     >
       <div
         className={`paywall-panel max-h-[calc(100dvh-2rem)] w-full overflow-y-auto rounded-[var(--radius-panel)] border border-line bg-night p-6 md:p-8 ${
-          offer === "plans" ? "max-w-4xl" : offer === "credits" ? "max-w-2xl" : "max-w-md bg-plum"
+          offer === "plans" ? "max-w-6xl" : offer === "credits" ? "max-w-5xl" : "max-w-md bg-plum"
         }`}
         onClick={(event) => event.stopPropagation()}
       >
         {offer === "plans" && (
           <>
-            <h2 id="paywall-title" className="font-display text-xl font-semibold md:text-2xl">Get Sonx Pro to keep creating</h2>
+            <h2 id="paywall-title" className="font-display text-xl font-semibold md:text-2xl">Pick a plan to keep creating</h2>
             <p className="mt-2 text-fog">Your plan works here and in the Sonx app.</p>
             <div className="mt-6"><PlanCards /></div>
-            <p className="mt-5 text-sm text-fog">
-              Rather not subscribe?{" "}
-              <Link href="/pricing#credits-title" onClick={onClose} className="text-violet hover:text-orchid">Buy credits instead</Link>
-            </p>
           </>
         )}
         {offer === "credits" && (

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { Aurora } from "@/components/aurora";
 import { CoverArt } from "@/components/cover-art";
 import { IconCreate, IconPause, IconPlay } from "@/components/icons";
 import { usePlayer } from "@/components/studio/player";
@@ -124,7 +125,7 @@ function Spectrum({ pulseRef, gainRef }: {
     <canvas
       ref={canvasRef}
       aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 bottom-0 h-28 w-full opacity-60 md:h-36 [mask-image:linear-gradient(to_top,black_40%,transparent)]"
+      className="pointer-events-none absolute inset-x-0 bottom-0 h-28 w-full opacity-30 md:h-36 [mask-image:linear-gradient(to_top,black_40%,transparent)]"
     />
   );
 }
@@ -173,21 +174,26 @@ function FloatingSample({ side }: { side: "left" | "right" }) {
   const song = SAMPLE_SONGS[side === "left" ? 0 : 1];
   if (!song) return null;
   const isCurrent = current?.id === song.id;
+  // GSAP reveals the wrapper; the button owns the hover transitions, so the two never fight.
   return (
+    <div className={`hero-float absolute top-[52%] z-0 hidden w-52 -translate-y-1/2 hover:z-20 xl:block ${
+      side === "left" ? "-left-8" : "-right-8"
+    }`}>
     <button type="button" onClick={() => play(song, SAMPLE_SONGS)}
       aria-label={isCurrent && playing ? `Pause ${song.title}` : `Play ${song.title}`}
-      className={`hero-float group absolute top-1/2 hidden w-40 -translate-y-1/2 overflow-hidden rounded-[var(--radius-panel)] border border-line shadow-2xl transition hover:rotate-0 xl:block ${
-        side === "left" ? "-left-6 -rotate-[8deg]" : "-right-6 rotate-[8deg]"
+      className={`group block w-full overflow-hidden rounded-[22px] shadow-[0_30px_60px_-15px_rgb(0_0_0/0.7)] brightness-75 transition duration-500 ease-out hover:rotate-0 hover:scale-105 hover:brightness-100 focus-visible:rotate-0 focus-visible:brightness-100 ${
+        side === "left" ? "-rotate-[11deg]" : "rotate-[11deg]"
       }`}>
       <span className="relative block aspect-[3/4]">
-        {song.cover_url ? <Image src={song.cover_url} alt="" fill sizes="160px" className="object-cover" /> : <CoverArt seed={song.id} className="size-full" />}
+        {song.cover_url ? <Image src={song.cover_url} alt="" fill sizes="208px" className="object-cover transition duration-700 group-hover:scale-110" /> : <CoverArt seed={song.id} className="size-full transition duration-700 group-hover:scale-110" />}
         <span className="absolute inset-0 bg-gradient-to-t from-night/90 via-transparent to-transparent" />
-        <span className="absolute left-1/2 top-1/2 flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-night/50 backdrop-blur transition group-hover:bg-paper group-hover:text-night">
-          {isCurrent && playing ? <IconPause size={18} /> : <IconPlay size={18} className="translate-x-px" />}
+        <span className="absolute left-1/2 top-1/2 flex size-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-night/40 backdrop-blur-md transition duration-300 group-hover:scale-110 group-hover:bg-paper group-hover:text-night">
+          {isCurrent && playing ? <IconPause size={18} /> : <IconPlay size={18} />}
         </span>
         <span className="absolute inset-x-3 bottom-3 truncate text-left text-sm font-medium">{song.title}</span>
       </span>
     </button>
+    </div>
   );
 }
 
@@ -307,34 +313,34 @@ export function Hero() {
 
   return (
     <section ref={sectionRef} aria-label="Make a song"
-      className="relative isolate overflow-hidden rounded-[28px] border border-line bg-plum/60 px-5 pb-32 pt-12 md:px-10 md:pb-40 md:pt-16">
-      {/* Soft brand glow behind the prompt. */}
-      <div aria-hidden="true" className="absolute -left-24 -top-24 -z-10 size-96 rounded-full bg-violet/25 blur-3xl" />
-      <div aria-hidden="true" className="absolute -right-16 top-1/3 -z-10 size-80 rounded-full bg-orchid/15 blur-3xl" />
-      <div aria-hidden="true" className="absolute bottom-0 left-1/3 -z-10 size-72 rounded-full bg-iris/20 blur-3xl" />
+      className="relative isolate flex min-h-[min(100svh,880px)] items-center overflow-hidden px-5 pb-32 pt-20 md:px-10 md:pb-40">
+      <Aurora />
 
       {phase === "idle" && (
         <>
           <FloatingSample side="left" />
           <FloatingSample side="right" />
-          <div className="relative z-10 mx-auto max-w-3xl text-center">
-            <h1 className="hero-reveal font-display text-3xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
-              AI Song Generator: Make Full Songs with Vocals from Text
+          <div className="relative z-10 mx-auto w-full max-w-3xl text-center">
+            {/* Same words as before for search, set as a title and a subtitle. */}
+            <h1 className="hero-reveal">
+              <span className="block text-5xl font-semibold leading-[0.98] tracking-[-0.045em] sm:text-6xl md:text-[5.5rem]">
+                AI Song Generator
+              </span>
+              <span className="mt-5 block text-lg font-medium tracking-[-0.01em] text-paper/85 md:text-2xl">
+                Make full songs with vocals from text
+              </span>
             </h1>
-            <p className="hero-reveal mt-4 font-display text-lg font-medium leading-snug md:text-2xl">
+            <p className="hero-reveal mt-8 text-base font-medium leading-snug text-paper/70 md:text-lg">
               Make {genrePhrase(genreName)} song about
               {/* Two lines are reserved on phones so the box below never jumps while typing. */}
-              <span className="block min-h-[2.75em] text-violet md:min-h-[1.375em]" aria-live="off">
+              <span className="block min-h-[2.75em] font-semibold text-paper md:min-h-[1.375em]" aria-live="off">
                 {typed}
                 <span aria-hidden="true" className="ml-1 inline-block h-[0.9em] w-[3px] translate-y-[0.1em] animate-pulse bg-paper" />
               </span>
             </p>
-            <p className="hero-reveal mx-auto mt-2 max-w-lg text-fog">
-              Describe a mood, a moment or a story. Sonx writes the lyrics, picks the voice and produces the track.
-            </p>
 
             <form onSubmit={start}
-              className="hero-reveal mt-8 rounded-[var(--radius-panel)] border border-line bg-night/70 p-3 text-left shadow-2xl backdrop-blur focus-within:border-violet/60">
+              className="hero-reveal mt-6 rounded-[28px] border border-paper/10 bg-[#120a18]/70 p-3 text-left shadow-[0_24px_80px_-24px_rgb(0_0_0/0.8)] backdrop-blur-md transition-[border-color,background-color] focus-within:border-paper/30 focus-within:bg-[#120a18]/80">
               <label htmlFor="hero-prompt" className="sr-only">Describe your song</label>
               <textarea
                 id="hero-prompt"
@@ -350,7 +356,7 @@ export function Hero() {
                 className="w-full resize-none bg-transparent px-2 py-1.5 text-base leading-relaxed placeholder:text-fog/50 focus:outline-none md:text-lg"
               />
               <div className="mt-2 flex flex-wrap items-center gap-2">
-                <label className="relative flex items-center rounded-full border border-line bg-plum text-sm transition hover:border-violet/60 focus-within:border-violet">
+                <label className="relative flex items-center rounded-full bg-paper/10 text-sm transition hover:bg-paper/15 focus-within:ring-1 focus-within:ring-paper/40">
                   <span className="sr-only">Genre</span>
                   <select value={genre} onChange={(event) => setGenre(event.target.value)}
                     className="cursor-pointer appearance-none bg-transparent py-2 pl-4 pr-8 focus:outline-none">
@@ -361,12 +367,12 @@ export function Hero() {
                   </svg>
                 </label>
                 <button type="button" aria-pressed={instrumental} onClick={() => setInstrumental((value) => !value)}
-                  className={`rounded-full border px-4 py-2 text-sm transition ${instrumental ? "border-violet bg-violet/15 text-paper" : "border-line bg-plum text-fog hover:text-paper"}`}>
+                  className={`rounded-full px-4 py-2 text-sm transition ${instrumental ? "bg-paper text-night" : "bg-paper/10 text-paper/80 hover:bg-paper/15 hover:text-paper"}`}>
                   Instrumental
                 </button>
                 <span className="ml-auto flex items-center gap-2">
                   <button type="button" onClick={surprise} aria-label="Surprise me with a prompt" title="Surprise me"
-                    className="flex size-10 items-center justify-center rounded-full border border-line bg-plum text-fog transition hover:text-paper">
+                    className="flex size-10 items-center justify-center rounded-full bg-paper/10 text-paper/80 transition hover:rotate-12 hover:bg-paper/15 hover:text-paper">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                       <rect x="3" y="3" width="18" height="18" rx="4" />
                       <circle cx="8.5" cy="8.5" r="1.3" fill="currentColor" stroke="none" />
@@ -376,14 +382,14 @@ export function Hero() {
                     </svg>
                   </button>
                   <button type="submit" disabled={!canCreate}
-                    className="bg-signature flex items-center gap-2 rounded-full px-5 py-2.5 font-display text-sm font-semibold tracking-wide transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:brightness-100">
+                    className="bg-signature flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-paper shadow-[0_8px_24px_-8px_rgb(229_99_241/0.8)] transition hover:scale-[1.03] hover:brightness-110 active:scale-100 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:hover:scale-100">
                     <IconCreate size={16} />
                     Create
                   </button>
                 </span>
               </div>
             </form>
-            <p className="hero-reveal mt-4 text-sm text-fog">Lyrics and vocals included.</p>
+            <p className="hero-reveal mt-4 text-sm text-paper/60">Sonx writes the lyrics, picks the voice and produces the track.</p>
           </div>
         </>
       )}
@@ -423,7 +429,7 @@ export function Hero() {
               <CoverArt seed={submitted} className="size-full transition duration-500 group-hover:scale-105" />
               <span className="absolute inset-0 flex items-center justify-center bg-night/20">
                 <span className="flex size-14 items-center justify-center rounded-full bg-paper text-night shadow-xl transition group-hover:scale-110">
-                  <IconPlay size={22} className="translate-x-px" />
+                  <IconPlay size={22} />
                 </span>
               </span>
             </span>

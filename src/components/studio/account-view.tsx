@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { PLAN_LABELS, PLAN_LIMITS, STORE_LINKS, type Feature } from "@/lib/billing-config";
+import { Aurora } from "@/components/aurora";
 import { webCheckoutEnabled, webCreditsEnabled } from "@/lib/paddle";
 import { getSupabase } from "@/lib/supabase/client";
 import { useBilling } from "./billing";
@@ -57,45 +58,58 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
   };
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-8">
       <section className="flex items-center gap-4">
         {avatarUrl ? (
-          <Image src={avatarUrl} alt="" width={56} height={56} unoptimized className="rounded-full" />
+          <Image src={avatarUrl} alt="" width={64} height={64} unoptimized className="rounded-full ring-2 ring-paper/10" />
         ) : (
-          <span className="flex size-14 items-center justify-center rounded-full bg-raised font-display text-lg">
+          <span className="bg-signature flex size-16 items-center justify-center rounded-full text-2xl font-semibold">
             {(name ?? email ?? "S").charAt(0).toUpperCase()}
           </span>
         )}
         <div className="min-w-0">
-          <p className="truncate text-lg font-medium">{name ?? email}</p>
-          {name && email && <p className="truncate text-fog">{email}</p>}
+          <p className="truncate text-2xl font-semibold tracking-[-0.02em]">{name ?? email}</p>
+          {name && email && <p className="truncate text-paper/60">{email}</p>}
         </div>
       </section>
 
-      <section aria-labelledby="plan-title" className="rounded-[var(--radius-panel)] border border-line p-6">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 id="plan-title" className="font-display text-lg font-semibold">{billing ? PLAN_LABELS[billing.currentPlan] : "Plan"}</h2>
-          <p className="text-fog tabular-nums">{billing ? `${billing.credits} credits` : ""}</p>
+      <section aria-labelledby="plan-title" className="relative isolate overflow-hidden rounded-[28px] border border-paper/[0.06] p-6 md:p-8">
+        <Aurora className="opacity-40" />
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="text-sm font-medium text-paper/60">Your plan</p>
+            <h2 id="plan-title" className="mt-1 text-3xl font-semibold tracking-[-0.03em]">{billing ? PLAN_LABELS[billing.currentPlan] : "Plan"}</h2>
+          </div>
+          {billing && (
+            <p className="rounded-full bg-paper/10 px-4 py-1.5 text-sm font-medium tabular-nums backdrop-blur">{billing.credits} credits</p>
+          )}
         </div>
         {billing && (
-          <dl className="mt-5 grid gap-3">
+          <dl className="mt-7 grid gap-5">
             {USAGE_ROWS.map(({ feature, label }) => {
               const limit = PLAN_LIMITS[billing.currentPlan][feature];
               const used = Math.min(billing.usage[feature] ?? 0, limit);
               return (
-                <div key={feature} className="flex items-center justify-between gap-4 text-sm">
-                  <dt className="text-fog">{label}</dt>
-                  <dd className="tabular-nums">{limit === 0 ? "Credits only" : `${limit - used} of ${limit} left`}</dd>
+                <div key={feature}>
+                  <div className="flex items-center justify-between gap-4 text-sm">
+                    <dt className="text-paper/70">{label}</dt>
+                    <dd className="font-medium tabular-nums">{limit === 0 ? "Credits only" : `${limit - used} of ${limit} left`}</dd>
+                  </div>
+                  {limit > 0 && (
+                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-paper/10" aria-hidden="true">
+                      <div className="bg-signature h-full rounded-full" style={{ width: `${((limit - used) / limit) * 100}%` }} />
+                    </div>
+                  )}
                 </div>
               );
             })}
           </dl>
         )}
         {billing?.isPro && (
-          <p className="mt-5 text-sm text-fog">
+          <p className="mt-6 text-sm text-paper/60">
             {billing.store && STORE_NAMES[billing.store] ? `Billed by ${STORE_NAMES[billing.store]}. ` : ""}
             {billing.managementUrl ? (
-              <a href={billing.managementUrl} target="_blank" rel="noreferrer" className="text-violet hover:text-orchid">
+              <a href={billing.managementUrl} target="_blank" rel="noreferrer" className="font-medium text-paper underline-offset-4 hover:underline">
                 Manage subscription
               </a>
             ) : (
@@ -106,12 +120,12 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
         {billing && (webCheckoutEnabled || webCreditsEnabled) ? (
           <div className="mt-6 flex flex-wrap gap-3">
             {!billing.isPro && webCheckoutEnabled && (
-              <Link href="/pricing" className="bg-signature rounded-[var(--radius-control)] px-5 py-2.5 text-sm font-semibold transition hover:brightness-110">
-                Get Sonx Pro
+              <Link href="/pricing" className="rounded-full bg-paper px-6 py-2.5 text-sm font-semibold text-night transition hover:bg-paper/90">
+                See plans
               </Link>
             )}
-            {webCreditsEnabled && (
-              <Link href="/pricing#credits-title" className="rounded-[var(--radius-control)] border border-line px-5 py-2.5 text-sm font-medium transition hover:bg-raised">
+            {billing.isPro && webCreditsEnabled && (
+              <Link href="/pricing#credits-title" className="rounded-full bg-paper/10 px-6 py-2.5 text-sm font-semibold backdrop-blur transition hover:bg-paper/15">
                 Buy credits
               </Link>
             )}
@@ -126,13 +140,13 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
         )}
       </section>
 
-      <section className="flex flex-col items-start gap-3">
+      <section className="flex flex-wrap items-center justify-between gap-3 border-t border-paper/[0.06] pt-8">
         <button type="button" disabled={busy} onClick={signOut}
-          className="rounded-[var(--radius-control)] border border-line px-5 py-2.5 text-sm font-medium transition hover:bg-plum disabled:opacity-50">
+          className="rounded-full bg-paper/[0.06] px-6 py-2.5 text-sm font-medium transition hover:bg-paper/10 disabled:opacity-50">
           Sign out
         </button>
         <button type="button" disabled={busy} onClick={deleteAccount}
-          className="px-1 py-2 text-sm text-danger transition hover:underline disabled:opacity-50">
+          className="rounded-full px-4 py-2.5 text-sm text-danger transition hover:bg-danger/10 disabled:opacity-50">
           Delete account
         </button>
       </section>

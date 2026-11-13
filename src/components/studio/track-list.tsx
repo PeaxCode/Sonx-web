@@ -22,6 +22,18 @@ export const kindLabel = (generation: Generation) => {
   }
 };
 
+/** Three bars that bounce while the row's song plays. */
+function NowPlaying({ playing }: { playing: boolean }) {
+  return (
+    <span aria-hidden="true" className="flex h-3.5 items-end gap-[3px]">
+      {[0, 1, 2].map((bar) => (
+        <span key={bar} className={`w-[3px] rounded-full bg-orchid ${playing ? "animate-[eq_0.9s_ease-in-out_infinite]" : ""}`}
+          style={{ height: playing ? undefined : `${5 + bar * 3}px`, animationDelay: `${bar * 0.18}s` }} />
+      ))}
+    </span>
+  );
+}
+
 function Writing() {
   return (
     <span className="flex items-center gap-2 text-sm text-fog">
@@ -61,7 +73,7 @@ export function VideoDialog({ generation, onClose }: { generation: Generation; o
 
 export function TrackList({ generations, emptyText }: { generations: Generation[]; emptyText: string }) {
   const { toggleFavorite, remove } = useLibrary();
-  const { current, playing, play } = usePlayer();
+  const { current, playing, play, open } = usePlayer();
   const [openVideo, setOpenVideo] = useState<Generation | null>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const seenIds = useRef<Set<string> | null>(null);
@@ -87,32 +99,33 @@ export function TrackList({ generations, emptyText }: { generations: Generation[
   const playable = generations.filter((item) => item.status === "completed" && item.feature !== "AI_MUSIC_VIDEO");
 
   if (generations.length === 0) {
-    return <p className="rounded-[var(--radius-panel)] border border-dashed border-line px-6 py-10 text-center text-fog">{emptyText}</p>;
+    return <p className="rounded-[24px] border border-dashed border-paper/10 px-6 py-12 text-center text-paper/60">{emptyText}</p>;
   }
 
   return (
     <>
-      <ul ref={listRef} className="divide-y divide-line">
+      <ul ref={listRef} className="flex flex-col gap-1">
         {generations.map((generation) => {
           const isVideo = generation.feature === "AI_MUSIC_VIDEO";
           const isCurrent = current?.id === generation.id;
           const ready = generation.status === "completed" && generation.output_url;
           return (
-            <li key={generation.id} data-row={generation.id} className="flex items-center gap-4 py-3">
+            <li key={generation.id} data-row={generation.id}
+              className={`group/row -mx-3 flex items-center gap-4 rounded-[18px] px-3 py-2.5 transition-colors hover:bg-paper/[0.04] ${isCurrent ? "bg-paper/[0.06]" : ""}`}>
               <button
                 type="button"
                 disabled={!ready}
                 aria-label={isVideo ? `Watch ${generation.title}` : isCurrent && playing ? `Pause ${generation.title}` : `Play ${generation.title}`}
                 onClick={() => (isVideo ? setOpenVideo(generation) : play(generation, playable))}
-                className="group relative size-14 shrink-0 overflow-hidden rounded-[var(--radius-control)] disabled:cursor-default"
+                className="group relative size-16 shrink-0 overflow-hidden rounded-[14px] shadow-lg disabled:cursor-default"
               >
                 {generation.cover_url ? (
-                  <Image src={generation.cover_url} alt="" fill sizes="56px" className="object-cover" />
+                  <Image src={generation.cover_url} alt="" fill sizes="64px" className="object-cover transition duration-500 group-hover:scale-110" />
                 ) : (
-                  <CoverArt seed={generation.id} className={`size-full ${ready ? "" : "opacity-40 grayscale"}`} />
+                  <CoverArt seed={generation.id} className={`size-full transition duration-500 group-hover:scale-110 ${ready ? "" : "opacity-40 grayscale"}`} />
                 )}
                 {ready && (
-                  <span className={`absolute inset-0 flex items-center justify-center bg-night/45 transition-opacity ${
+                  <span className={`absolute inset-0 flex items-center justify-center bg-night/50 transition-opacity duration-200 ${
                     isCurrent ? "opacity-100" : "opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100"
                   }`}>
                     {isVideo ? <IconVideo size={20} /> : isCurrent && playing ? <IconPause size={20} /> : <IconPlay size={20} />}
@@ -121,7 +134,20 @@ export function TrackList({ generations, emptyText }: { generations: Generation[
               </button>
 
               <div className="min-w-0 flex-1">
-                <p className="truncate font-medium">{generation.title}</p>
+                {/* The title opens the full player: lyrics and controls for this song. */}
+                {ready && !isVideo ? (
+                  <button type="button" onClick={() => open(generation, playable)} aria-label={`Open ${generation.title} in the player`}
+                    className={`flex max-w-full items-center gap-2 text-left font-medium transition hover:underline ${isCurrent ? "text-orchid" : ""}`}>
+                    {isCurrent && <NowPlaying playing={playing} />}
+                    <span className="truncate">{generation.title}</span>
+                  </button>
+                ) : ready && isVideo ? (
+                  <button type="button" onClick={() => setOpenVideo(generation)} className="max-w-full truncate text-left font-medium transition hover:underline">
+                    {generation.title}
+                  </button>
+                ) : (
+                  <p className="truncate font-medium">{generation.title}</p>
+                )}
                 {generation.status === "processing" ? (
                   <Writing />
                 ) : generation.status === "failed" ? (
@@ -134,18 +160,18 @@ export function TrackList({ generations, emptyText }: { generations: Generation[
               </div>
 
               {generation.status !== "processing" && (
-                <div className="flex items-center gap-1 text-fog">
+                <div className="flex items-center gap-0.5 text-paper/50 transition-opacity md:opacity-0 md:group-hover/row:opacity-100 md:group-focus-within/row:opacity-100">
                   {ready && (
                     <>
                       {!generation.is_sample && (
                       <button type="button" aria-label={generation.is_favorite ? "Remove from favorites" : "Add to favorites"}
                         aria-pressed={generation.is_favorite} onClick={() => toggleFavorite(generation)}
-                        className={`rounded-full p-2 transition hover:text-paper ${generation.is_favorite ? "text-orchid" : ""}`}>
+                        className={`rounded-full p-2 transition hover:bg-paper/10 hover:text-paper ${generation.is_favorite ? "text-orchid md:opacity-100" : ""}`}>
                         <IconHeart size={18} filled={generation.is_favorite} />
                       </button>
                       )}
                       <a href={generation.output_url!} download target="_blank" rel="noreferrer"
-                        aria-label={`Download ${generation.title}`} className="rounded-full p-2 transition hover:text-paper">
+                        aria-label={`Download ${generation.title}`} className="rounded-full p-2 transition hover:bg-paper/10 hover:text-paper">
                         <IconDownload size={18} />
                       </a>
                     </>
@@ -156,7 +182,7 @@ export function TrackList({ generations, emptyText }: { generations: Generation[
                     onClick={() => {
                       if (window.confirm(`Delete "${generation.title}"? This removes it from the app too.`)) void remove(generation);
                     }}
-                    className="rounded-full p-2 transition hover:text-danger">
+                    className="rounded-full p-2 transition hover:bg-danger/10 hover:text-danger">
                     <IconTrash size={18} />
                   </button>
                   )}

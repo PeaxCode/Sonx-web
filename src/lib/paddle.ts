@@ -8,36 +8,44 @@ import { CheckoutEventNames, initializePaddle, type Paddle, type PaddleEventData
  */
 export const REVENUECAT_USER_KEY = "app_user_id";
 
-export type WebPlan = "WEEKLY" | "MONTHLY" | "YEARLY";
-export type CreditPackId = "mini" | "starter" | "pro" | "studio";
+/** Web tiers. Pro uses the server's MONTHLY quota, Studio its STUDIO quota. */
+export type WebTier = "PRO" | "STUDIO";
+export type BillingCycle = "monthly" | "yearly";
 
-const PLAN_PRICE_IDS: Record<WebPlan, string | undefined> = {
-  WEEKLY: process.env.NEXT_PUBLIC_PADDLE_PRICE_WEEKLY,
-  MONTHLY: process.env.NEXT_PUBLIC_PADDLE_PRICE_MONTHLY,
-  YEARLY: process.env.NEXT_PUBLIC_PADDLE_PRICE_YEARLY,
+const PLAN_PRICE_IDS: Record<WebTier, Record<BillingCycle, string | undefined>> = {
+  PRO: {
+    monthly: process.env.NEXT_PUBLIC_PADDLE_PRICE_PRO_MONTHLY,
+    yearly: process.env.NEXT_PUBLIC_PADDLE_PRICE_PRO_YEARLY,
+  },
+  STUDIO: {
+    monthly: process.env.NEXT_PUBLIC_PADDLE_PRICE_STUDIO_MONTHLY,
+    yearly: process.env.NEXT_PUBLIC_PADDLE_PRICE_STUDIO_YEARLY,
+  },
 };
 
 // Credit amounts are mirrored on the server in PADDLE_CREDIT_PRODUCTS, which is authoritative.
-const PACKS: { id: CreditPackId; credits: number; priceId: string | undefined }[] = [
-  { id: "mini", credits: 40, priceId: process.env.NEXT_PUBLIC_PADDLE_PRICE_CREDITS_MINI },
-  { id: "starter", credits: 95, priceId: process.env.NEXT_PUBLIC_PADDLE_PRICE_CREDITS_STARTER },
-  { id: "pro", credits: 210, priceId: process.env.NEXT_PUBLIC_PADDLE_PRICE_CREDITS_PRO },
-  { id: "studio", credits: 445, priceId: process.env.NEXT_PUBLIC_PADDLE_PRICE_CREDITS_STUDIO },
+const PACKS: { credits: number; priceId: string | undefined }[] = [
+  { credits: 100, priceId: process.env.NEXT_PUBLIC_PADDLE_PRICE_CREDITS_100 },
+  { credits: 250, priceId: process.env.NEXT_PUBLIC_PADDLE_PRICE_CREDITS_250 },
+  { credits: 600, priceId: process.env.NEXT_PUBLIC_PADDLE_PRICE_CREDITS_600 },
+  { credits: 1500, priceId: process.env.NEXT_PUBLIC_PADDLE_PRICE_CREDITS_1500 },
 ];
 
 const TOKEN = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
 const ENVIRONMENT = process.env.NEXT_PUBLIC_PADDLE_ENV === "sandbox" ? "sandbox" : "production";
 
-/** Plans that have a Paddle price configured, in display order. */
-export const WEB_PLANS = (["WEEKLY", "MONTHLY", "YEARLY"] as const).filter((plan) => PLAN_PRICE_IDS[plan]);
+/** Tiers with both a monthly and a yearly price configured, in display order. */
+export const WEB_TIERS = (["PRO", "STUDIO"] as const).filter(
+  (tier) => PLAN_PRICE_IDS[tier].monthly && PLAN_PRICE_IDS[tier].yearly,
+);
 /** Credit packs that have a Paddle price configured, smallest first. */
 export const CREDIT_PACKS = PACKS.filter((pack): pack is typeof pack & { priceId: string } => Boolean(pack.priceId));
 
-/** False until the client token and at least one plan price are set; the UI falls back to the app. */
-export const webCheckoutEnabled = Boolean(TOKEN) && WEB_PLANS.length > 0;
+/** False until the client token and at least one tier are set; the UI falls back to the app. */
+export const webCheckoutEnabled = Boolean(TOKEN) && WEB_TIERS.length > 0;
 export const webCreditsEnabled = Boolean(TOKEN) && CREDIT_PACKS.length > 0;
 
-export const planPriceId = (plan: WebPlan) => PLAN_PRICE_IDS[plan];
+export const planPriceId = (tier: WebTier, cycle: BillingCycle) => PLAN_PRICE_IDS[tier][cycle];
 
 /** A localized price: `formatted` for display, `amount` in major units for per-song maths. */
 export interface WebPrice {
@@ -74,7 +82,10 @@ const ZERO_DECIMAL = new Set(["JPY", "KRW", "CLP"]);
 export function fetchWebPrices(): Promise<Record<string, WebPrice>> {
   pricesPromise ??= (async () => {
     const paddle = await getPaddle();
-    const priceIds = [...WEB_PLANS.map((plan) => PLAN_PRICE_IDS[plan]!), ...CREDIT_PACKS.map((pack) => pack.priceId)];
+    const priceIds = [
+      ...WEB_TIERS.flatMap((tier) => [PLAN_PRICE_IDS[tier].monthly!, PLAN_PRICE_IDS[tier].yearly!]),
+      ...CREDIT_PACKS.map((pack) => pack.priceId),
+    ];
     if (!paddle || priceIds.length === 0) return {};
     const response = await paddle.PricePreview({ items: priceIds.map((priceId) => ({ priceId, quantity: 1 })) });
     const currency = response.data.currencyCode;
@@ -92,9 +103,9 @@ export function fetchWebPrices(): Promise<Record<string, WebPrice>> {
   return pricesPromise;
 }
 
-/** Formats a per-unit amount in the same currency as a Paddle price, e.g. "$0.25". */
-export function formatPerUnit(price: WebPrice, units: number) {
-  return new Intl.NumberFormat(undefined, { style: "currency", currency: price.currency }).format(price.amount / units);
+/** Formats an amount in the same currency as a Paddle price, e.g. formatMoney(price, price.amount / 12). */
+export function formatMoney(price: WebPrice, amount: number) {
+  return new Intl.NumberFormat(undefined, { style: "currency", currency: price.currency }).format(amount);
 }
 
 /** Opens the Paddle overlay for one price; onCompleted runs once payment succeeds. */

@@ -7,7 +7,7 @@ export interface FaqItem {
 export function FaqList({ items, title, id }: { items: FaqItem[]; title: string; id: string }) {
   return (
     <section aria-labelledby={id} className="grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.8fr)]">
-      <h2 id={id} className="font-display text-xl font-semibold md:text-2xl">{title}</h2>
+      <h2 id={id} className="text-3xl font-semibold tracking-[-0.035em] md:text-4xl">{title}</h2>
       <div className="divide-y divide-line border-y border-line">
         {items.map((item) => (
           <details key={item.question} className="group py-4">

@@ -10,13 +10,15 @@ export type Feature =
   | "AI_MUSIC_VIDEO"
   | "VOICE_TRAINING";
 
-export type Plan = "FREE" | "WEEKLY" | "MONTHLY" | "YEARLY";
+export type Plan = "FREE" | "WEEKLY" | "MONTHLY" | "YEARLY" | "STUDIO";
 
 export const PLAN_LIMITS: Record<Plan, Record<Feature, number>> = {
   FREE: { PROMPT_MUSIC: 0, PHOTO_MUSIC: 0, LYRICS_MUSIC: 0, AI_SINGING: 0, AI_MUSIC_VIDEO: 0, VOICE_TRAINING: 0 },
   WEEKLY: { PROMPT_MUSIC: 5, PHOTO_MUSIC: 5, LYRICS_MUSIC: 5, AI_SINGING: 3, AI_MUSIC_VIDEO: 0, VOICE_TRAINING: 3 },
   MONTHLY: { PROMPT_MUSIC: 40, PHOTO_MUSIC: 20, LYRICS_MUSIC: 20, AI_SINGING: 15, AI_MUSIC_VIDEO: 1, VOICE_TRAINING: 15 },
   YEARLY: { PROMPT_MUSIC: 250, PHOTO_MUSIC: 100, LYRICS_MUSIC: 100, AI_SINGING: 50, AI_MUSIC_VIDEO: 5, VOICE_TRAINING: 50 },
+  // Web-only tier (Paddle); web Pro uses MONTHLY. Both renew monthly, also when billed yearly.
+  STUDIO: { PROMPT_MUSIC: 130, PHOTO_MUSIC: 60, LYRICS_MUSIC: 70, AI_SINGING: 50, AI_MUSIC_VIDEO: 3, VOICE_TRAINING: 50 },
 };
 
 export const CREDIT_COSTS: Record<Feature, number> = {
@@ -34,8 +36,9 @@ export const VIDEO_CREDIT_COSTS: Record<VideoDuration, number> = { 15: 30, 30: 7
 export const PLAN_LABELS: Record<Plan, string> = {
   FREE: "Free",
   WEEKLY: "Pro weekly",
-  MONTHLY: "Pro monthly",
+  MONTHLY: "Sonx Pro",
   YEARLY: "Pro yearly",
+  STUDIO: "Sonx Studio",
 };
 
 export const STORE_LINKS = {

@@ -19,7 +19,7 @@ const isVideo = (item: Generation) => item.feature === "AI_MUSIC_VIDEO";
 function ShelfHeader({ id, title, href, linkLabel }: { id: string; title: string; href?: string; linkLabel?: string }) {
   return (
     <div className="mb-4 flex items-end justify-between gap-4">
-      <h2 id={id} className="font-display text-xl font-semibold">{title}</h2>
+      <h2 id={id} className="text-2xl font-semibold tracking-[-0.03em] md:text-3xl">{title}</h2>
       {href && (
         <Link href={href} className="flex items-center gap-1 text-sm font-medium text-fog transition hover:text-paper">
           {linkLabel} <IconArrow size={16} />
@@ -44,21 +44,22 @@ function TrackCard({ item, queue, onWatch }: { item: Generation; queue: Generati
       <button type="button" disabled={!ready} aria-label={label}
         onClick={() => (isVideo(item) ? onWatch(item) : play(item, queue))}
         className="group block w-full text-left disabled:cursor-default">
-        <span className="relative block aspect-square overflow-hidden rounded-[var(--radius-control)] bg-raised">
+        <span className="relative block aspect-[3/4] overflow-hidden rounded-[20px] bg-raised shadow-[0_20px_40px_-20px_rgb(0_0_0/0.8)] transition duration-300 ease-out group-hover:-translate-y-1 group-enabled:group-hover:shadow-[0_28px_50px_-18px_rgb(229_99_241/0.45)]">
           {item.cover_url ? (
             <Image src={item.cover_url} alt="" fill sizes="(min-width: 768px) 20vw, 160px"
-              className="object-cover transition duration-500 group-hover:scale-105" />
+              className="object-cover brightness-90 transition duration-700 ease-out group-hover:scale-110 group-hover:brightness-105" />
           ) : (
-            <CoverArt seed={item.id} className={`size-full transition duration-500 group-hover:scale-105 ${ready ? "" : "opacity-40 grayscale"}`} />
+            <CoverArt seed={item.id} className={`size-full transition duration-700 ease-out group-hover:scale-110 ${ready ? "" : "opacity-40 grayscale"}`} />
           )}
+          <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-night/70 via-transparent to-transparent opacity-60 transition duration-300 group-hover:opacity-100" />
           {isVideo(item) && (
             <span className="absolute left-2 top-2 rounded-full bg-night/70 px-2 py-0.5 text-[11px] font-medium backdrop-blur">Video</span>
           )}
           {ready && (
-            <span className={`absolute bottom-2 right-2 flex size-11 items-center justify-center rounded-full bg-paper text-night shadow-xl transition ${
-              isCurrent ? "opacity-100" : "translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
+            <span className={`absolute left-1/2 top-1/2 flex size-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-paper text-night shadow-xl transition duration-300 ${
+              isCurrent ? "scale-100 opacity-100" : "scale-75 opacity-0 group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100"
             }`}>
-              {isCurrent && playing && !isVideo(item) ? <IconPause size={18} /> : <IconPlay size={18} className="translate-x-px" />}
+              {isCurrent && playing && !isVideo(item) ? <IconPause size={18} /> : <IconPlay size={18} />}
             </span>
           )}
         </span>
@@ -127,10 +128,10 @@ export function StyleGrid() {
         {STARTERS.map((starter) => (
           <li key={starter.label}>
             <Link href={`/create?prompt=${encodeURIComponent(starter.prompt)}`}
-              className="group relative flex h-28 items-end overflow-hidden rounded-[var(--radius-control)] border border-line p-4 md:h-32">
-              <CoverArt seed={starter.label} className="absolute inset-0 size-full opacity-70 transition duration-500 group-hover:scale-105 group-hover:opacity-90" />
+              className="group relative flex h-28 items-end overflow-hidden rounded-[20px] p-4 transition duration-300 hover:-translate-y-0.5 md:h-36">
+              <CoverArt seed={starter.label} className="absolute inset-0 size-full opacity-70 transition duration-700 ease-out group-hover:scale-110 group-hover:opacity-100" />
               <span className="absolute inset-0 bg-gradient-to-t from-night/90 via-night/30 to-transparent" />
-              <span className="relative font-display text-sm font-semibold leading-snug md:text-base">{starter.label}</span>
+              <span className="relative text-base font-semibold leading-snug tracking-[-0.01em] md:text-lg">{starter.label}</span>
             </Link>
           </li>
         ))}

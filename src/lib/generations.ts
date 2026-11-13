@@ -1,5 +1,5 @@
 import { callProxy, ProxyError } from "@/lib/api";
-import type { Feature } from "@/lib/billing-config";
+import type { Feature, Plan } from "@/lib/billing-config";
 import { getSupabase } from "@/lib/supabase/client";
 
 export type GenerationStatus = "processing" | "completed" | "failed";
@@ -39,7 +39,7 @@ export async function syncBillingAccount() {
 
 export interface ServerBilling {
   isPro: boolean;
-  currentPlan: "FREE" | "WEEKLY" | "MONTHLY" | "YEARLY";
+  currentPlan: Plan;
   credits: number;
   usage: Partial<Record<Feature, number>>;
   periodStart: number;

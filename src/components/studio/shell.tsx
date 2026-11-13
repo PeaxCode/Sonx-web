@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconAccount, IconCreate, IconHome, IconLibrary, IconPricing } from "@/components/icons";
+import { IconAccount, IconBlog, IconCreate, IconExplore, IconHome, IconLibrary, IconMail, IconPolicy, IconPricing } from "@/components/icons";
 import { PLAN_LABELS } from "@/lib/billing-config";
 import { BillingProvider, useBilling } from "./billing";
 import { FeedbackProvider } from "./feedback";
@@ -14,12 +14,24 @@ import { SessionProvider, useSession } from "./session";
 
 const NAV = [
   { href: "/", label: "Home", icon: IconHome },
+  { href: "/explore", label: "Explore", icon: IconExplore },
   { href: "/create", label: "Create", icon: IconCreate },
   // Hidden pending payment provider review (restore IconVideo import too):
   // { href: "/video", label: "Video", icon: IconVideo },
   { href: "/library", label: "Library", icon: IconLibrary },
-  { href: "/pricing", label: "Pricing", icon: IconPricing },
+  // The phone tab bar has room for five; Pricing stays reachable from Home and Account there.
+  { href: "/pricing", label: "Pricing", icon: IconPricing, desktopOnly: true },
   { href: "/account", label: "Account", icon: IconAccount },
+];
+
+// TODO: confirm this inbox exists before launch; it is the only contact shown in the studio.
+const FEEDBACK_EMAIL = "support@getsonx.com";
+
+// Plain <a>: the Journal and legal pages are static HTML, not app routes.
+const FOOTER_LINKS = [
+  { href: "/blog/", label: "Blog", icon: IconBlog },
+  { href: `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent("Sonx feedback")}`, label: "Feedback", icon: IconMail },
+  { href: "/terms.html", label: "Terms & Policies", icon: IconPolicy },
 ];
 
 function Balance() {
@@ -93,11 +105,23 @@ function Navigation() {
           })}
           <AccountEntry />
         </nav>
-        <div className="mt-auto"><Balance /></div>
+        <div className="mt-auto flex flex-col gap-4">
+          <ul className="flex flex-col">
+            {FOOTER_LINKS.map(({ href, label, icon: Icon }) => (
+              <li key={label}>
+                <a href={href} className="flex items-center gap-3 rounded-[var(--radius-control)] px-3 py-2 text-sm text-fog/80 transition hover:bg-plum hover:text-paper">
+                  <Icon size={16} />
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <Balance />
+        </div>
       </aside>
 
       <nav className="fixed inset-x-0 bottom-0 z-40 grid h-16 grid-cols-5 border-t border-line bg-night md:hidden">
-        {items.map(({ href, label, icon: Icon }) => {
+        {items.filter((item) => !item.desktopOnly).map(({ href, label, icon: Icon }) => {
           const active = isActive(pathname, href);
           return (
             <Link key={href} href={href} aria-current={active ? "page" : undefined}

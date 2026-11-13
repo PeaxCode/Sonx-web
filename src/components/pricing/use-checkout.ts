@@ -49,8 +49,13 @@ export function useCheckout() {
       });
       return;
     }
+    // Credit packs top up a plan; the cards are disabled, this is the backstop.
+    if (kind === "credits" && !billing?.isPro) {
+      notify("Subscribe to Pro or Studio to buy credit packs.", "error");
+      return;
+    }
     void open(priceId, kind);
-  }, [open, requestSignIn, signedIn]);
+  }, [billing?.isPro, notify, open, requestSignIn, signedIn]);
 
   // Resume the purchase picked before sign-in, once billing has loaded.
   useEffect(() => {
@@ -64,7 +69,11 @@ export function useCheckout() {
     window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
     // Someone who turns out to be Pro already must not subscribe twice.
     if (kind === "plan" && billing.isPro) {
-      notify("You already have Sonx Pro on this account.");
+      notify("You already have a plan on this account.");
+      return;
+    }
+    if (kind === "credits" && !billing.isPro) {
+      notify("Subscribe to Pro or Studio to buy credit packs.", "error");
       return;
     }
     // Out of the effect's render pass; resumed.current already stops a second run.

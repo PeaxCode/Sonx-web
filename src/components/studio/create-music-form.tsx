@@ -160,10 +160,10 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
 
   return (
     <form ref={formRef} onSubmit={submit} className="flex flex-col gap-6">
-      <div role="radiogroup" aria-label="How to start" className="grid grid-cols-2 rounded-[var(--radius-control)] bg-plum p-1">
+      <div role="radiogroup" aria-label="How to start" className="grid grid-cols-2 rounded-full bg-paper/[0.06] p-1">
         {([["describe", "Describe it"], ["lyrics", "My lyrics"]] as const).map(([value, label]) => (
           <button key={value} type="button" role="radio" aria-checked={mode === value} onClick={() => setMode(value)}
-            className={`rounded-[10px] py-2.5 text-sm font-medium transition ${mode === value ? "bg-raised text-paper" : "text-fog hover:text-paper"}`}>
+            className={`rounded-full py-2.5 text-sm font-medium transition ${mode === value ? "bg-paper text-night shadow" : "text-paper/65 hover:text-paper"}`}>
             {label}
           </button>
         ))}
@@ -179,12 +179,12 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
           placeholder={mode === "describe"
             ? "A slow late-night drive through a rainy city, warm synths, a hopeful chorus"
             : "Paste your lyrics, or type a topic and let Sonx write them"}
-          className="resize-none rounded-[var(--radius-control)] border border-line bg-plum px-4 py-3 text-base leading-relaxed placeholder:text-fog/60 focus:border-violet focus:outline-none"
+          className="resize-none rounded-[22px] border border-paper/10 bg-paper/[0.04] px-5 py-4 text-base leading-relaxed transition-[border-color,background-color] placeholder:text-paper/35 hover:border-paper/20 focus:border-paper/35 focus:bg-paper/[0.06] focus:outline-none"
         />
         <span className="flex items-center justify-between text-xs text-fog">
           {mode === "lyrics" ? (
             <button type="button" onClick={writeLyricsForMe} disabled={busy !== null}
-              className="font-medium text-violet transition hover:text-orchid disabled:opacity-50">
+              className="rounded-full bg-paper/[0.08] px-3 py-1.5 font-medium text-paper transition hover:bg-paper/15 disabled:opacity-50">
               {busy === "lyrics" ? "Writing lyrics" : "Write lyrics for me"}
             </button>
           ) : <span />}
@@ -201,7 +201,7 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
           <input type="checkbox" checked={instrumental} onChange={(event) => setInstrumental(event.target.checked)}
             className="peer sr-only" />
           <span aria-hidden="true"
-            className="relative h-6 w-11 shrink-0 rounded-full bg-raised transition peer-checked:bg-violet peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-violet after:absolute after:left-0.5 after:top-0.5 after:size-5 after:rounded-full after:bg-paper after:transition peer-checked:after:translate-x-5" />
+            className="relative h-6 w-11 shrink-0 rounded-full bg-paper/15 transition peer-checked:bg-orchid peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-violet after:absolute after:left-0.5 after:top-0.5 after:size-5 after:rounded-full after:bg-paper after:transition peer-checked:after:translate-x-5" />
         </label>
       )}
 
@@ -211,7 +211,7 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
           <div className="flex gap-2">
             {([["random", "Any"], ["female", "Female"], ["male", "Male"]] as const).map(([value, label]) => (
               <button key={value} type="button" aria-pressed={voice === value} onClick={() => setVoice(value)}
-                className={`rounded-full border px-4 py-1.5 text-sm transition ${voice === value ? "border-violet bg-violet/15 text-paper" : "border-line text-fog hover:text-paper"}`}>
+                className={`rounded-full px-4 py-2 text-sm font-medium transition ${voice === value ? "bg-paper text-night" : "bg-paper/[0.06] text-paper/70 hover:bg-paper/10 hover:text-paper"}`}>
                 {label}
               </button>
             ))}
@@ -224,7 +224,7 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
         <div className="flex flex-wrap gap-2">
           {GENRES.map((item) => (
             <button key={item.id} type="button" aria-pressed={genre === item.id} onClick={() => setGenre(item.id)}
-              className={`rounded-full border px-3.5 py-1.5 text-sm transition ${genre === item.id ? "border-violet bg-violet/15 text-paper" : "border-line text-fog hover:text-paper"}`}>
+              className={`rounded-full px-3.5 py-2 text-sm font-medium transition ${genre === item.id ? "bg-paper text-night" : "bg-paper/[0.06] text-paper/70 hover:bg-paper/10 hover:text-paper"}`}>
               {item.name}
             </button>
           ))}
@@ -234,15 +234,15 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
       <label className="flex flex-col gap-2">
         <span className="text-sm font-medium">Title <span className="font-normal text-fog">(optional)</span></span>
         <input value={title} maxLength={80} onChange={(event) => setTitle(event.target.value)} placeholder={`${genreLabel} track`}
-          className="rounded-[var(--radius-control)] border border-line bg-plum px-4 py-3 placeholder:text-fog/60 focus:border-violet focus:outline-none" />
+          className="rounded-full border border-paper/10 bg-paper/[0.04] px-5 py-3 transition-[border-color,background-color] placeholder:text-paper/35 hover:border-paper/20 focus:border-paper/35 focus:bg-paper/[0.06] focus:outline-none" />
       </label>
 
       <div className="flex flex-col gap-2">
         <button type="submit" disabled={!canSubmit}
-          className="bg-signature rounded-[var(--radius-control)] py-3.5 font-display text-sm font-semibold tracking-wide text-paper transition hover:brightness-110 disabled:opacity-40">
+          className="bg-signature rounded-full py-4 text-base font-semibold text-paper shadow-[0_12px_32px_-12px_rgb(229_99_241/0.8)] transition hover:scale-[1.01] hover:brightness-110 active:scale-100 disabled:opacity-40 disabled:shadow-none disabled:hover:scale-100">
           {busy === "lyrics" ? "Writing lyrics" : busy === "song" ? "Starting your song" : "Create song"}
         </button>
-        <p className="text-center text-xs text-fog">{costHint}</p>
+        <p className="text-center text-sm text-paper/55">{costHint}</p>
       </div>
     </form>
   );
