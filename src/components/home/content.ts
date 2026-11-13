@@ -22,6 +22,13 @@ export const WAYS = [
   // },
 ];
 
+// A real sequence, timed the way a song usually comes together.
+export const STEPS = [
+  { time: "0:00", title: "Describe it", text: "A mood, a moment or a story in one sentence. Or paste your own lyrics." },
+  { time: "0:05", title: "Sonx writes and sings", text: "Lyrics, voice and arrangement come together while you wait or browse." },
+  { time: "1:00", title: "Play, download, share", text: "The song lands in your library as an MP3, on the web and in the app." },
+];
+
 export const STARTERS = [
   { label: "Lo-fi to study to", prompt: "A calm lo-fi beat for a late study session, soft rain and warm keys" },
   { label: "Pop about summer love", prompt: "An upbeat pop song about falling in love on a summer trip" },
@@ -37,12 +44,12 @@ export const FAQ = [
   {
     question: "How much does Sonx cost?",
     answer:
-      "Creating songs needs Sonx Pro or credits, which you get in the Sonx app. Your plan works on the web as soon as you sign in with the same account.",
+      "Creating songs needs Sonx Pro or credits. Subscribe weekly, monthly or yearly, or buy a credit pack with no subscription, here or in the Sonx app. See Pricing for plans and prices.",
   },
   {
     question: "Do I need the app to use the website?",
     answer:
-      "No. You can create, play and download songs on the web. For now, subscriptions and credits are bought in the app.",
+      "No. You can subscribe, buy credits, create, play and download songs on the web. The app is there when you want your songs on your phone.",
   },
   {
     question: "How long does a song take?",
@@ -72,6 +79,6 @@ export const FAQ = [
   {
     question: "How do I delete my account?",
     answer:
-      "Open Account and choose Delete account. Your songs and credits are removed everywhere, including the app. Subscriptions are billed by the App Store or Google Play, so cancel yours there to stop future charges.",
+      "Open Account and choose Delete account. Your songs and credits are removed everywhere, including the app. Deleting does not cancel a subscription: cancel it first from Account (web plans) or in the App Store or Google Play.",
   },
 ];

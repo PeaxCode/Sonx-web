@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
-import { FAQ, WAYS } from "@/components/home/content";
+import { FaqList } from "@/components/faq-list";
+import { FAQ, STEPS, WAYS } from "@/components/home/content";
 import { Hero } from "@/components/home/hero";
 import { ExamplesShelf, RecentShelf, StyleGrid } from "@/components/home/shelves";
+import { PlanCards } from "@/components/pricing/plan-cards";
 import { StoreBadges } from "@/components/store-badges";
 import { STORE_LINKS } from "@/lib/billing-config";
 import { SITE_URL } from "@/lib/journal";
@@ -100,8 +102,28 @@ export default function Home() {
       <ExamplesShelf />
       <StyleGrid />
 
+      <section aria-labelledby="how-title">
+        <h2 id="how-title" className="font-display text-xl font-semibold md:text-2xl">From idea to song in about a minute</h2>
+        <ol className="relative mt-8 grid gap-8 md:grid-cols-3 md:gap-6">
+          {/* A playback track under the steps; the filled part is the song coming together. */}
+          <span aria-hidden="true" className="absolute top-[7px] right-0 left-0 hidden h-0.5 bg-line md:block" />
+          <span aria-hidden="true" className="bg-signature absolute top-[7px] left-0 hidden h-0.5 w-2/3 md:block" />
+          {STEPS.map((step, index) => (
+            <li key={step.title} className="relative flex gap-4 md:block">
+              <span aria-hidden="true"
+                className={`relative mt-0.5 block size-4 shrink-0 rounded-full border-2 md:mt-0 ${index < 2 ? "border-violet bg-violet" : "border-fog bg-night"}`} />
+              <div className="md:mt-5">
+                <p className="text-sm text-fog tabular-nums"><span className="sr-only">At </span>{step.time}</p>
+                <p className="mt-1 font-display font-semibold">{step.title}</p>
+                <p className="mt-2 max-w-xs text-sm text-fog">{step.text}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       <section aria-labelledby="ways-title">
-        <h2 id="ways-title" className="mb-4 font-display text-xl font-semibold">Three ways to create</h2>
+        <h2 id="ways-title" className="mb-4 font-display text-xl font-semibold">Ways to start</h2>
         <ul className="grid gap-4 md:grid-cols-2">
           {WAYS.map((way) => (
             <li key={way.title}>
@@ -120,6 +142,17 @@ export default function Home() {
         </ul>
       </section>
 
+      <section aria-labelledby="home-pricing-title" className="flex flex-col gap-6">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 id="home-pricing-title" className="font-display text-xl font-semibold md:text-2xl">Pick a plan, or pay as you go</h2>
+            <p className="mt-2 text-fog">Each dot is one song. Credit packs need no subscription.</p>
+          </div>
+          <Link href="/pricing" className="text-sm font-medium text-violet hover:text-orchid">See credit packs and pricing details</Link>
+        </div>
+        <PlanCards />
+      </section>
+
       <section aria-labelledby="app-title"
         className="flex flex-col gap-8 rounded-[28px] bg-plum p-7 md:flex-row md:items-center md:justify-between md:p-10">
         <div className="max-w-lg">
@@ -135,41 +168,24 @@ export default function Home() {
         </div>
       </section>
 
-      <section aria-labelledby="faq-title" className="grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.8fr)]">
-        <h2 id="faq-title" className="font-display text-xl font-semibold md:text-2xl">Questions, answered</h2>
-        <div className="divide-y divide-line border-y border-line">
-          {FAQ.map((item) => (
-            <details key={item.question} className="group py-4">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 font-medium [&::-webkit-details-marker]:hidden">
-                {item.question}
-                <span aria-hidden="true"
-                  className="relative size-4 shrink-0 before:absolute before:inset-x-0 before:top-1/2 before:h-0.5 before:-translate-y-1/2 before:bg-fog after:absolute after:inset-y-0 after:left-1/2 after:w-0.5 after:-translate-x-1/2 after:bg-fog after:transition-transform group-open:after:rotate-90" />
-              </summary>
-              <p className="mt-3 max-w-2xl text-sm text-fog">{item.answer}</p>
-            </details>
-          ))}
-        </div>
-        {/* Structured data so search engines can show these answers. */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              mainEntity: FAQ.map((item) => ({
-                "@type": "Question",
-                name: item.question,
-                acceptedAnswer: { "@type": "Answer", text: item.answer },
-              })),
-            }).replace(/</g, "\\u003c"),
-          }}
-        />
+      <FaqList id="faq-title" title="Questions, answered" items={FAQ} />
+
+      <section aria-labelledby="cta-title"
+        className="relative overflow-hidden rounded-[28px] border border-line px-7 py-12 text-center md:py-16">
+        <span aria-hidden="true" className="bg-signature absolute inset-x-0 -bottom-24 mx-auto h-48 w-2/3 rounded-full opacity-30 blur-3xl" />
+        <h2 id="cta-title" className="relative font-display text-2xl font-semibold md:text-4xl">Your next song starts with one sentence</h2>
+        <p className="relative mx-auto mt-4 max-w-md text-fog">Describe it and hear it in about a minute.</p>
+        <Link href="/create"
+          className="bg-signature relative mt-8 inline-block rounded-[var(--radius-control)] px-7 py-3.5 font-display text-sm font-semibold tracking-wide transition hover:brightness-110">
+          Create a song
+        </Link>
       </section>
 
       <footer className="flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6 text-sm text-fog">
         <p>© Sonx</p>
         <nav className="flex gap-6">
           {/* Plain links: the Journal and legal pages are static HTML, not app routes. */}
+          <Link href="/pricing" className="hover:text-paper">Pricing</Link>
           <a href="/blog/" className="hover:text-paper">Journal</a>
           <a href="/privacy.html" className="hover:text-paper">Privacy</a>
           <a href="/terms.html" className="hover:text-paper">Terms</a>

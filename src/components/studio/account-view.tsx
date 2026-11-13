@@ -1,12 +1,21 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { PLAN_LABELS, PLAN_LIMITS, STORE_LINKS, type Feature } from "@/lib/billing-config";
+import { webCheckoutEnabled, webCreditsEnabled } from "@/lib/paddle";
 import { getSupabase } from "@/lib/supabase/client";
 import { useBilling } from "./billing";
 import { useFeedback } from "./feedback";
+
+const STORE_NAMES: Record<string, string> = {
+  paddle: "Paddle (web)",
+  app_store: "the App Store",
+  mac_app_store: "the App Store",
+  play_store: "Google Play",
+};
 
 const USAGE_ROWS: { feature: Feature; label: string }[] = [
   { feature: "PROMPT_MUSIC", label: "Instrumentals" },
@@ -31,7 +40,8 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
   const deleteAccount = async () => {
     const confirmed = window.confirm(
       "Delete your account? Your songs and credits are deleted everywhere, including the app. " +
-      "Subscriptions are billed by the App Store or Google Play: cancel yours there to stop future charges.",
+      "Deleting does not cancel a subscription: cancel it first with Manage subscription on this page " +
+      "(web plans) or in the App Store or Google Play to stop future charges.",
     );
     if (!confirmed) return;
     setBusy(true);
@@ -81,12 +91,39 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
             })}
           </dl>
         )}
-        <p className="mt-5 text-sm text-fog">
-          Plans and credits are managed in the Sonx app.{" "}
-          <a href={STORE_LINKS.ios} target="_blank" rel="noreferrer" className="text-violet hover:text-orchid">App Store</a>
-          {" or "}
-          <a href={STORE_LINKS.android} target="_blank" rel="noreferrer" className="text-violet hover:text-orchid">Google Play</a>.
-        </p>
+        {billing?.isPro && (
+          <p className="mt-5 text-sm text-fog">
+            {billing.store && STORE_NAMES[billing.store] ? `Billed by ${STORE_NAMES[billing.store]}. ` : ""}
+            {billing.managementUrl ? (
+              <a href={billing.managementUrl} target="_blank" rel="noreferrer" className="text-violet hover:text-orchid">
+                Manage subscription
+              </a>
+            ) : (
+              "Manage it where you subscribed."
+            )}
+          </p>
+        )}
+        {billing && (webCheckoutEnabled || webCreditsEnabled) ? (
+          <div className="mt-6 flex flex-wrap gap-3">
+            {!billing.isPro && webCheckoutEnabled && (
+              <Link href="/pricing" className="bg-signature rounded-[var(--radius-control)] px-5 py-2.5 text-sm font-semibold transition hover:brightness-110">
+                Get Sonx Pro
+              </Link>
+            )}
+            {webCreditsEnabled && (
+              <Link href="/pricing#credits-title" className="rounded-[var(--radius-control)] border border-line px-5 py-2.5 text-sm font-medium transition hover:bg-raised">
+                Buy credits
+              </Link>
+            )}
+          </div>
+        ) : (
+          <p className="mt-5 text-sm text-fog">
+            Plans and credits are available in the Sonx app.{" "}
+            <a href={STORE_LINKS.ios} target="_blank" rel="noreferrer" className="text-violet hover:text-orchid">App Store</a>
+            {" or "}
+            <a href={STORE_LINKS.android} target="_blank" rel="noreferrer" className="text-violet hover:text-orchid">Google Play</a>.
+          </p>
+        )}
       </section>
 
       <section className="flex flex-col items-start gap-3">

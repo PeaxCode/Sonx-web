@@ -5,6 +5,7 @@ import { trackEvent } from "@/lib/analytics";
 import { isInsufficientBalance } from "@/lib/api";
 import { CREDIT_COSTS, GENRES, type Feature } from "@/lib/billing-config";
 import { newRequestId, startGeneration } from "@/lib/generations";
+import { webCheckoutEnabled } from "@/lib/paddle";
 import { saveDraft, takeBlogSource, takeDraft, type DraftMode, type DraftVoice } from "@/lib/draft";
 import { generateLyrics } from "@/lib/lyrics";
 import { useBilling } from "./billing";
@@ -91,7 +92,8 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
       return `Uses 1 of ${left} left this period`;
     }
     if (access === "credits") return `Uses ${CREDIT_COSTS[feature]} credits`;
-    return "Get Pro or credits in the Sonx app to create songs";
+    if (billing.isPro) return "Buy credits in the Sonx app to keep creating";
+    return webCheckoutEnabled ? "Get Pro to create songs" : "Get Pro or credits in the Sonx app to create songs";
   })();
 
   const writeLyricsForMe = async () => {

@@ -29,6 +29,9 @@ export const IconLibrary = (props: IconProps) => (
 export const IconAccount = (props: IconProps) => (
   <Icon {...props}><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></Icon>
 );
+export const IconPricing = (props: IconProps) => (
+  <Icon {...props}><path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9-9-9Z" /><circle cx="7.5" cy="7.5" r="1.5" /></Icon>
+);
 export const IconPlay = (props: IconProps) => (
   <Icon {...props} fill="currentColor" stroke="none"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5Z" /></Icon>
 );

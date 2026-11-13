@@ -44,6 +44,10 @@ export interface ServerBilling {
   usage: Partial<Record<Feature, number>>;
   periodStart: number;
   periodEnd: number;
+  /** Where the active subscription was bought: app_store, play_store, paddle... */
+  store?: string | null;
+  /** Manage link for that subscription (Paddle portal or store settings). */
+  managementUrl?: string | null;
 }
 
 export async function fetchBilling() {
