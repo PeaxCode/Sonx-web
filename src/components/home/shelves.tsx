@@ -19,7 +19,7 @@ const isVideo = (item: Generation) => item.feature === "AI_MUSIC_VIDEO";
 function ShelfHeader({ id, title, href, linkLabel }: { id: string; title: string; href?: string; linkLabel?: string }) {
   return (
     <div className="mb-4 flex items-end justify-between gap-4">
-      <h2 id={id} className="text-2xl font-semibold tracking-[-0.03em] md:text-3xl">{title}</h2>
+      <h2 id={id} className="text-xl font-semibold tracking-[-0.03em] md:text-2xl">{title}</h2>
       {href && (
         <Link href={href} className="flex items-center gap-1 text-sm font-medium text-fog transition hover:text-paper">
           {linkLabel} <IconArrow size={16} />
@@ -40,7 +40,7 @@ function TrackCard({ item, queue, onWatch }: { item: Generation; queue: Generati
   const label = isVideo(item) ? `Watch ${item.title}` : isCurrent && playing ? `Pause ${item.title}` : `Play ${item.title}`;
 
   return (
-    <li className="w-40 shrink-0 snap-start md:w-auto">
+    <li className="w-36 shrink-0 snap-start md:w-auto">
       <button type="button" disabled={!ready} aria-label={label}
         onClick={() => (isVideo(item) ? onWatch(item) : play(item, queue))}
         className="group block w-full text-left disabled:cursor-default">
@@ -86,7 +86,7 @@ function Shelf({ items }: { items: Generation[] }) {
   return (
     <>
       <ul ref={ref}
-        className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-4 md:overflow-visible md:px-0 lg:grid-cols-5">
+        className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0 lg:grid-cols-6">
         {items.map((item) => <TrackCard key={item.id} item={item} queue={queue} onWatch={setWatching} />)}
       </ul>
       {watching && <VideoDialog generation={watching} onClose={() => setWatching(null)} />}
@@ -128,7 +128,7 @@ export function StyleGrid() {
         {STARTERS.map((starter) => (
           <li key={starter.label}>
             <Link href={`/create?prompt=${encodeURIComponent(starter.prompt)}`}
-              className="group relative flex h-28 items-end overflow-hidden rounded-[20px] p-4 transition duration-300 hover:-translate-y-0.5 md:h-36">
+              className="group relative flex h-24 items-end overflow-hidden rounded-[18px] p-4 transition duration-300 hover:-translate-y-0.5 md:h-28">
               <CoverArt seed={starter.label} className="absolute inset-0 size-full opacity-70 transition duration-700 ease-out group-hover:scale-110 group-hover:opacity-100" />
               <span className="absolute inset-0 bg-gradient-to-t from-night/90 via-night/30 to-transparent" />
               <span className="relative text-base font-semibold leading-snug tracking-[-0.01em] md:text-lg">{starter.label}</span>

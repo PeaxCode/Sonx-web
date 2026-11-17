@@ -106,7 +106,7 @@ export default function Home() {
       <StyleGrid />
 
       <section aria-labelledby="how-title">
-        <h2 id="how-title" className="text-3xl font-semibold tracking-[-0.035em] md:text-5xl">From idea to song in about a minute</h2>
+        <h2 id="how-title" className="text-3xl font-semibold tracking-[-0.035em] md:text-4xl">From idea to song in about a minute</h2>
         <ol className="relative mt-8 grid gap-8 md:grid-cols-3 md:gap-6">
           {/* A playback track under the steps; the filled part is the song coming together. */}
           <span aria-hidden="true" className="absolute top-[7px] right-0 left-0 hidden h-0.5 bg-line md:block" />
@@ -133,7 +133,7 @@ export default function Home() {
             <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-night/60 to-transparent" />
           </div>
           <div>
-            <h2 id={`feature-${index}`} className="text-3xl font-semibold leading-[1.05] tracking-[-0.035em] md:text-5xl">{feature.title}</h2>
+            <h2 id={`feature-${index}`} className="text-3xl font-semibold leading-[1.05] tracking-[-0.035em] md:text-4xl">{feature.title}</h2>
             <p className="mt-4 max-w-md text-lg text-fog">{feature.text}</p>
             <ul className="mt-6 flex flex-col gap-3">
               {feature.points.map((point) => (
@@ -153,7 +153,7 @@ export default function Home() {
 
       <section aria-labelledby="reviews-title">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <h2 id="reviews-title" className="text-3xl font-semibold tracking-[-0.035em] md:text-5xl">People keep pressing create</h2>
+          <h2 id="reviews-title" className="text-3xl font-semibold tracking-[-0.035em] md:text-4xl">People keep pressing create</h2>
           <a href={STORE_LINKS.ios} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-fog hover:text-paper">
             <span aria-hidden="true" className="text-orchid">★</span>
             {APP_STORE_RATING.value} out of 5 from {APP_STORE_RATING.count} ratings on the App Store
@@ -173,7 +173,7 @@ export default function Home() {
       <section aria-labelledby="home-pricing-title" className="flex flex-col gap-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 id="home-pricing-title" className="text-3xl font-semibold tracking-[-0.035em] md:text-5xl">Simple plans, monthly or yearly</h2>
+            <h2 id="home-pricing-title" className="text-3xl font-semibold tracking-[-0.035em] md:text-4xl">Simple plans, monthly or yearly</h2>
             <p className="mt-2 text-fog">Each dot is one song you can make every month. Pay yearly to save.</p>
           </div>
           <Link href="/pricing" className="text-sm font-medium text-orchid hover:text-paper">Compare plans and credit packs</Link>
@@ -201,7 +201,7 @@ export default function Home() {
       <section aria-labelledby="cta-title"
         className="relative isolate overflow-hidden rounded-[32px] px-7 py-16 text-center md:py-24">
         <Aurora />
-        <h2 id="cta-title" className="relative text-4xl font-semibold leading-[1] tracking-[-0.04em] md:text-7xl">Your next song starts<br className="hidden md:block" /> with one sentence</h2>
+        <h2 id="cta-title" className="relative text-3xl font-semibold leading-[1.05] tracking-[-0.04em] md:text-5xl">Your next song starts<br className="hidden md:block" /> with one sentence</h2>
         <p className="relative mx-auto mt-4 max-w-md text-fog">Describe it and hear it in about a minute.</p>
         <Link href="/create"
           className="relative mt-8 inline-block rounded-full bg-paper px-8 py-3.5 text-sm font-semibold text-night transition hover:bg-paper/90">

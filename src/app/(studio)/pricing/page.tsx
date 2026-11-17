@@ -69,7 +69,7 @@ export default function PricingPage() {
     <div className="mx-auto flex max-w-6xl flex-col gap-16 px-4 py-8 md:px-8 lg:py-12">
       <header className="relative isolate -mx-4 overflow-hidden px-4 pb-16 pt-16 text-center md:mx-0 md:rounded-[32px] md:pt-24">
         <Aurora />
-        <h1 className="text-5xl font-semibold leading-[0.98] tracking-[-0.045em] md:text-7xl">Make more music for less</h1>
+        <h1 className="text-4xl font-semibold leading-[0.98] tracking-[-0.045em] md:text-4xl">Make more music for less</h1>
         <p className="mx-auto mt-4 max-w-xl text-lg text-fog">
           Paid plans include commercial use and MP3 downloads, here and in the Sonx app.
         </p>
@@ -82,7 +82,7 @@ export default function PricingPage() {
 
       <section aria-labelledby="credits-title" className="flex flex-col gap-6">
         <div className="max-w-2xl">
-          <h2 id="credits-title" className="text-3xl font-semibold tracking-[-0.035em] md:text-5xl">Top up with credits</h2>
+          <h2 id="credits-title" className="text-3xl font-semibold tracking-[-0.035em] md:text-4xl">Top up with credits</h2>
           <p className="mt-3 text-fog">
             Ran out of songs before the month ends? Credit packs keep you going until your plan renews. For Pro and Studio members.
           </p>

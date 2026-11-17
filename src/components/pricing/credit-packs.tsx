@@ -80,7 +80,7 @@ export function CreditPacks({ onSubscribeClick }: { onSubscribeClick?: () => voi
         })}
       </ol>
       <p id="credits-locked" className="mt-3 text-sm text-fog">
-        {billing ? `You have ${billing.credits} credits. ` : ""}
+        {billing?.isPro ? `You have ${billing.credits} credits. ` : ""}
         A song with vocals uses {VOCAL_COST} credits, an instrumental {INSTRUMENTAL_COST}. Credits are used after your plan&apos;s monthly songs.
       </p>
     </div>

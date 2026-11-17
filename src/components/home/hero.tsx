@@ -176,7 +176,7 @@ function FloatingSample({ side }: { side: "left" | "right" }) {
   const isCurrent = current?.id === song.id;
   // GSAP reveals the wrapper; the button owns the hover transitions, so the two never fight.
   return (
-    <div className={`hero-float absolute top-[52%] z-0 hidden w-52 -translate-y-1/2 hover:z-20 xl:block ${
+    <div className={`hero-float absolute top-[52%] z-0 hidden w-44 -translate-y-1/2 hover:z-20 xl:block ${
       side === "left" ? "-left-8" : "-right-8"
     }`}>
     <button type="button" onClick={() => play(song, SAMPLE_SONGS)}
@@ -185,9 +185,9 @@ function FloatingSample({ side }: { side: "left" | "right" }) {
         side === "left" ? "-rotate-[11deg]" : "rotate-[11deg]"
       }`}>
       <span className="relative block aspect-[3/4]">
-        {song.cover_url ? <Image src={song.cover_url} alt="" fill sizes="208px" className="object-cover transition duration-700 group-hover:scale-110" /> : <CoverArt seed={song.id} className="size-full transition duration-700 group-hover:scale-110" />}
+        {song.cover_url ? <Image src={song.cover_url} alt="" fill sizes="176px" className="object-cover transition duration-700 group-hover:scale-110" /> : <CoverArt seed={song.id} className="size-full transition duration-700 group-hover:scale-110" />}
         <span className="absolute inset-0 bg-gradient-to-t from-night/90 via-transparent to-transparent" />
-        <span className="absolute left-1/2 top-1/2 flex size-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-night/40 backdrop-blur-md transition duration-300 group-hover:scale-110 group-hover:bg-paper group-hover:text-night">
+        <span className="absolute left-1/2 top-1/2 flex size-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-night/40 backdrop-blur-md transition duration-300 group-hover:scale-110 group-hover:bg-paper group-hover:text-night">
           {isCurrent && playing ? <IconPause size={18} /> : <IconPlay size={18} />}
         </span>
         <span className="absolute inset-x-3 bottom-3 truncate text-left text-sm font-medium">{song.title}</span>
@@ -323,10 +323,10 @@ export function Hero() {
           <div className="relative z-10 mx-auto w-full max-w-3xl text-center">
             {/* Same words as before for search, set as a title and a subtitle. */}
             <h1 className="hero-reveal">
-              <span className="block text-5xl font-semibold leading-[0.98] tracking-[-0.045em] sm:text-6xl md:text-[5.5rem]">
+              <span className="block text-4xl font-semibold leading-[0.98] tracking-[-0.045em] sm:text-5xl md:text-[4.25rem]">
                 AI Song Generator
               </span>
-              <span className="mt-5 block text-lg font-medium tracking-[-0.01em] text-paper/85 md:text-2xl">
+              <span className="mt-4 block text-base font-medium tracking-[-0.01em] text-paper/85 md:text-xl">
                 Make full songs with vocals from text
               </span>
             </h1>
@@ -422,7 +422,7 @@ export function Hero() {
 
       {phase === "ready" && (
         <div className="hero-phase relative z-10 mx-auto flex max-w-md flex-col items-center text-center">
-          <h2 className="font-display text-3xl font-semibold leading-tight md:text-5xl">Your song is almost ready</h2>
+          <h2 className="font-display text-3xl font-semibold leading-tight md:text-4xl">Your song is almost ready</h2>
           <button type="button" onClick={askToSignIn} aria-label={`Sign in to listen to ${titleFrom(submitted)}`}
             className="group mt-8 w-52 text-left">
             <span className="relative block aspect-square overflow-hidden rounded-[var(--radius-panel)] shadow-2xl">

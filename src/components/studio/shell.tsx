@@ -54,7 +54,12 @@ function Balance() {
   return (
     <div className="rounded-[var(--radius-control)] border border-line px-3 py-2.5">
       <p className="text-sm font-medium">{PLAN_LABELS[billing.currentPlan]}</p>
-      <p className="text-xs text-fog tabular-nums">{billing.credits} credits</p>
+      {/* Credits are a subscriber top-up: free accounts see their plan only. */}
+      {billing.isPro ? (
+        <p className="text-xs text-fog tabular-nums">{billing.credits} credits</p>
+      ) : (
+        <Link href="/pricing" className="text-xs font-medium text-orchid hover:underline">See plans</Link>
+      )}
     </div>
   );
 }
@@ -95,7 +100,7 @@ function Navigation() {
             const active = isActive(pathname, href);
             return (
               <Link key={href} href={href} aria-current={active ? "page" : undefined}
-                className={`flex items-center gap-3 rounded-[var(--radius-control)] px-3 py-2.5 text-sm font-medium transition ${
+                className={`flex items-center gap-3 rounded-[var(--radius-control)] px-3 py-2 text-sm font-medium transition ${
                   active ? "bg-raised text-paper" : "text-fog hover:bg-plum hover:text-paper"
                 }`}>
                 <Icon size={18} />

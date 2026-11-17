@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+const DEV_HOST = "dev.getsonx.com";
+
 const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
@@ -17,6 +19,15 @@ const nextConfig: NextConfig = {
         as: "*.css",
       },
     },
+  },
+  // dev.getsonx.com is a private test deployment (the dev branch): keep every
+  // response out of search engines. proxy.ts also serves it a blocking robots.txt.
+  async headers() {
+    return [{
+      source: "/:path*",
+      has: [{ type: "host", value: DEV_HOST }],
+      headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+    }];
   },
   // AI music video is hidden pending payment provider review; see app/(studio)/video/page.tsx.
   async redirects() {

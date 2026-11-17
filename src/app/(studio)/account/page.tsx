@@ -27,7 +27,7 @@ async function AccountDetails() {
 export default function AccountPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 md:px-8 lg:py-14">
-      <h1 className="mb-10 text-5xl font-semibold tracking-[-0.045em] md:text-6xl">Account</h1>
+      <h1 className="mb-8 text-3xl font-semibold tracking-[-0.04em] md:text-4xl">Account</h1>
       <Suspense fallback={<p className="text-fog">Loading your account</p>}>
         <AccountDetails />
       </Suspense>

@@ -139,7 +139,7 @@ export function PlanCards() {
           <h3 className="font-display text-lg font-semibold">Free</h3>
           <p className="mt-1 min-h-10 text-sm text-fog">Listen and write lyrics before you subscribe.</p>
           <p className="mt-5 flex items-baseline gap-1.5">
-            <span className="font-display text-4xl font-semibold">{freePrice(prices)}</span>
+            <span className="font-display text-3xl font-semibold">{freePrice(prices)}</span>
             <span className="text-fog">/ month</span>
           </p>
           <p className="min-h-5 text-sm text-fog">Free forever</p>
@@ -192,7 +192,7 @@ export function PlanCards() {
                     {cycle === "yearly" && monthlyPrice && (
                       <span className="text-lg text-fog line-through tabular-nums">{monthlyPrice.formatted}</span>
                     )}
-                    <span className="font-display text-4xl font-semibold tabular-nums">{formatMoney(price, perMonth)}</span>
+                    <span className="font-display text-3xl font-semibold tabular-nums">{formatMoney(price, perMonth)}</span>
                     <span className="text-fog">/ month</span>
                   </>
                 ) : (

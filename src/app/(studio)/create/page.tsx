@@ -19,7 +19,7 @@ export default function CreatePage({ searchParams }: { searchParams: Promise<{ p
       <section aria-labelledby="create-title"
         className="relative isolate overflow-hidden rounded-[32px] border border-paper/[0.06] p-6 md:p-8">
         <Aurora className="opacity-35" />
-        <h1 id="create-title" className="mb-6 text-4xl font-semibold tracking-[-0.04em]">Create a song</h1>
+        <h1 id="create-title" className="mb-5 text-3xl font-semibold tracking-[-0.04em]">Create a song</h1>
         <Suspense fallback={<CreateMusicForm restoreDraft={false} />}>
           <PrefilledForm searchParams={searchParams} />
         </Suspense>

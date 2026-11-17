@@ -6,7 +6,7 @@ import { useLibrary } from "./library";
 import { useSession } from "./session";
 import { TrackList } from "./track-list";
 
-const heading = "mb-4 text-3xl font-semibold tracking-[-0.035em]";
+const heading = "mb-4 text-2xl font-semibold tracking-[-0.035em]";
 
 /** Songs only (no videos), newest first, including ones made in the app. Visitors hear the examples. */
 export function MusicList() {

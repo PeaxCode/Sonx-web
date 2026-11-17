@@ -80,11 +80,15 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
             <p className="text-sm font-medium text-paper/60">Your plan</p>
             <h2 id="plan-title" className="mt-1 text-3xl font-semibold tracking-[-0.03em]">{billing ? PLAN_LABELS[billing.currentPlan] : "Plan"}</h2>
           </div>
-          {billing && (
+          {/* Credits are a subscriber top-up, so the balance stays hidden until there is a plan. */}
+          {billing?.isPro && (
             <p className="rounded-full bg-paper/10 px-4 py-1.5 text-sm font-medium tabular-nums backdrop-blur">{billing.credits} credits</p>
           )}
         </div>
-        {billing && (
+        {billing && !billing.isPro && (
+          <p className="mt-4 text-sm text-paper/70">Subscribe to start creating songs every month.</p>
+        )}
+        {billing?.isPro && (
           <dl className="mt-7 grid gap-5">
             {USAGE_ROWS.map(({ feature, label }) => {
               const limit = PLAN_LIMITS[billing.currentPlan][feature];
