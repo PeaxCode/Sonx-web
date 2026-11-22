@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { openWebCheckout } from "@/lib/paddle";
 import { getSupabase } from "@/lib/supabase/client";
@@ -15,6 +16,7 @@ export function useCheckout() {
   const { signedIn, requestSignIn } = useSession();
   const { billing, awaitPurchase } = useBilling();
   const { notify } = useFeedback();
+  const router = useRouter();
   const [opening, setOpening] = useState<string | null>(null);
   const resumed = useRef(false);
 
@@ -27,14 +29,18 @@ export function useCheckout() {
         priceId,
         userId: user.id,
         email: user.email ?? null,
-        onCompleted: () => awaitPurchase(kind),
+        // The buyer lands on Account, where the balance and plan update as soon as the server has them.
+        onCompleted: () => {
+          awaitPurchase(kind);
+          router.push("/account");
+        },
       });
     } catch (error) {
       notify(error instanceof Error ? error.message : "Checkout could not open.", "error");
     } finally {
       setOpening(null);
     }
-  }, [awaitPurchase, notify]);
+  }, [awaitPurchase, notify, router]);
 
   const buy = useCallback((priceId: string, kind: PendingPurchase) => {
     if (signedIn === null) return;

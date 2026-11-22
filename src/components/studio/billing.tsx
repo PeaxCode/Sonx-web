@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { CREDIT_COSTS, PLAN_LIMITS, type Feature } from "@/lib/billing-config";
+import { trackEvent } from "@/lib/analytics";
 import { fetchBilling, syncBillingAccount, type ServerBilling } from "@/lib/generations";
 import { useSession } from "./session";
 
@@ -17,11 +18,18 @@ interface BillingValue {
   pending: PendingPurchase | null;
   /** Polls the server after a web checkout until the plan or credits show up. */
   awaitPurchase: (kind: PendingPurchase) => void;
+  /** How the last web purchase ended: added to the account, or not seen in time. */
+  outcome: PurchaseOutcome | null;
+  dismissOutcome: () => void;
 }
 
 export type PendingPurchase = "plan" | "credits";
+export type PurchaseOutcome =
+  | { kind: PendingPurchase; status: "added"; credits: number; id: number }
+  | { kind: PendingPurchase; status: "late"; id: number };
 
-// RevenueCat receives Paddle's notification within about a minute.
+// Credit packs land within seconds (paddle-webhook); plans go through RevenueCat
+// and take up to about a minute. After two minutes the buyer is told and given support.
 const PURCHASE_POLL_MS = 3000;
 const PURCHASE_TIMEOUT_MS = 2 * 60 * 1000;
 
@@ -54,30 +62,49 @@ export function BillingProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const [purchase, setPurchase] = useState<{ kind: PendingPurchase; startedAt: number; credits: number } | null>(null);
-  const settled = purchase !== null && billing !== null &&
-    (purchase.kind === "plan" ? billing.isPro : billing.credits > purchase.credits);
-  const pending = purchase && !settled ? purchase.kind : null;
+  const [outcome, setOutcome] = useState<PurchaseOutcome | null>(null);
+  const pending = purchase ? purchase.kind : null;
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (!pending || !purchase) return;
+    if (!purchase) return;
+    let active = true;
     const poll = async () => {
-      await refresh();
-      if (Date.now() - purchase.startedAt < PURCHASE_TIMEOUT_MS) {
-        timer.current = setTimeout(poll, PURCHASE_POLL_MS);
-      } else {
+      let state: ServerBilling | null = null;
+      try {
+        state = await fetchBilling();
+      } catch {
+        // A failed read is retried on the next tick.
+      }
+      if (!active) return;
+      if (state) setBilling(state);
+      const settled = state !== null &&
+        (purchase.kind === "plan" ? state.isPro : state.credits > purchase.credits);
+      if (settled) {
+        setOutcome({ kind: purchase.kind, status: "added", credits: state!.credits - purchase.credits, id: Date.now() });
         setPurchase(null);
+      } else if (Date.now() - purchase.startedAt >= PURCHASE_TIMEOUT_MS) {
+        // Paid but not on the account: tell the buyer and flag it for the team.
+        trackEvent("purchase_not_received", { kind: purchase.kind, waited_seconds: PURCHASE_TIMEOUT_MS / 1000 });
+        setOutcome({ kind: purchase.kind, status: "late", id: Date.now() });
+        setPurchase(null);
+      } else {
+        timer.current = setTimeout(poll, PURCHASE_POLL_MS);
       }
     };
     timer.current = setTimeout(poll, PURCHASE_POLL_MS);
     return () => {
+      active = false;
       if (timer.current) clearTimeout(timer.current);
     };
-  }, [pending, purchase, refresh]);
+  }, [purchase]);
 
   const awaitPurchase = useCallback((kind: PendingPurchase) => {
+    setOutcome(null);
     setPurchase({ kind, startedAt: Date.now(), credits: billing?.credits ?? 0 });
   }, [billing?.credits]);
+
+  const dismissOutcome = useCallback(() => setOutcome(null), []);
 
   const value = useMemo<BillingValue>(() => {
     const remaining = (feature: Feature) =>
@@ -88,13 +115,15 @@ export function BillingProvider({ children }: { children: React.ReactNode }) {
       remaining,
       pending,
       awaitPurchase,
+      outcome,
+      dismissOutcome,
       accessFor: (feature, creditCost = CREDIT_COSTS[feature]) => {
         if (!billing) return "unknown";
         if (remaining(feature) > 0) return "quota";
         return billing.credits >= creditCost ? "credits" : "none";
       },
     };
-  }, [billing, refresh, pending, awaitPurchase]);
+  }, [billing, refresh, pending, awaitPurchase, outcome, dismissOutcome]);
 
   return <BillingContext.Provider value={value}>{children}</BillingContext.Provider>;
 }

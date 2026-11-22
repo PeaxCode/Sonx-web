@@ -17,24 +17,16 @@ interface FeedbackValue {
 
 const FeedbackContext = createContext<FeedbackValue | null>(null);
 
-function PaywallDialog({ onClose, notify }: { onClose: () => void; notify: FeedbackValue["notify"] }) {
+function PaywallDialog({ onClose }: { onClose: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
   const { billing, pending } = useBilling();
   // Pro members who ran out can't subscribe twice: they get credit packs instead.
   const offer = !billing ? "app" : !billing.isPro && webCheckoutEnabled ? "plans" : billing.isPro && webCreditsEnabled ? "credits" : "app";
-  const waited = useRef<typeof pending>(null);
 
-  // Close once the purchase shows up on the server.
+  // Payment went through: the buyer is taken to Account, which tracks the purchase.
   useEffect(() => {
-    if (pending) {
-      waited.current = pending;
-      return;
-    }
-    if (!waited.current) return;
-    notify(waited.current === "plan" ? "Your Pro plan is active. Create away." : "Credits added. Create away.");
-    waited.current = null;
-    onClose();
-  }, [pending, notify, onClose]);
+    if (pending) onClose();
+  }, [pending, onClose]);
 
   useGSAP(() => {
     if (prefersReducedMotion()) return;
@@ -110,6 +102,21 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const closePaywall = useCallback(() => setPaywallOpen(false), []);
+
+  // Announce a finished web purchase wherever the buyer is, for a few seconds.
+  const { outcome } = useBilling();
+  const [hiddenOutcome, setHiddenOutcome] = useState<number | null>(null);
+  useEffect(() => {
+    if (!outcome) return;
+    const timer = setTimeout(() => setHiddenOutcome(outcome.id), 6000);
+    return () => clearTimeout(timer);
+  }, [outcome]);
+  const purchaseToast = outcome && hiddenOutcome !== outcome.id
+    ? outcome.status === "late"
+      ? { message: "Your payment went through, but it is not on your account yet. See Account for help.", tone: "error" as const }
+      : { message: outcome.kind === "plan" ? "Your plan is active. Create away." : `${outcome.credits.toLocaleString("en-US")} credits added. Create away.`, tone: "info" as const }
+    : null;
+  const shown = purchaseToast ?? toast;
   const value = useMemo(() => ({ notify, openPaywall: () => setPaywallOpen(true) }), [notify]);
 
   return (
@@ -117,18 +124,18 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
       {children}
 
       <div aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-28 z-50 flex justify-center px-4">
-        {toast && (
+        {shown && (
           <p
             className={`pointer-events-auto max-w-md rounded-[var(--radius-control)] border px-4 py-3 text-sm shadow-2xl ${
-              toast.tone === "error" ? "border-danger/40 bg-raised text-paper" : "border-line bg-raised text-paper"
+              shown.tone === "error" ? "border-danger/40 bg-raised text-paper" : "border-line bg-raised text-paper"
             }`}
           >
-            {toast.message}
+            {shown.message}
           </p>
         )}
       </div>
 
-      {paywallOpen && <PaywallDialog onClose={closePaywall} notify={notify} />}
+      {paywallOpen && <PaywallDialog onClose={closePaywall} />}
     </FeedbackContext.Provider>
   );
 }

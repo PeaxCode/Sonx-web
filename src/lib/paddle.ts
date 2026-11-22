@@ -58,8 +58,18 @@ let completedListener: (() => void) | null = null;
 let paddlePromise: Promise<Paddle | undefined> | null = null;
 let pricesPromise: Promise<Record<string, WebPrice>> | null = null;
 
+// Long enough to show Paddle's "payment successful" step, short enough that
+// buyers are not left on it wondering what to do next.
+const CLOSE_AFTER_COMPLETED_MS = 1500;
+
 function onPaddleEvent(event: PaddleEventData) {
-  if (event.name === CheckoutEventNames.CHECKOUT_COMPLETED) completedListener?.();
+  if (event.name !== CheckoutEventNames.CHECKOUT_COMPLETED) return;
+  const listener = completedListener;
+  completedListener = null;
+  listener?.();
+  window.setTimeout(() => {
+    void paddlePromise?.then((paddle) => paddle?.Checkout.close());
+  }, CLOSE_AFTER_COMPLETED_MS);
 }
 
 function getPaddle() {
@@ -108,7 +118,11 @@ export function formatMoney(price: WebPrice, amount: number) {
   return new Intl.NumberFormat(undefined, { style: "currency", currency: price.currency }).format(amount);
 }
 
-/** Opens the Paddle overlay for one price; onCompleted runs once payment succeeds. */
+/**
+ * Opens the Paddle overlay for one price; onCompleted runs once payment
+ * succeeds and the overlay then closes itself. Quantity is fixed at one: the
+ * prices allow only one unit, and paddle-webhook grants credits x quantity anyway.
+ */
 export async function openWebCheckout(options: {
   priceId: string;
   userId: string;

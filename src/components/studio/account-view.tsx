@@ -18,6 +18,9 @@ const STORE_NAMES: Record<string, string> = {
   play_store: "Google Play",
 };
 
+const SUPPORT_EMAIL = "support@getsonx.com";
+const SUPPORT_MAILTO = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Web purchase not on my account")}`;
+
 const USAGE_ROWS: { feature: Feature; label: string }[] = [
   { feature: "PROMPT_MUSIC", label: "Instrumentals" },
   { feature: "LYRICS_MUSIC", label: "Songs with vocals" },
@@ -27,7 +30,7 @@ const USAGE_ROWS: { feature: Feature; label: string }[] = [
 
 export function AccountView({ email, name, avatarUrl }: { email: string | null; name: string | null; avatarUrl: string | null }) {
   const router = useRouter();
-  const { billing } = useBilling();
+  const { billing, pending, outcome, dismissOutcome, refresh } = useBilling();
   const { notify } = useFeedback();
   const [busy, setBusy] = useState(false);
 
@@ -72,6 +75,39 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
           {name && email && <p className="truncate text-paper/60">{email}</p>}
         </div>
       </section>
+
+      {pending && (
+        <p role="status" className="rounded-[var(--radius-control)] border border-orchid/40 bg-raised px-4 py-3 text-sm">
+          Payment received. {pending === "plan" ? "Activating your plan" : "Adding your credits"}, this usually takes a few seconds.
+        </p>
+      )}
+      {outcome?.status === "added" && (
+        <div role="status" className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-control)] border border-orchid/40 bg-raised px-4 py-3 text-sm">
+          <p>
+            {outcome.kind === "plan"
+              ? "Your plan is active."
+              : `${outcome.credits.toLocaleString("en-US")} credits added. You now have ${billing?.credits.toLocaleString("en-US") ?? outcome.credits} credits.`}
+          </p>
+          <button type="button" onClick={dismissOutcome} className="font-semibold text-paper/70 hover:text-paper">Dismiss</button>
+        </div>
+      )}
+      {outcome?.status === "late" && (
+        <div role="alert" className="flex flex-col gap-3 rounded-[var(--radius-control)] border border-danger/40 bg-raised px-4 py-4 text-sm">
+          <p className="font-semibold">Your payment went through, but {outcome.kind === "plan" ? "your plan is" : "the credits are"} not on your account yet.</p>
+          <p className="text-paper/70">
+            You have not been charged twice, and nothing is lost. Check again in a few minutes. If it still has not arrived, email{" "}
+            <a href={SUPPORT_MAILTO} className="font-semibold text-orchid hover:text-paper">{SUPPORT_EMAIL}</a>{" "}
+            with your Paddle receipt and we will add it.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <button type="button" onClick={() => { void refresh(); dismissOutcome(); }}
+              className="rounded-full bg-paper/10 px-5 py-2 font-semibold transition hover:bg-paper/15">
+              Check again
+            </button>
+            <a href={SUPPORT_MAILTO} className="rounded-full px-5 py-2 font-semibold text-paper/70 transition hover:text-paper">Contact support</a>
+          </div>
+        </div>
+      )}
 
       <section aria-labelledby="plan-title" className="relative isolate overflow-hidden rounded-[28px] border border-paper/[0.06] p-6 md:p-8">
         <Aurora className="opacity-40" />
