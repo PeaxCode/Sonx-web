@@ -89,3 +89,25 @@ Mobil uygulamada yapılması gerekenler (uygulama sürümü gerektirir):
 - constants/BillingConfig.ts: tek şarkı sayısı (5+5 → 10 vb.), PROMPT_MUSIC 13 → 10 kredi
 - Ücretsiz hesap için aylık 1 şarkı (sunucu artık izin veriyor; uygulama yerel olarak engelliyor olabilir)
 - Web aboneliği olan kullanıcıda "Manage subscription" Paddle portalına gitmeli (RevenueCat management_url)
+
+## 23 Kasım — Parti 3
+
+Kararlar: Apple Pay / Google Pay ve Meta / TikTok pikselleri şimdilik yok. auth.getsonx.com ve
+Supabase SMTP / Redirect URL ayarları Supabase Pro'ya kadar varsayılan kalıyor.
+
+Web (dev'de):
+- [x] Next.js 16.4.3 → 16.4.6 güvenlik yükseltmesi (npm audit: 0 production açığı)
+- [x] Sonx checkout sayfası (/checkout?price=…): bizim özetimiz + Paddle inline one-page formu, canlı vergi/toplam,
+      aylık/yıllık geçişi, sayfada kayıt, engelli durumlar için net yönlendirme
+- [x] Paylaşım butonu + herkese açık şarkı sayfası /song/<id> (G4, S4) — migration bekliyor
+- [x] Fiyatlar sunucu HTML'inde (USD liste fiyatı) + Product/Offer şeması (S6, S7)
+- [x] Çerez onayı: Consent Mode v2, AB/UK/CH/TR'de onaysız analitik kapalı (A3)
+- [x] Terms: kredi paketleri, aylık ücretsiz şarkı, paylaşılan linkler (M10)
+
+Backend (commit'li, DEPLOY EDİLMEDİ — migration için onay gerekiyor):
+- [ ] supabase/migrations/20261123000000_free_song_claims_and_sharing.sql → `supabase db push`
+- [ ] Ardından provider-proxy deploy (aynı e-postaya ayda tek ücretsiz şarkı)
+- [ ] PADDLE_API_KEY / PADDLE_SANDBOX_API_KEY secret'ları (hesap silinince web aboneliği iptali)
+
+Hâlâ açık: M9 gerçek örnek şarkılar (içerik), F4 Explore gerçek veriyle, G11 gerçek üretimde adım adım ilerleme,
+ücretsiz şarkı dosyasının tam kilitlenmesi (imzalı URL), mobil uygulama güncellemesi.
