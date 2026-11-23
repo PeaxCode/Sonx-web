@@ -1,4 +1,5 @@
 import { CheckoutEventNames, initializePaddle, type Paddle, type PaddleEventData } from "@paddle/paddle-js";
+import { trackEvent } from "@/lib/analytics";
 
 /**
  * Web checkout through Paddle. RevenueCat reads each purchase from Paddle's
@@ -55,6 +56,8 @@ export interface WebPrice {
 }
 
 let completedListener: (() => void) | null = null;
+/** The checkout on screen, for analytics: what is being bought and whether it was paid. */
+let openCheckout: { priceId: string; kind: CheckoutKind; completed: boolean } | null = null;
 let paddlePromise: Promise<Paddle | undefined> | null = null;
 let pricesPromise: Promise<Record<string, WebPrice>> | null = null;
 
@@ -62,8 +65,32 @@ let pricesPromise: Promise<Record<string, WebPrice>> | null = null;
 // buyers are not left on it wondering what to do next.
 const CLOSE_AFTER_COMPLETED_MS = 1500;
 
+export type CheckoutKind = "plan" | "credits";
+
 function onPaddleEvent(event: PaddleEventData) {
+  if (event.name === CheckoutEventNames.CHECKOUT_CLOSED) {
+    // Closed without paying: the abandoned half of checkout_start.
+    if (openCheckout && !openCheckout.completed) {
+      trackEvent("checkout_closed", { kind: openCheckout.kind, price_id: openCheckout.priceId });
+    }
+    openCheckout = null;
+    return;
+  }
   if (event.name !== CheckoutEventNames.CHECKOUT_COMPLETED) return;
+  if (openCheckout) {
+    openCheckout.completed = true;
+    const data = event.data;
+    // GA4's purchase event; value is what the buyer paid, tax included, in major units.
+    const params = {
+      transaction_id: data?.transaction_id,
+      currency: data?.currency_code,
+      value: data?.totals?.total,
+      items: data?.items.map((item) => ({ item_id: item.price_id, item_name: item.price_name ?? item.product?.name, quantity: item.quantity })),
+      kind: openCheckout.kind,
+    };
+    trackEvent("purchase", params);
+    if (openCheckout.kind === "credits") trackEvent("credit_pack_purchase", params);
+  }
   const listener = completedListener;
   completedListener = null;
   listener?.();
@@ -125,6 +152,7 @@ export function formatMoney(price: WebPrice, amount: number) {
  */
 export async function openWebCheckout(options: {
   priceId: string;
+  kind: CheckoutKind;
   userId: string;
   email: string | null;
   onCompleted: () => void;
@@ -132,10 +160,13 @@ export async function openWebCheckout(options: {
   const paddle = await getPaddle();
   if (!paddle) throw new Error("Checkout is unavailable right now. Try again in a moment.");
   completedListener = options.onCompleted;
+  openCheckout = { priceId: options.priceId, kind: options.kind, completed: false };
+  trackEvent("checkout_start", { kind: options.kind, price_id: options.priceId });
   paddle.Checkout.open({
     items: [{ priceId: options.priceId, quantity: 1 }],
     ...(options.email ? { customer: { email: options.email } } : {}),
     customData: { [REVENUECAT_USER_KEY]: options.userId },
-    settings: { displayMode: "overlay", theme: "dark", allowLogout: false },
+    // No coupons are offered, so the discount field would only send buyers looking for one.
+    settings: { displayMode: "overlay", theme: "dark", allowLogout: false, showAddDiscounts: false },
   });
 }

@@ -300,13 +300,12 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
     <li><a href="/create">Create</a></li>
     <!-- Music video hidden pending payment provider review: <li><a href="/video">Music videos</a></li> -->
     <li><a href="/library">Library</a></li>
-    <li><a href="/blog/" class="active">Journal</a></li>
+    <li><a href="/pricing">Pricing</a></li>
+    <li><a href="/blog/" class="active">Blog</a></li>
   </ul>
   <div class="nav-cta">
     <a href="/login" class="btn-nav-ghost">Sign in</a>
-    <a href="https://aimusicgeneratorsonx.go.link/iCF6Q" class="btn-nav" target="_blank">
-      <span>⬇</span> Download
-    </a>
+    <a href="/create" class="btn-nav" data-cta="nav_create">Create a song</a>
     <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
       <span></span>
       <span></span>
@@ -319,7 +318,8 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
     <li><a href="/create">Create</a></li>
     <!-- Music video hidden pending payment provider review: <li><a href="/video">Music videos</a></li> -->
     <li><a href="/library">Library</a></li>
-    <li><a href="/blog/" class="active">Journal</a></li>
+    <li><a href="/pricing">Pricing</a></li>
+    <li><a href="/blog/" class="active">Blog</a></li>
   </ul>
   <a href="/login" class="mobile-menu-signup">Sign in</a>
 </div>
@@ -329,7 +329,7 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
 <header class="article-head">
   <div class="breadcrumb">
     <a href="/">Home</a><span class="sep">/</span>
-    <a href="/blog/">Journal</a><span class="sep">/</span>
+    <a href="/blog/">Blog</a><span class="sep">/</span>
     <span>How to Make a TikTok-Ready Song</span>
   </div>
   <span class="article-tag">Guide</span>
@@ -483,7 +483,7 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
       <h4>Make the hook first</h4>
       <p>Sonx turns one sentence into a hook-first track, created and downloaded from your phone, ready to pair with your video. Free on iOS and Android.</p>
       <div class="inline-cta-buttons">
-        <a href="https://aimusicgeneratorsonx.go.link/iCF6Q" class="btn-primary" target="_blank">Try Sonx free <span>→</span></a>
+        <a href="/create" class="btn-primary" data-cta="article_create">Make a song with Sonx <span>→</span></a>
       </div>
     </div>
 
@@ -645,7 +645,7 @@ window.addEventListener('scroll',()=>{
   document.addEventListener('click', function(e){
     var t = e.target;
     if (!t || !t.closest) return;
-    var a = t.closest('a[href*="' + HOST + '"]');
+    var a = t.closest('a[href*="' + HOST + '"], a[href^="/create"], a[href^="/pricing"]');
     if (a) window.trackCta(label(a));
   }, true);
 })();

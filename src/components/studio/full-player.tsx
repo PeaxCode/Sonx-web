@@ -3,11 +3,12 @@
 import Image from "next/image";
 import { useEffect, useMemo, useRef } from "react";
 import { CoverArt } from "@/components/cover-art";
-import { IconChevronDown, IconDownload, IconNext, IconPause, IconPlay, IconPrevious } from "@/components/icons";
+import { IconChevronDown, IconNext, IconPause, IconPlay, IconPrevious } from "@/components/icons";
 import { formatTime } from "@/lib/audio";
 import { activeLyricIndex, timeLyrics } from "@/lib/lyrics-sync";
 import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
 import { genreName, kindLabel } from "./track-list";
+import { DownloadButton } from "./download-button";
 import { usePlayer } from "./player";
 
 // After the listener scrolls the lyrics themselves, follow-along waits this long.
@@ -126,10 +127,7 @@ export function FullPlayer() {
           </button>
           <p className="text-sm font-medium text-paper/70">Now playing</p>
           {current.output_url ? (
-            <a href={current.output_url} download target="_blank" rel="noreferrer" aria-label={`Download ${current.title}`}
-              className="rounded-full p-2 text-paper/70 transition hover:bg-paper/10 hover:text-paper">
-              <IconDownload size={22} />
-            </a>
+            <DownloadButton generation={current} size={22} className="rounded-full p-2 text-paper/70 transition hover:bg-paper/10 hover:text-paper" />
           ) : <span className="size-10" />}
         </header>
 

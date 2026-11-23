@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { StoreBadges } from "@/components/store-badges";
 import { useBilling } from "@/components/studio/billing";
 import { useSession } from "@/components/studio/session";
-import { PLAN_LIMITS, type Plan } from "@/lib/billing-config";
+import { PLAN_LABELS, songsIn, type Plan } from "@/lib/billing-config";
 import {
   fetchWebPrices,
   formatMoney,
@@ -26,12 +26,10 @@ interface TierInfo {
 }
 
 const TIERS: TierInfo[] = [
-  { tier: "PRO", name: "Pro", plan: "MONTHLY", pitch: "For making songs every week.", badge: "Recommended" },
-  { tier: "STUDIO", name: "Studio", plan: "STUDIO", pitch: "For creators who make music every day.", badge: "Lowest price per song" },
+  { tier: "PRO", name: "Pro", plan: "MONTHLY", pitch: "For making songs every week.", badge: "Most popular" },
+  { tier: "STUDIO", name: "Studio", plan: "STUDIO", pitch: "For creators who make music every day.", badge: "Best value" },
 ];
 
-/** Songs on the web: instrumentals and songs with vocals draw on separate allowances. */
-const songsIn = (plan: Plan) => PLAN_LIMITS[plan].PROMPT_MUSIC + PLAN_LIMITS[plan].LYRICS_MUSIC;
 
 const METER_COLUMNS = 25;
 const DOT = 5;
@@ -84,14 +82,28 @@ function freePrice(prices: Record<string, WebPrice> | null) {
   return new Intl.NumberFormat(undefined, { style: "currency", currency, maximumFractionDigits: 0 }).format(0);
 }
 
-/** Percent saved by paying yearly, from the live Pro prices. */
-function yearlySaving(prices: Record<string, WebPrice> | null) {
-  const monthly = prices?.[planPriceId("PRO", "monthly") ?? ""];
-  const yearly = prices?.[planPriceId("PRO", "yearly") ?? ""];
+/** Percent a tier saves by paying yearly, from the live prices (Pro and Studio differ). */
+function yearlySaving(prices: Record<string, WebPrice> | null, tier: WebTier) {
+  const monthly = prices?.[planPriceId(tier, "monthly") ?? ""];
+  const yearly = prices?.[planPriceId(tier, "yearly") ?? ""];
   if (!monthly || !yearly) return null;
-  const saving = Math.round((1 - yearly.amount / (monthly.amount * 12)) * 100);
+  // Rounded down, so the badge never promises more than the price gives.
+  const saving = Math.floor((1 - yearly.amount / (monthly.amount * 12)) * 100);
   return saving > 0 ? saving : null;
 }
+
+/** The best saving across tiers, for the toggle: "Save up to 20%". */
+function bestSaving(prices: Record<string, WebPrice> | null) {
+  const savings = TIERS.map(({ tier }) => yearlySaving(prices, tier)).filter((value): value is number => value !== null);
+  return savings.length ? Math.max(...savings) : null;
+}
+
+// Where an app subscription is managed, for subscribers who cannot change plans here.
+const APP_STORES: Record<string, string> = {
+  app_store: "the App Store",
+  mac_app_store: "the App Store",
+  play_store: "Google Play",
+};
 
 export function BillingToggle({ cycle, onChange, saving }: {
   cycle: BillingCycle;
@@ -107,8 +119,8 @@ export function BillingToggle({ cycle, onChange, saving }: {
           }`}>
           {option === "monthly" ? "Monthly" : "Yearly"}
           {option === "yearly" && saving && (
-            <span className={`rounded-full px-2 py-0.5 text-xs ${cycle === option ? "bg-orchid/20 text-[#8a1fa8]" : "bg-orchid/15 text-orchid"}`}>
-              Save {saving}%
+            <span className={`whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold ${cycle === option ? "bg-orchid text-paper" : "bg-orchid/20 text-orchid"}`}>
+              Save up to {saving}%
             </span>
           )}
         </button>
@@ -124,11 +136,22 @@ export function PlanCards() {
   const { signedIn, requestSignIn } = useSession();
   const { buy, opening } = useCheckout();
   const [cycle, setCycle] = useState<BillingCycle>("yearly");
-  const saving = yearlySaving(prices);
+  const saving = bestSaving(prices);
+  // App subscribers manage their plan in the store; the web shows it and sells them credit packs only.
+  const appStore = billing?.isPro && billing.store ? APP_STORES[billing.store] : undefined;
+  const appPlan = appStore && billing ? billing.currentPlan : null;
 
   return (
     <div className="flex flex-col gap-6">
       {webCheckoutEnabled && <div className="flex justify-center"><BillingToggle cycle={cycle} onChange={setCycle} saving={saving} /></div>}
+      {appPlan && (
+        <div role="note" className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-control)] border border-line bg-plum px-4 py-3 text-sm">
+          <p>
+            You are on <strong>{PLAN_LABELS[appPlan]}</strong>, billed by {appStore}. Change or cancel it in the Sonx app.
+          </p>
+          <a href="/pricing#credits-title" className="font-semibold text-orchid hover:text-paper">Top up with credits</a>
+        </div>
+      )}
       {pending === "plan" && (
         <p role="status" className="rounded-[var(--radius-control)] border border-orchid/40 bg-raised px-4 py-3 text-sm">
           Payment received. Activating your plan, this takes up to a minute.
@@ -137,7 +160,7 @@ export function PlanCards() {
       <ul className="grid gap-4 lg:grid-cols-3">
         <li className="order-last flex flex-col rounded-[var(--radius-panel)] border border-line p-6 lg:order-none">
           <h3 className="font-display text-lg font-semibold">Free</h3>
-          <p className="mt-1 min-h-10 text-sm text-fog">Listen and write lyrics before you subscribe.</p>
+          <p className="mt-1 min-h-10 text-sm text-fog">Try Sonx with a free song every month.</p>
           <p className="mt-5 flex items-baseline gap-1.5">
             <span className="font-display text-3xl font-semibold">{freePrice(prices)}</span>
             <span className="text-fog">/ month</span>
@@ -149,16 +172,15 @@ export function PlanCards() {
                 {billing?.isPro ? "Included in your plan" : "Your plan"}
               </p>
             ) : (
-              <button type="button" onClick={() => requestSignIn({ next: "/create", title: "Sign in to Sonx" })}
+              <button type="button" onClick={() => requestSignIn({ next: "/create", title: "Create your free account" })}
                 className="w-full rounded-full border border-line py-3 text-sm font-semibold transition hover:bg-raised">
-                Sign in free
+                Create free account
               </button>
             )}
           </div>
           <ul className="mt-6 flex flex-col gap-2.5 border-t border-line pt-6 text-sm">
-            <Feature included>Listen to songs made with Sonx</Feature>
+            <Feature included>1 song a month</Feature>
             <Feature included>AI lyrics writer</Feature>
-            <Feature included={false}>Create songs</Feature>
             <Feature included={false}>MP3 downloads</Feature>
             <Feature included={false}>Commercial use</Feature>
             <Feature included={false}>Credit packs</Feature>
@@ -172,7 +194,9 @@ export function PlanCards() {
           const perMonth = price ? (cycle === "yearly" ? price.amount / 12 : price.amount) : null;
           const songs = songsIn(plan);
           const featured = tier === "PRO";
-          const isCurrent = billing?.isPro && (tier === "STUDIO" ? billing.currentPlan === "STUDIO" : billing.currentPlan !== "STUDIO");
+          // Only a web plan matches a card: app plans (weekly, yearly...) are their own, shown in the note above.
+          const isCurrent = billing?.isPro && !appPlan && (tier === "STUDIO" ? billing.currentPlan === "STUDIO" : billing.currentPlan === "MONTHLY");
+          const tierSaving = cycle === "yearly" ? yearlySaving(prices, tier) : null;
           return (
             <li key={tier}
               className={`relative flex flex-col overflow-hidden rounded-[var(--radius-panel)] border p-6 ${
@@ -180,7 +204,10 @@ export function PlanCards() {
               }`}>
               <div className="relative flex items-center justify-between gap-3">
                 <h3 className="font-display text-lg font-semibold">{name}</h3>
-                <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${featured ? "bg-paper text-night" : "bg-orchid/15 text-orchid"}`}>{badge}</span>
+                <span className="flex items-center gap-1.5">
+                  {tierSaving && <span className="rounded-full bg-orchid/20 px-2.5 py-1 text-xs font-semibold text-orchid">Save {tierSaving}%</span>}
+                  <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${featured ? "bg-paper text-night" : "bg-orchid/15 text-orchid"}`}>{badge}</span>
+                </span>
               </div>
               <p className="relative mt-1 min-h-10 text-sm text-fog">{pitch}</p>
 
@@ -206,13 +233,17 @@ export function PlanCards() {
               <div className="relative mt-6">
                 {!webCheckoutEnabled ? null : isCurrent ? (
                   <p className="rounded-full border border-line py-3 text-center text-sm font-medium">Your plan</p>
+                ) : appPlan ? (
+                  <p className="rounded-full border border-line px-4 py-3 text-center text-sm text-fog">Your plan is managed in the Sonx app</p>
+                ) : billing?.isPro ? (
+                  <p className="rounded-full border border-line px-4 py-3 text-center text-sm text-fog">Switch plans from Account, Manage subscription</p>
                 ) : (
                   <button type="button" onClick={() => priceId && buy(priceId, "plan")}
                     disabled={!priceId || opening !== null || Boolean(billing?.isPro) || pending === "plan"}
                     className={`w-full rounded-full py-3 text-sm font-semibold transition disabled:opacity-40 ${
                       featured ? "bg-paper text-night hover:bg-paper/90" : "bg-signature text-paper hover:brightness-110"
                     }`}>
-                    {opening === priceId ? "Opening checkout" : billing?.isPro ? "You have a plan" : `Get ${name}`}
+                    {opening === priceId ? "Opening checkout" : `Get ${name}`}
                   </button>
                 )}
               </div>
@@ -231,7 +262,7 @@ export function PlanCards() {
               </div>
 
               <ul className="relative mt-6 flex flex-col gap-2.5 text-sm">
-                <Feature included>{PLAN_LIMITS[plan].PROMPT_MUSIC} instrumentals and {PLAN_LIMITS[plan].LYRICS_MUSIC} songs with vocals</Feature>
+                <Feature included>{songs} songs a month, with vocals or instrumental</Feature>
                 <Feature included>Commercial use license</Feature>
                 <Feature included>MP3 downloads</Feature>
                 <Feature included>AI lyrics writer</Feature>

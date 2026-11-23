@@ -4,10 +4,10 @@ import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 import { FaqList } from "@/components/faq-list";
 import { APP_STORE_RATING, FAQ, FEATURES, REVIEWS, STEPS } from "@/components/home/content";
-import { Aurora } from "@/components/aurora";
 import { Hero } from "@/components/home/hero";
 import { ExamplesShelf, RecentShelf, StyleGrid } from "@/components/home/shelves";
 import { PlanCards } from "@/components/pricing/plan-cards";
+import { ClosingCta, SiteFooter } from "@/components/site-footer";
 import { StoreBadges } from "@/components/store-badges";
 import { STORE_LINKS } from "@/lib/billing-config";
 import { SITE_URL } from "@/lib/journal";
@@ -15,7 +15,7 @@ import { SITE_URL } from "@/lib/journal";
 // Under 60 characters, so search results show it whole.
 const TITLE = "AI Song Generator — Full Songs with Vocals from Text | Sonx";
 const DESCRIPTION =
-  "Sonx AI turns any idea into a full song in seconds, with AI lyrics and vocals. On the web, iOS and Android. Describe your song and start creating now.";
+  "Sonx AI turns any idea into a full song with AI lyrics and vocals in 1 to 3 minutes. On the web, iOS and Android. Describe your song and start creating now.";
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
@@ -72,7 +72,7 @@ const ORGANIZATION_GRAPH = {
       "@type": "WebApplication",
       name: "Sonx",
       alternateName: "Sonx AI",
-      description: "AI song generator — turn any idea into a full song in seconds, with AI vocals and lyrics.",
+      description: "AI song generator — turn any idea into a full song in minutes, with AI vocals and lyrics.",
       url: `${SITE_URL}/create`,
       applicationCategory: "MusicApplication",
       operatingSystem: "Web",
@@ -83,7 +83,7 @@ const ORGANIZATION_GRAPH = {
       "@type": "MobileApplication",
       name: "Sonx",
       alternateName: "Sonx AI",
-      description: "AI song generator — turn any idea into a full song in seconds, with AI vocals and lyrics.",
+      description: "AI song generator — turn any idea into a full song in minutes, with AI vocals and lyrics.",
       url: `${SITE_URL}/`,
       applicationCategory: "MusicApplication",
       operatingSystem: "iOS, Android",
@@ -106,7 +106,7 @@ export default function Home() {
       <StyleGrid />
 
       <section aria-labelledby="how-title">
-        <h2 id="how-title" className="text-3xl font-semibold tracking-[-0.035em] md:text-4xl">From idea to song in about a minute</h2>
+        <h2 id="how-title" className="text-3xl font-semibold tracking-[-0.035em] md:text-4xl">From idea to song in a few minutes</h2>
         <ol className="relative mt-8 grid gap-8 md:grid-cols-3 md:gap-6">
           {/* A playback track under the steps; the filled part is the song coming together. */}
           <span aria-hidden="true" className="absolute top-[7px] right-0 left-0 hidden h-0.5 bg-line md:block" />
@@ -129,7 +129,7 @@ export default function Home() {
         <section key={feature.title} aria-labelledby={`feature-${index}`}
           className="grid items-center gap-8 md:grid-cols-2 md:gap-14">
           <div className={`relative aspect-[4/3] overflow-hidden rounded-[32px] border border-line ${index % 2 ? "md:order-2" : ""}`}>
-            <Image src={feature.image} alt="" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+            <Image src={feature.image} alt={feature.alt} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
             <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-night/60 to-transparent" />
           </div>
           <div>
@@ -191,34 +191,15 @@ export default function Home() {
           <StoreBadges className="mt-6" />
         </div>
         <div className="hidden shrink-0 items-center gap-4 md:flex">
-          <div className="rounded-2xl bg-paper p-3"><QRCodeSVG value={STORE_LINKS.ios} size={104} /></div>
-          <p className="max-w-32 text-sm text-fog">Scan with your iPhone camera</p>
+          <div className="rounded-2xl bg-paper p-3"><QRCodeSVG value={`${SITE_URL}/get-app`} size={104} /></div>
+          <p className="max-w-32 text-sm text-fog">Scan with your phone camera</p>
         </div>
       </section>
 
       <FaqList id="faq-title" title="Questions, answered" items={FAQ} />
 
-      <section aria-labelledby="cta-title"
-        className="relative isolate overflow-hidden rounded-[32px] px-7 py-16 text-center md:py-24">
-        <Aurora />
-        <h2 id="cta-title" className="relative text-3xl font-semibold leading-[1.05] tracking-[-0.04em] md:text-5xl">Your next song starts<br className="hidden md:block" /> with one sentence</h2>
-        <p className="relative mx-auto mt-4 max-w-md text-fog">Describe it and hear it in about a minute.</p>
-        <Link href="/create"
-          className="relative mt-8 inline-block rounded-full bg-paper px-8 py-3.5 text-sm font-semibold text-night transition hover:bg-paper/90">
-          Create a song
-        </Link>
-      </section>
-
-      <footer className="flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6 text-sm text-fog">
-        <p>© Sonx</p>
-        <nav className="flex gap-6">
-          {/* Plain links: the Journal and legal pages are static HTML, not app routes. */}
-          <Link href="/pricing" className="hover:text-paper">Pricing</Link>
-          <a href="/blog/" className="hover:text-paper">Journal</a>
-          <a href="/privacy.html" className="hover:text-paper">Privacy</a>
-          <a href="/terms.html" className="hover:text-paper">Terms</a>
-        </nav>
-      </footer>
+      <ClosingCta />
+      <SiteFooter />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_GRAPH).replace(/</g, "\\u003c") }}

@@ -8,7 +8,7 @@ import { CoverArt } from "@/components/cover-art";
 import { IconCreate, IconPause, IconPlay } from "@/components/icons";
 import { usePlayer } from "@/components/studio/player";
 import { useSession } from "@/components/studio/session";
-import { GENRES } from "@/lib/billing-config";
+import { GENRES, genreFromPrompt } from "@/lib/billing-config";
 import { trackEvent } from "@/lib/analytics";
 import { readLinkedPrompt, saveDraft, saveLinkedPrompt } from "@/lib/draft";
 import { MUSIC_FEATURES } from "@/lib/generations";
@@ -26,10 +26,7 @@ const EXAMPLES = [
 
 const BAR_COUNT = 72;
 const PROMPT_LIMIT = 500;
-const STEP_MS = 1500;
 const SAMPLE_SONGS = SAMPLE_GENERATIONS.filter((item) => MUSIC_FEATURES.includes(item.feature));
-
-type Phase = "idle" | "making" | "ready";
 
 /** "Pop" reads "a pop song", "EDM" stays "an EDM song". */
 function genrePhrase(name: string) {
@@ -37,17 +34,6 @@ function genrePhrase(name: string) {
   return `${/^[aeiou]/i.test(word) || word === "EDM" ? "an" : "a"} ${word}`;
 }
 
-/** The opening words of a prompt, title-cased, as the song's working title ("Road Trip With My Sister"). */
-function titleFrom(prompt: string) {
-  const words = prompt.replace(/[^\p{L}\p{N}'\s-]/gu, " ").split(/\s+/).filter(Boolean);
-  if (words.length > 1 && /^(a|an|the)$/i.test(words[0])) words.shift();
-  const kept: string[] = [];
-  for (const word of words) {
-    if (kept.length === 6 || (kept.length >= 3 && [...kept, word].join(" ").length > 28)) break;
-    kept.push(word);
-  }
-  return kept.map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ") || "Untitled";
-}
 
 /**
  * A spectrum that answers typing: every keystroke pushes energy into a few
@@ -204,9 +190,6 @@ export function Hero() {
   const [prompt, setPrompt] = useState("");
   const [genre, setGenre] = useState("pop");
   const [instrumental, setInstrumental] = useState(false);
-  const [phase, setPhase] = useState<Phase>("idle");
-  const [step, setStep] = useState(0);
-  const [submitted, setSubmitted] = useState("");
   const pulseRef = useRef<() => void>(() => undefined);
   const gainRef = useRef({ value: 0 });
   const sectionRef = useRef<HTMLElement>(null);
@@ -214,8 +197,6 @@ export function Hero() {
   const linkedRef = useRef<string | null>(null);
 
   const genreName = GENRES.find((item) => item.id === genre)?.name ?? "Pop";
-  const steps = ["Writing the lyrics", "Composing the music", instrumental ? "Producing the track" : "Recording the vocals", "Mixing it down"];
-  if (instrumental) steps.shift();
 
   // The entrance: copy and prompt rise in, the spectrum swells up from silence.
   useGSAP(() => {
@@ -228,26 +209,6 @@ export function Hero() {
       .from(".hero-float", { opacity: 0, y: 30, duration: 0.8, stagger: 0.1 }, "-=0.4")
       .to(gainRef.current, { value: 1, duration: 1.4, ease: "power2.out" }, 0.2);
   }, { scope: sectionRef });
-
-  // Each phase eases in over the last one.
-  useGSAP(() => {
-    if (phase === "idle" || prefersReducedMotion()) return;
-    gsap.from(".hero-phase", { opacity: 0, y: 14, duration: 0.45, ease: "power2.out" });
-  }, { scope: sectionRef, dependencies: [phase] });
-
-  // A visitor's song is "made" here first; the real one starts once they sign in.
-  useEffect(() => {
-    if (phase !== "making") return;
-    const timer = setTimeout(() => (step + 1 >= steps.length ? setPhase("ready") : setStep(step + 1)), STEP_MS);
-    return () => clearTimeout(timer);
-  }, [phase, step, steps.length]);
-
-  // The spectrum works hard while the song is being "made".
-  useEffect(() => {
-    if (phase !== "making") return;
-    const pulse = setInterval(() => pulseRef.current(), 90);
-    return () => clearInterval(pulse);
-  }, [phase]);
 
   // ?prompt= from another site (Beatintel's "Try it in Sonx") fills the box as
   // plain text. It never starts a song: the visitor edits it and presses Create.
@@ -270,15 +231,19 @@ export function Hero() {
     if (!linked) return;
     linkedRef.current = linked;
     // URL and storage are only readable after hydration.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    /* eslint-disable react-hooks/set-state-in-effect */
     setPrompt(linked);
+    const named = genreFromPrompt(linked);
+    if (named) setGenre(named);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
+  // Visitors sign up right where they pressed Create; the song starts as soon as they are back.
   const askToSignIn = () =>
     requestSignIn({
       next: "/create?resume=1",
-      title: "Your song is almost ready",
-      text: "Sign in with your Sonx account to make it. Your songs are waiting in the Sonx app too.",
+      title: "Create your free account to make this song",
+      text: "Your first song each month is free. We start it the moment you are in. Already use the Sonx app? Same account.",
     });
 
   const canCreate = prompt.trim().length > 0;
@@ -295,19 +260,17 @@ export function Hero() {
       saveLinkedPrompt(null);
     }
     // The create form picks this draft up and starts the song (create-music-form.tsx).
-    saveDraft({ mode: "describe", prompt: text, lyrics: "", instrumental, voice: "random", genre, title: titleFrom(text) });
-    if (signedIn) {
-      router.push("/create?resume=1");
-      return;
-    }
-    setSubmitted(text);
-    setStep(0);
-    setPhase("making");
+    // No title: the create form names the song (the lyric writer's title, else the prompt's).
+    saveDraft({ mode: "describe", prompt: text, lyrics: "", instrumental, voice: "random", genre, title: "" });
+    // Signed in or not, the real song is made on Create; visitors sign up first (the draft survives it).
+    if (signedIn === false) askToSignIn();
+    else if (signedIn) router.push("/create?resume=1");
   };
 
   const surprise = () => {
     const starter = STARTERS[Math.floor(Math.random() * STARTERS.length)];
     setPrompt(starter.prompt);
+    setGenre(starter.genre);
     for (let pulse = 0; pulse < 6; pulse++) pulseRef.current();
   };
 
@@ -316,8 +279,6 @@ export function Hero() {
       className="relative isolate flex min-h-[min(100svh,880px)] items-center overflow-hidden px-5 pb-32 pt-20 md:px-10 md:pb-40">
       <Aurora />
 
-      {phase === "idle" && (
-        <>
           <FloatingSample side="left" />
           <FloatingSample side="right" />
           <div className="relative z-10 mx-auto w-full max-w-3xl text-center">
@@ -347,7 +308,12 @@ export function Hero() {
                 value={prompt}
                 rows={2}
                 maxLength={PROMPT_LIMIT}
-                onChange={(event) => setPrompt(event.target.value)}
+                onChange={(event) => {
+                  setPrompt(event.target.value);
+                  // A genre named in the prompt ("a lo-fi beat") moves the picker with it.
+                  const named = genreFromPrompt(event.target.value);
+                  if (named) setGenre(named);
+                }}
                 onKeyDown={(event) => {
                   pulseRef.current();
                   if (event.key === "Enter" && !event.shiftKey) start(event);
@@ -391,60 +357,6 @@ export function Hero() {
             </form>
             <p className="hero-reveal mt-4 text-sm text-paper/60">Sonx writes the lyrics, picks the voice and produces the track.</p>
           </div>
-        </>
-      )}
-
-      {phase === "making" && (
-        <div className="hero-phase relative z-10 mx-auto flex max-w-md flex-col items-center text-center" role="status">
-          <div className="relative size-36 overflow-hidden rounded-[var(--radius-panel)] shadow-2xl">
-            <CoverArt seed={submitted} className="size-full animate-pulse" />
-          </div>
-          <h2 className="mt-6 font-display text-2xl font-semibold md:text-3xl">Making your song</h2>
-          <p className="mt-2 line-clamp-2 text-fog">&ldquo;{submitted}&rdquo;</p>
-          <div className="mt-6 h-1.5 w-full overflow-hidden rounded-full bg-raised">
-            <div className="bg-signature h-full rounded-full transition-[width] duration-[1400ms] ease-out"
-              style={{ width: `${((step + 1) / steps.length) * 100}%` }} />
-          </div>
-          <ol className="mt-5 flex w-full flex-col gap-2 text-left text-sm">
-            {steps.map((label, index) => (
-              <li key={label} className={`flex items-center gap-3 transition ${index <= step ? "text-paper" : "text-fog/50"}`}>
-                <span aria-hidden="true" className={`flex size-5 items-center justify-center rounded-full text-[11px] ${
-                  index < step ? "bg-violet text-paper" : index === step ? "border border-violet" : "border border-line"
-                }`}>
-                  {index < step ? "✓" : ""}
-                </span>
-                {label}
-              </li>
-            ))}
-          </ol>
-        </div>
-      )}
-
-      {phase === "ready" && (
-        <div className="hero-phase relative z-10 mx-auto flex max-w-md flex-col items-center text-center">
-          <h2 className="font-display text-3xl font-semibold leading-tight md:text-4xl">Your song is almost ready</h2>
-          <button type="button" onClick={askToSignIn} aria-label={`Sign in to listen to ${titleFrom(submitted)}`}
-            className="group mt-8 w-52 text-left">
-            <span className="relative block aspect-square overflow-hidden rounded-[var(--radius-panel)] shadow-2xl">
-              <CoverArt seed={submitted} className="size-full transition duration-500 group-hover:scale-105" />
-              <span className="absolute inset-0 flex items-center justify-center bg-night/20">
-                <span className="flex size-14 items-center justify-center rounded-full bg-paper text-night shadow-xl transition group-hover:scale-110">
-                  <IconPlay size={22} />
-                </span>
-              </span>
-            </span>
-            <span className="mt-3 block truncate font-medium">{titleFrom(submitted)}</span>
-            <span className="block text-sm text-fog">{instrumental ? "Instrumental" : "Song with vocals"}, {genreName}</span>
-          </button>
-          <button type="button" onClick={askToSignIn}
-            className="bg-signature mt-8 rounded-full px-8 py-3.5 font-display text-sm font-semibold tracking-wide transition hover:brightness-110">
-            Sign in to listen
-          </button>
-          <button type="button" onClick={() => setPhase("idle")} className="mt-3 text-sm text-fog hover:text-paper">
-            Change the prompt
-          </button>
-        </div>
-      )}
 
       <Spectrum pulseRef={pulseRef} gainRef={gainRef} />
     </section>

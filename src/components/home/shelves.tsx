@@ -127,7 +127,7 @@ export function StyleGrid() {
       <ul className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {STARTERS.map((starter) => (
           <li key={starter.label}>
-            <Link href={`/create?prompt=${encodeURIComponent(starter.prompt)}`}
+            <Link href={`/create?prompt=${encodeURIComponent(starter.prompt)}&genre=${starter.genre}`}
               className="group relative flex h-24 items-end overflow-hidden rounded-[18px] p-4 transition duration-300 hover:-translate-y-0.5 md:h-28">
               <CoverArt seed={starter.label} className="absolute inset-0 size-full opacity-70 transition duration-700 ease-out group-hover:scale-110 group-hover:opacity-100" />
               <span className="absolute inset-0 bg-gradient-to-t from-night/90 via-night/30 to-transparent" />

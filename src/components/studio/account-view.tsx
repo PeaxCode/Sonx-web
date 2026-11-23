@@ -4,11 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { PLAN_LABELS, PLAN_LIMITS, STORE_LINKS, type Feature } from "@/lib/billing-config";
+import { PLAN_LABELS, PLAN_LIMITS, SONG_POOL, STORE_LINKS, type Feature } from "@/lib/billing-config";
 import { Aurora } from "@/components/aurora";
 import { webCheckoutEnabled, webCreditsEnabled } from "@/lib/paddle";
 import { getSupabase } from "@/lib/supabase/client";
 import { useBilling } from "./billing";
+import { ConfirmDialog } from "./confirm-dialog";
 import { useFeedback } from "./feedback";
 
 const STORE_NAMES: Record<string, string> = {
@@ -21,9 +22,9 @@ const STORE_NAMES: Record<string, string> = {
 const SUPPORT_EMAIL = "support@getsonx.com";
 const SUPPORT_MAILTO = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Web purchase not on my account")}`;
 
+// One row: instrumentals and songs with vocals share the plan's songs.
 const USAGE_ROWS: { feature: Feature; label: string }[] = [
-  { feature: "PROMPT_MUSIC", label: "Instrumentals" },
-  { feature: "LYRICS_MUSIC", label: "Songs with vocals" },
+  { feature: SONG_POOL, label: "Songs this month" },
   // Hidden with music video, pending payment provider review:
   // { feature: "AI_MUSIC_VIDEO", label: "Music videos" },
 ];
@@ -33,6 +34,9 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
   const { billing, pending, outcome, dismissOutcome, refresh } = useBilling();
   const { notify } = useFeedback();
   const [busy, setBusy] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const webPlan = billing?.isPro && billing.store === "paddle";
+  const appPlan = billing?.isPro && billing.store && billing.store !== "paddle" ? STORE_NAMES[billing.store] ?? "your app store" : null;
 
   const signOut = async () => {
     setBusy(true);
@@ -42,16 +46,11 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
   };
 
   const deleteAccount = async () => {
-    const confirmed = window.confirm(
-      "Delete your account? Your songs and credits are deleted everywhere, including the app. " +
-      "Deleting does not cancel a subscription: cancel it first with Manage subscription on this page " +
-      "(web plans) or in the App Store or Google Play to stop future charges.",
-    );
-    if (!confirmed) return;
     setBusy(true);
     const { error } = await getSupabase().functions.invoke("delete-account", { body: {} });
     if (error) {
       setBusy(false);
+      setConfirmingDelete(false);
       notify("Your account could not be deleted. Try again in a moment.", "error");
       return;
     }
@@ -122,7 +121,17 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
           )}
         </div>
         {billing && !billing.isPro && (
-          <p className="mt-4 text-sm text-paper/70">Subscribe to start creating songs every month.</p>
+          <p className="mt-4 text-sm text-paper/70">
+            {(billing.usage[SONG_POOL] ?? 0) < PLAN_LIMITS.FREE[SONG_POOL]
+              ? "Your free song for this month is ready to use. "
+              : `You have used this month's free song. The next one arrives on ${new Date(billing.periodEnd).toLocaleDateString("en-US", { month: "long", day: "numeric" })}. `}
+            Subscribe for {PLAN_LIMITS.MONTHLY[SONG_POOL]}+ songs a month, MP3 downloads and commercial use.
+          </p>
+        )}
+        {billing?.isPro && billing.periodEnd > 0 && (
+          <p className="mt-2 text-sm text-paper/70">
+            Songs reset on {new Date(billing.periodEnd).toLocaleDateString("en-US", { month: "long", day: "numeric" })}
+          </p>
         )}
         {billing?.isPro && (
           <dl className="mt-7 grid gap-5">
@@ -150,7 +159,7 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
             {billing.store && STORE_NAMES[billing.store] ? `Billed by ${STORE_NAMES[billing.store]}. ` : ""}
             {billing.managementUrl ? (
               <a href={billing.managementUrl} target="_blank" rel="noreferrer" className="font-medium text-paper underline-offset-4 hover:underline">
-                Manage subscription
+                {billing.store === "paddle" ? "Manage subscription and invoices" : "Manage subscription"}
               </a>
             ) : (
               "Manage it where you subscribed."
@@ -185,11 +194,32 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
           className="rounded-full bg-paper/[0.06] px-6 py-2.5 text-sm font-medium transition hover:bg-paper/10 disabled:opacity-50">
           Sign out
         </button>
-        <button type="button" disabled={busy} onClick={deleteAccount}
+        <button type="button" disabled={busy} onClick={() => setConfirmingDelete(true)}
           className="rounded-full px-4 py-2.5 text-sm text-danger transition hover:bg-danger/10 disabled:opacity-50">
           Delete account
         </button>
       </section>
+
+      {confirmingDelete && (
+        <ConfirmDialog title="Delete your account?" confirmLabel="Delete account" typeToConfirm="DELETE" busy={busy}
+          onConfirm={deleteAccount} onCancel={() => setConfirmingDelete(false)}>
+          <p>Your songs, lyrics and credits are deleted everywhere, including the Sonx app. This cannot be undone.</p>
+          {webPlan && (
+            <p className="rounded-[var(--radius-control)] border border-danger/40 px-3 py-2 text-paper">
+              Your web plan keeps billing until you cancel it.{" "}
+              {billing?.managementUrl ? (
+                <a href={billing.managementUrl} target="_blank" rel="noreferrer" className="font-semibold underline">Cancel it first</a>
+              ) : "Cancel it first with Manage subscription"}
+              , then delete your account.
+            </p>
+          )}
+          {appPlan && (
+            <p className="rounded-[var(--radius-control)] border border-danger/40 px-3 py-2 text-paper">
+              Deleting does not cancel your plan. Cancel it in {appPlan} first to stop future charges.
+            </p>
+          )}
+        </ConfirmDialog>
+      )}
     </div>
   );
 }

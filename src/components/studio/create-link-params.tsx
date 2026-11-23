@@ -17,6 +17,7 @@ export function CreateLinkParams() {
     if (from && /^[a-z0-9-]{1,80}$/.test(from)) saveBlogSource(from);
     params.delete("prompt");
     params.delete("from");
+    params.delete("genre");
     const query = params.toString();
     window.history.replaceState(null, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
   }, []);

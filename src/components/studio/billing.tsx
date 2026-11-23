@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { CREDIT_COSTS, PLAN_LIMITS, type Feature } from "@/lib/billing-config";
+import { CREDIT_COSTS, PLAN_LIMITS, usageBucket, type Feature } from "@/lib/billing-config";
 import { trackEvent } from "@/lib/analytics";
 import { fetchBilling, syncBillingAccount, type ServerBilling } from "@/lib/generations";
 import { useSession } from "./session";
@@ -108,7 +108,7 @@ export function BillingProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<BillingValue>(() => {
     const remaining = (feature: Feature) =>
-      billing ? Math.max(0, PLAN_LIMITS[billing.currentPlan][feature] - (billing.usage[feature] ?? 0)) : 0;
+      billing ? Math.max(0, PLAN_LIMITS[billing.currentPlan][usageBucket(feature)] - (billing.usage[usageBucket(feature)] ?? 0)) : 0;
     return {
       billing,
       refresh,
