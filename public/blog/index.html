@@ -161,13 +161,12 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
     <li><a href="/create">Create</a></li>
     <!-- Music video hidden pending payment provider review: <li><a href="/video">Music videos</a></li> -->
     <li><a href="/library">Library</a></li>
-    <li><a href="/blog/" class="active">Journal</a></li>
+    <li><a href="/pricing">Pricing</a></li>
+    <li><a href="/blog/" class="active">Blog</a></li>
   </ul>
   <div class="nav-cta">
     <a href="/login" class="btn-nav-ghost">Sign in</a>
-    <a href="https://aimusicgeneratorsonx.go.link/iCF6Q" class="btn-nav" target="_blank">
-      <span>⬇</span> Download
-    </a>
+    <a href="/create" class="btn-nav" data-cta="nav_create">Create a song</a>
     <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
       <span></span>
       <span></span>
@@ -180,7 +179,8 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
     <li><a href="/create">Create</a></li>
     <!-- Music video hidden pending payment provider review: <li><a href="/video">Music videos</a></li> -->
     <li><a href="/library">Library</a></li>
-    <li><a href="/blog/" class="active">Journal</a></li>
+    <li><a href="/pricing">Pricing</a></li>
+    <li><a href="/blog/" class="active">Blog</a></li>
   </ul>
   <a href="/login" class="mobile-menu-signup">Sign in</a>
 </div>
@@ -330,7 +330,7 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
 <section class="subscribe">
   <h3>New essays every other week</h3>
   <p>Get the next deep-dive in your inbox — no fluff, no spam.</p>
-  <a href="https://aimusicgeneratorsonx.go.link/iCF6Q" class="subscribe-cta" target="_blank">Try Sonx free <span>→</span></a>
+  <a href="/create" class="subscribe-cta" data-cta="subscribe_create">Make a song with Sonx <span>→</span></a>
 </section>
 
 <footer>
@@ -400,7 +400,7 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
   document.addEventListener('click', function(e){
     var t = e.target;
     if (!t || !t.closest) return;
-    var a = t.closest('a[href*="' + HOST + '"]');
+    var a = t.closest('a[href*="' + HOST + '"], a[href^="/create"], a[href^="/pricing"]');
     if (a) window.trackCta(label(a));
   }, true);
 })();

@@ -3,11 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
 import { isInsufficientBalance } from "@/lib/api";
-import { CREDIT_COSTS, GENRES, type Feature } from "@/lib/billing-config";
+import { CREDIT_COSTS, GENRES, genreFromPrompt, isGenre, songsIn, type Feature } from "@/lib/billing-config";
 import { newRequestId, startGeneration } from "@/lib/generations";
 import { webCheckoutEnabled } from "@/lib/paddle";
 import { saveDraft, takeBlogSource, takeDraft, type DraftMode, type DraftVoice } from "@/lib/draft";
-import { generateLyrics } from "@/lib/lyrics";
+import { generateLyrics, writeLyrics } from "@/lib/lyrics";
+import { titleFromLyrics, titleFromPrompt } from "@/lib/titles";
 import { useBilling } from "./billing";
 import { useFeedback } from "./feedback";
 import { useLibrary } from "./library";
@@ -19,24 +20,39 @@ type Voice = DraftVoice;
 const PROMPT_LIMIT = 500;
 const LYRICS_LIMIT = 3000;
 
+/** "Dec 14": when the plan's songs come back (periodEnd is in milliseconds). */
+const resetDate = (periodEnd: number) =>
+  new Date(periodEnd).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
 /** `restoreDraft` is off for the Suspense placeholder, so only the real form picks up a saved draft. */
-export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { initialPrompt?: string; restoreDraft?: boolean }) {
-  const { accessFor, remaining, billing } = useBilling();
+export function CreateMusicForm({ initialPrompt = "", initialGenre, restoreDraft = true }: {
+  initialPrompt?: string;
+  initialGenre?: string;
+  restoreDraft?: boolean;
+}) {
+  const { accessFor, remaining, billing, pending } = useBilling();
   const { notify, openPaywall } = useFeedback();
   const { track } = useLibrary();
   const { signedIn, requestSignIn } = useSession();
   const formRef = useRef<HTMLFormElement>(null);
-  // Set when the visitor pressed Create before signing in; the song starts once billing is known.
-  const resumeRef = useRef(false);
+  // Set when a draft arrives to be made right away (after sign-in, or from Home's Create).
+  // State, not a ref: the submit must run after the restored draft has rendered, or it sees an empty form.
+  // "now": a restored draft to make at once. "after-purchase": the paywall is open; make it once the plan or credits land.
+  const [resume, setResume] = useState<false | "now" | "after-purchase">(false);
 
   const [mode, setMode] = useState<Mode>("describe");
   const [prompt, setPrompt] = useState(initialPrompt.slice(0, PROMPT_LIMIT));
   const [lyrics, setLyrics] = useState("");
   const [instrumental, setInstrumental] = useState(false);
   const [voice, setVoice] = useState<Voice>("random");
-  const [genre, setGenre] = useState<string>("pop");
+  const [genre, setGenre] = useState<string>(() =>
+    isGenre(initialGenre) ? initialGenre : genreFromPrompt(initialPrompt) ?? "pop");
+  // Once someone picks a genre themselves, the prompt stops moving it.
+  const genrePicked = useRef(false);
   const [title, setTitle] = useState("");
   const [busy, setBusy] = useState<null | "lyrics" | "song">(null);
+  // What was in the box before "Write lyrics for me" replaced it, so it can be put back.
+  const [topicBefore, setTopicBefore] = useState<string | null>(null);
 
   // Restore a draft saved before sign-in. sessionStorage is browser-only, so this runs after hydration.
   useEffect(() => {
@@ -60,8 +76,8 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
     setVoice(draft.voice);
     setGenre(draft.genre);
     setTitle(draft.title);
+    setResume(resuming ? "now" : false);
     /* eslint-enable react-hooks/set-state-in-effect */
-    resumeRef.current = resuming;
   }, [restoreDraft, initialPrompt]);
 
   // A described song with vocals gets lyrics first, so it bills as a song with vocals.
@@ -70,30 +86,50 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
   const hasVocals = feature === "LYRICS_MUSIC";
   const genreLabel = GENRES.find((item) => item.id === genre)?.name ?? "Pop";
   const text = mode === "describe" ? prompt : lyrics;
-  const canSubmit = !busy && (mode === "describe" ? prompt.trim().length > 0 : lyrics.trim().length >= 10);
+  const limit = mode === "describe" ? PROMPT_LIMIT : LYRICS_LIMIT;
+  const canSubmit = !busy && text.length <= limit && (mode === "describe" ? prompt.trim().length > 0 : lyrics.trim().length >= 10);
 
-  // Back from sign-in with a draft: start the song they asked for once the balance has loaded.
+  // Start the song once the restored form has rendered and the balance has loaded; after a
+  // purchase, once the new plan or credits are on the account.
   useEffect(() => {
-    if (!resumeRef.current || !signedIn || access === "unknown") return;
-    resumeRef.current = false;
+    if (!resume || !signedIn || access === "unknown" || pending) return;
+    if (resume === "after-purchase" && access === "none") return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setResume(false);
+    if (resume === "after-purchase") takeDraft();
     formRef.current?.requestSubmit();
-  }, [signedIn, access]);
+  }, [resume, signedIn, access, pending]);
 
   const askToSignIn = (next: string) => {
     saveDraft({ mode, prompt, lyrics, instrumental, voice, genre, title });
-    requestSignIn({ next });
+    requestSignIn({
+      next,
+      title: "Create your free account to make this song",
+      text: "Your first song each month is free. We start it the moment you are in. Already use the Sonx app? Same account.",
+    });
+  };
+
+  // Out of songs: keep what they wrote, so the song starts right after they pay (use-checkout sends them back here).
+  const paywall = () => {
+    saveDraft({ mode, prompt, lyrics, instrumental, voice, genre, title });
+    setResume("after-purchase");
+    openPaywall(billing && !billing.isPro && remaining(feature) === 0 ? "You have used this month's free song" : undefined);
   };
 
   const costHint = (() => {
-    if (signedIn === false) return "You sign in when you create it.";
+    if (signedIn === false) return "Your first song is free. You create your account when you press Create.";
+    if (pending) return "Payment received. Your song starts as soon as your plan is active.";
     if (!billing) return "";
+    if (access === "quota" && !billing.isPro) return "This is your free song for this month";
     if (access === "quota") {
       const left = remaining(feature);
-      return `Uses 1 of ${left} left this period`;
+      return `${left} ${left === 1 ? "song" : "songs"} left until ${resetDate(billing.periodEnd)}`;
     }
     if (access === "credits") return `Uses ${CREDIT_COSTS[feature]} credits`;
     if (billing.isPro) return "Buy credits in the Sonx app to keep creating";
-    return webCheckoutEnabled ? "Get Pro to create songs" : "Get Pro or credits in the Sonx app to create songs";
+    return webCheckoutEnabled
+      ? `Free song used. The next one arrives ${resetDate(billing.periodEnd)}, or get Pro for ${songsIn("MONTHLY")} a month`
+      : "Get Pro or credits in the Sonx app to create songs";
   })();
 
   const writeLyricsForMe = async () => {
@@ -107,7 +143,9 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
     }
     setBusy("lyrics");
     try {
+      const topic = lyrics;
       setLyrics(await generateLyrics(`${genreLabel} song about: ${lyrics.trim()}`));
+      setTopicBefore(topic);
     } catch (error) {
       notify(error instanceof Error ? error.message : "Lyrics could not be written.", "error");
     } finally {
@@ -118,6 +156,7 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!canSubmit) return;
+    trackEvent("create_click", { mode, instrumental: mode === "describe" && instrumental, genre, signed_in: Boolean(signedIn), access });
     // The other half of blog_cta_click. Taken once, so the submit that resumes after sign-in isn't counted again.
     const blogPost = signedIn === null ? null : takeBlogSource();
     if (blogPost) trackEvent("create_from_blog", { post_slug: blogPost });
@@ -126,22 +165,25 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
       return;
     }
     if (access === "none") {
-      openPaywall();
+      paywall();
       return;
     }
 
     try {
       let songLyrics = mode === "lyrics" ? lyrics.trim() : undefined;
+      let writerTitle = "";
       if (mode === "describe" && !instrumental) {
         setBusy("lyrics");
-        songLyrics = await generateLyrics(`${genreLabel} song about: ${prompt.trim()}`);
+        ({ lyrics: songLyrics, title: writerTitle } = await writeLyrics(`${genreLabel} song about: ${prompt.trim()}`));
       }
+      // Unnamed songs get a real name: the lyric writer's, else the prompt's or the lyrics' opening phrase.
+      const autoTitle = writerTitle || (mode === "describe" ? titleFromPrompt(prompt) : titleFromLyrics(lyrics));
 
       setBusy("song");
       await startGeneration({
         feature,
         clientRequestId: newRequestId("web"),
-        title: title.trim() || `${genreLabel} track`,
+        title: title.trim() || autoTitle || `${genreLabel} track`,
         genre,
         ...(feature === "LYRICS_MUSIC" ? { lyrics: songLyrics, vocalGender: voice } : { prompt: prompt.trim() }),
       });
@@ -149,9 +191,10 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
       setPrompt("");
       setLyrics("");
       setTitle("");
-      notify("Your song is being made. It plays from the list when it is ready.");
+      setTopicBefore(null);
+      notify("Your song is being made. It takes 1 to 3 minutes, and we will tell you when it is ready.");
     } catch (error) {
-      if (isInsufficientBalance(error)) openPaywall();
+      if (isInsufficientBalance(error)) paywall();
       else notify(error instanceof Error ? error.message : "The song could not be started.", "error");
     } finally {
       setBusy(null);
@@ -174,7 +217,16 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
         <textarea
           value={text}
           maxLength={mode === "describe" ? PROMPT_LIMIT : LYRICS_LIMIT}
-          onChange={(event) => (mode === "describe" ? setPrompt(event.target.value) : setLyrics(event.target.value))}
+          onChange={(event) => {
+            if (mode === "describe") {
+              setPrompt(event.target.value);
+              const named = genrePicked.current ? null : genreFromPrompt(event.target.value);
+              if (named) setGenre(named);
+            } else {
+              setLyrics(event.target.value);
+              setTopicBefore(null);
+            }
+          }}
           rows={mode === "describe" ? 5 : 9}
           placeholder={mode === "describe"
             ? "A slow late-night drive through a rainy city, warm synths, a hopeful chorus"
@@ -183,10 +235,18 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
         />
         <span className="flex items-center justify-between text-xs text-fog">
           {mode === "lyrics" ? (
-            <button type="button" onClick={writeLyricsForMe} disabled={busy !== null}
-              className="rounded-full bg-paper/[0.08] px-3 py-1.5 font-medium text-paper transition hover:bg-paper/15 disabled:opacity-50">
-              {busy === "lyrics" ? "Writing lyrics" : "Write lyrics for me"}
-            </button>
+            <span className="flex items-center gap-2">
+              <button type="button" onClick={writeLyricsForMe} disabled={busy !== null}
+                className="rounded-full bg-paper/[0.08] px-3 py-1.5 font-medium text-paper transition hover:bg-paper/15 disabled:opacity-50">
+                {busy === "lyrics" ? "Writing lyrics" : topicBefore !== null ? "Write again" : "Write lyrics for me"}
+              </button>
+              {topicBefore !== null && busy === null && (
+                <button type="button" onClick={() => { setLyrics(topicBefore); setTopicBefore(null); }}
+                  className="rounded-full px-3 py-1.5 font-medium text-paper/70 transition hover:text-paper">
+                  Undo
+                </button>
+              )}
+            </span>
           ) : <span />}
           <span className="tabular-nums">{text.length}/{mode === "describe" ? PROMPT_LIMIT : LYRICS_LIMIT}</span>
         </span>
@@ -205,9 +265,9 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
         </label>
       )}
 
-      {hasVocals && (
-        <fieldset className="flex flex-col gap-2">
-          <legend className="mb-2 text-sm font-medium">Voice</legend>
+      {/* Stays in place when Instrumental is on, so the genres below do not jump. */}
+      <fieldset disabled={!hasVocals} className="flex flex-col gap-2 transition-opacity disabled:opacity-40">
+          <legend className="mb-2 text-sm font-medium">Voice{!hasVocals && <span className="font-normal text-fog"> (not used for instrumentals)</span>}</legend>
           <div className="flex gap-2">
             {([["random", "Any"], ["female", "Female"], ["male", "Male"]] as const).map(([value, label]) => (
               <button key={value} type="button" aria-pressed={voice === value} onClick={() => setVoice(value)}
@@ -216,14 +276,13 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
               </button>
             ))}
           </div>
-        </fieldset>
-      )}
+      </fieldset>
 
       <fieldset>
         <legend className="mb-2 text-sm font-medium">Genre</legend>
         <div className="flex flex-wrap gap-2">
           {GENRES.map((item) => (
-            <button key={item.id} type="button" aria-pressed={genre === item.id} onClick={() => setGenre(item.id)}
+            <button key={item.id} type="button" aria-pressed={genre === item.id} onClick={() => { genrePicked.current = true; setGenre(item.id); }}
               className={`rounded-full px-3.5 py-2 text-sm font-medium transition ${genre === item.id ? "bg-paper text-night" : "bg-paper/[0.06] text-paper/70 hover:bg-paper/10 hover:text-paper"}`}>
               {item.name}
             </button>
@@ -233,7 +292,7 @@ export function CreateMusicForm({ initialPrompt = "", restoreDraft = true }: { i
 
       <label className="flex flex-col gap-2">
         <span className="text-sm font-medium">Title <span className="font-normal text-fog">(optional)</span></span>
-        <input value={title} maxLength={80} onChange={(event) => setTitle(event.target.value)} placeholder={`${genreLabel} track`}
+        <input value={title} maxLength={80} onChange={(event) => setTitle(event.target.value)} placeholder="Sonx names it for you"
           className="rounded-full border border-paper/10 bg-paper/[0.04] px-5 py-3 transition-[border-color,background-color] placeholder:text-paper/35 hover:border-paper/20 focus:border-paper/35 focus:bg-paper/[0.06] focus:outline-none" />
       </label>
 

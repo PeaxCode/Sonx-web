@@ -91,6 +91,18 @@ export async function refreshGeneration(id: string) {
   return callProxy<{ status: GenerationStatus }>("generation-refresh", { generationId: id });
 }
 
+/**
+ * Where the download icon points. Users' songs come through /api/download, which
+ * names the file after the song; examples are on this origin, so the download
+ * attribute names them.
+ */
+export function downloadLink(generation: Generation): { href: string; filename?: string } {
+  if (generation.is_sample || !generation.output_url?.startsWith("http")) {
+    return { href: generation.output_url ?? "", filename: `${generation.title}.mp3` };
+  }
+  return { href: `/api/download/${generation.id}` };
+}
+
 export async function setFavorite(id: string, isFavorite: boolean) {
   const { error } = await getSupabase().from("generations").update({ is_favorite: isFavorite }).eq("id", id);
   if (error) throw error;

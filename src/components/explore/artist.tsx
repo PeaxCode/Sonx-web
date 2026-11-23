@@ -5,14 +5,24 @@ import Link from "next/link";
 import { IconPause, IconPlay } from "@/components/icons";
 import { usePlayer } from "@/components/studio/player";
 import type { ExploreArtist, ExploreTrack } from "@/lib/explore-mock";
+import { useSession } from "@/components/studio/session";
 import { useFollowing } from "@/lib/follows";
 import { artistHref, compact, Shelf, TrackTile } from "./tiles";
 
 export function FollowButton({ artist, size = "md" }: { artist: ExploreArtist; size?: "sm" | "md" }) {
   const { isFollowing, toggle } = useFollowing();
+  const { signedIn, requestSignIn } = useSession();
   const following = isFollowing(artist.handle);
+  // Following is an account feature: visitors are asked to sign up first.
+  const onClick = () => {
+    if (signedIn === false) {
+      requestSignIn({ next: window.location.pathname, title: `Follow ${artist.name} on Sonx`, text: "Create your free account to follow artists and keep the songs you like." });
+      return;
+    }
+    if (signedIn) toggle(artist.handle);
+  };
   return (
-    <button type="button" onClick={() => toggle(artist.handle)} aria-pressed={following}
+    <button type="button" onClick={onClick} aria-pressed={following}
       aria-label={following ? `Unfollow ${artist.name}` : `Follow ${artist.name}`}
       className={`rounded-full font-semibold transition ${size === "sm" ? "px-3 py-1 text-xs" : "px-5 py-2 text-sm"} ${
         following ? "border border-paper/25 text-paper hover:border-paper/50" : "bg-paper text-night hover:bg-paper/85"

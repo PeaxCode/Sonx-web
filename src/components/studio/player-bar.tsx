@@ -3,9 +3,10 @@
 import Image from "next/image";
 import { useRef } from "react";
 import { CoverArt } from "@/components/cover-art";
-import { IconClose, IconDownload, IconNext, IconPause, IconPlay, IconPrevious } from "@/components/icons";
+import { IconClose, IconNext, IconPause, IconPlay, IconPrevious } from "@/components/icons";
 import { formatTime } from "@/lib/audio";
 import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
+import { DownloadButton } from "./download-button";
 import { FullPlayer } from "./full-player";
 import { usePlayer } from "./player";
 import { kindLabel } from "./track-list";
@@ -106,10 +107,7 @@ export function PlayerBar() {
               <IconLyrics />
             </button>
             {current.output_url && (
-              <a href={current.output_url} download target="_blank" rel="noreferrer" aria-label={`Download ${current.title}`}
-                className="rounded-full p-2 text-paper/70 transition hover:bg-paper/10 hover:text-paper">
-                <IconDownload size={18} />
-              </a>
+              <DownloadButton generation={current} className="rounded-full p-2 text-paper/70 transition hover:bg-paper/10 hover:text-paper" />
             )}
             <button type="button" aria-label="Close player" onClick={close}
               className="rounded-full p-2 text-paper/70 transition hover:bg-paper/10 hover:text-paper">

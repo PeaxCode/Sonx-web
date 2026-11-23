@@ -31,7 +31,15 @@ const nextConfig: NextConfig = {
   },
   // AI music video is hidden pending payment provider review; see app/(studio)/video/page.tsx.
   async redirects() {
-    return [{ source: "/video", destination: "/create", permanent: false }];
+    return [
+      { source: "/video", destination: "/create", permanent: false },
+      // People type these; there is one page for signing in and signing up.
+      { source: "/signup", destination: "/login", permanent: true },
+      { source: "/signin", destination: "/login", permanent: true },
+      { source: "/sign-up", destination: "/login", permanent: true },
+      { source: "/sign-in", destination: "/login", permanent: true },
+      { source: "/register", destination: "/login", permanent: true },
+    ];
   },
   async rewrites() {
     return {

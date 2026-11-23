@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ArtistProfile } from "@/components/explore/artist";
 import { Chevron } from "@/components/explore/tiles";
 import { ARTISTS, findArtist, tracksBy } from "@/lib/explore-mock";
+import { exploreEnabled } from "@/lib/flags";
 
 type Props = { params: Promise<{ handle: string }> };
 
@@ -35,7 +36,7 @@ export default function ArtistPage({ params }: Props) {
 }
 
 async function Artist({ params }: Props) {
-  const artist = findArtist((await params).handle);
+  const artist = exploreEnabled ? findArtist((await params).handle) : undefined;
   if (!artist) notFound();
   return <ArtistProfile artist={artist} tracks={tracksBy(artist.handle)} />;
 }

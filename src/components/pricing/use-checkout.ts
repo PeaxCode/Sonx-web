@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { trackEvent } from "@/lib/analytics";
+import { hasDraft } from "@/lib/draft";
 import { openWebCheckout } from "@/lib/paddle";
 import { getSupabase } from "@/lib/supabase/client";
 import { useBilling, type PendingPurchase } from "@/components/studio/billing";
@@ -27,12 +29,15 @@ export function useCheckout() {
       if (!user) throw new Error("Sign in again to continue to checkout.");
       await openWebCheckout({
         priceId,
+        kind,
         userId: user.id,
         email: user.email ?? null,
-        // The buyer lands on Account, where the balance and plan update as soon as the server has them.
+        // A song waiting from the paywall is made right away on Create; otherwise the buyer lands
+        // on Account, where the balance and plan update as soon as the server has them.
         onCompleted: () => {
           awaitPurchase(kind);
-          router.push("/account");
+          // On Create the form itself starts the waiting song when the purchase lands.
+          if (!(hasDraft() && window.location.pathname === "/create")) router.push("/account");
         },
       });
     } catch (error) {
@@ -44,6 +49,7 @@ export function useCheckout() {
 
   const buy = useCallback((priceId: string, kind: PendingPurchase) => {
     if (signedIn === null) return;
+    trackEvent("plan_click", { kind, price_id: priceId, signed_in: signedIn });
     if (!signedIn) {
       const next = new URL(window.location.href);
       next.searchParams.set("buy", priceId);

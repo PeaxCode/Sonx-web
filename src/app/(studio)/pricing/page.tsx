@@ -3,7 +3,8 @@ import { Aurora } from "@/components/aurora";
 import { FaqList, type FaqItem } from "@/components/faq-list";
 import { CreditPacks } from "@/components/pricing/credit-packs";
 import { PlanCards } from "@/components/pricing/plan-cards";
-import { CREDIT_COSTS } from "@/lib/billing-config";
+import { ClosingCta, SiteFooter } from "@/components/site-footer";
+import { SONG_CREDIT_COST } from "@/lib/billing-config";
 
 const TITLE = "Pricing — Sonx Pro and Studio Plans";
 const DESCRIPTION =
@@ -37,7 +38,7 @@ const PRICING_FAQ: FaqItem[] = [
   },
   {
     question: "How do credit packs work?",
-    answer: `Credit packs top up a plan when you run out of songs before the month ends. They are available to Pro and Studio members. A song with vocals uses ${CREDIT_COSTS.LYRICS_MUSIC} credits and an instrumental ${CREDIT_COSTS.PROMPT_MUSIC}. Your plan's songs are always used first.`,
+    answer: `Credit packs top up a plan when you run out of songs before the month ends. They are available to Pro and Studio members. Every song uses ${SONG_CREDIT_COST} credits, with vocals or instrumental. Your plan's songs are always used first.`,
   },
   {
     question: "I already subscribe in the app. Do I pay again here?",
@@ -46,7 +47,7 @@ const PRICING_FAQ: FaqItem[] = [
   },
   {
     question: "What can I do for free?",
-    answer: "Listen to songs made with Sonx and write lyrics with AI. Creating songs needs a plan.",
+    answer: "Every free account gets one song a month, plus the AI lyrics writer. Free songs play on Sonx but can't be downloaded or used commercially; a plan adds MP3 downloads, commercial use and many more songs.",
   },
   {
     question: "How do I cancel?",
@@ -78,6 +79,8 @@ export default function PricingPage() {
       <section aria-labelledby="plans-title" className="-mt-8 flex flex-col gap-6">
         <h2 id="plans-title" className="sr-only">Plans</h2>
         <PlanCards />
+        {/* Right under the buttons, where the decision is made. */}
+        <Assurances />
       </section>
 
       <section aria-labelledby="credits-title" className="flex flex-col gap-6">
@@ -90,19 +93,25 @@ export default function PricingPage() {
         <CreditPacks />
       </section>
 
-      <ul aria-label="Buying on Sonx" className="grid gap-3 rounded-[var(--radius-panel)] bg-plum p-6 text-sm sm:grid-cols-2 lg:grid-cols-4">
-        {ASSURANCES.map((item) => (
-          <li key={item} className="flex items-start gap-2.5">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2}
-              strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="mt-0.5 shrink-0 text-violet">
-              <path d="m5 12 5 5L20 7" />
-            </svg>
-            {item}
-          </li>
-        ))}
-      </ul>
-
       <FaqList id="pricing-faq-title" title="Pricing questions" items={PRICING_FAQ} />
+      <ClosingCta />
+      <SiteFooter />
     </div>
+  );
+}
+
+function Assurances() {
+  return (
+    <ul aria-label="Buying on Sonx" className="grid gap-3 rounded-[var(--radius-panel)] bg-plum p-5 text-sm sm:grid-cols-2 lg:grid-cols-4">
+      {ASSURANCES.map((item) => (
+        <li key={item} className="flex items-start gap-2.5">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2}
+            strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="mt-0.5 shrink-0 text-violet">
+            <path d="m5 12 5 5L20 7" />
+          </svg>
+          {item}
+        </li>
+      ))}
+    </ul>
   );
 }

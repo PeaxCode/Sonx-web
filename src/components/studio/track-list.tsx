@@ -4,11 +4,27 @@ import { useRef, useState } from "react";
 import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
 import Image from "next/image";
 import { CoverArt } from "@/components/cover-art";
-import { IconClose, IconDownload, IconHeart, IconPause, IconPlay, IconTrash, IconVideo } from "@/components/icons";
+import { IconClose, IconHeart, IconPause, IconPlay, IconTrash, IconVideo } from "@/components/icons";
 import { GENRES } from "@/lib/billing-config";
 import type { Generation } from "@/lib/generations";
+import { DownloadButton } from "./download-button";
+import { useFeedback } from "./feedback";
 import { useLibrary } from "./library";
 import { usePlayer } from "./player";
+
+/** "Today", "Yesterday", "Nov 3" or "Nov 3, 2025": when a song was made. */
+function madeOn(iso: string) {
+  const date = new Date(iso);
+  const days = Math.floor((new Date().setHours(0, 0, 0, 0) - new Date(iso).setHours(0, 0, 0, 0)) / 86_400_000);
+  if (days === 0) return "Today";
+  if (days === 1) return "Yesterday";
+  return date.toLocaleDateString("en-US", {
+    month: "short", day: "numeric", ...(date.getFullYear() !== new Date().getFullYear() ? { year: "numeric" } : {}),
+  });
+}
+
+// Row actions appear on hover on desktop; a favorited heart stays visible.
+const HOVER_ACTION = "md:opacity-0 md:group-hover/row:opacity-100 md:group-focus-within/row:opacity-100";
 
 export const genreName = (id: string | null) => GENRES.find((genre) => genre.id === id)?.name ?? id ?? "";
 
@@ -43,7 +59,7 @@ function Writing() {
             style={{ height: `${6 + bar * 3}px`, animationDelay: `${bar * 150}ms` }} />
         ))}
       </span>
-      Writing your song
+      Making your song, usually 1 to 3 minutes
     </span>
   );
 }
@@ -72,7 +88,8 @@ export function VideoDialog({ generation, onClose }: { generation: Generation; o
 }
 
 export function TrackList({ generations, emptyText }: { generations: Generation[]; emptyText: string }) {
-  const { toggleFavorite, remove } = useLibrary();
+  const { toggleFavorite, removeWithUndo } = useLibrary();
+  const { notify } = useFeedback();
   const { current, playing, play, open } = usePlayer();
   const [openVideo, setOpenVideo] = useState<Generation | null>(null);
   const listRef = useRef<HTMLUListElement>(null);
@@ -155,34 +172,34 @@ export function TrackList({ generations, emptyText }: { generations: Generation[
                 ) : (
                   <p className="truncate text-sm text-fog">
                     {[kindLabel(generation), genreName(generation.genre)].filter(Boolean).join(", ")}
+                    {!generation.is_sample && <span className="text-fog/70"> · {madeOn(generation.created_at)}</span>}
                   </p>
                 )}
               </div>
 
               {generation.status !== "processing" && (
-                <div className="flex items-center gap-0.5 text-paper/50 transition-opacity md:opacity-0 md:group-hover/row:opacity-100 md:group-focus-within/row:opacity-100">
+                <div className="flex items-center gap-0.5 text-paper/50">
                   {ready && (
                     <>
                       {!generation.is_sample && (
                       <button type="button" aria-label={generation.is_favorite ? "Remove from favorites" : "Add to favorites"}
                         aria-pressed={generation.is_favorite} onClick={() => toggleFavorite(generation)}
-                        className={`rounded-full p-2 transition hover:bg-paper/10 hover:text-paper ${generation.is_favorite ? "text-orchid md:opacity-100" : ""}`}>
+                        className={`rounded-full p-2 transition hover:bg-paper/10 hover:text-paper ${generation.is_favorite ? "text-orchid" : HOVER_ACTION}`}>
                         <IconHeart size={18} filled={generation.is_favorite} />
                       </button>
                       )}
-                      <a href={generation.output_url!} download target="_blank" rel="noreferrer"
-                        aria-label={`Download ${generation.title}`} className="rounded-full p-2 transition hover:bg-paper/10 hover:text-paper">
-                        <IconDownload size={18} />
-                      </a>
+                      <DownloadButton generation={generation} className={`rounded-full p-2 transition hover:bg-paper/10 hover:text-paper ${HOVER_ACTION}`} />
                     </>
                   )}
                   {/* Examples are not rows in the user's library, so they cannot be deleted. */}
                   {!generation.is_sample && (
                   <button type="button" aria-label={`Delete ${generation.title}`}
                     onClick={() => {
-                      if (window.confirm(`Delete "${generation.title}"? This removes it from the app too.`)) void remove(generation);
+                      // Undo instead of a confirm box: one tap to delete, one to bring it back.
+                      const undo = removeWithUndo(generation);
+                      notify(`Deleted “${generation.title}” here and in the app.`, "info", { label: "Undo", onClick: undo });
                     }}
-                    className="rounded-full p-2 transition hover:bg-danger/10 hover:text-danger">
+                    className={`rounded-full p-2 transition hover:bg-danger/10 hover:text-danger ${HOVER_ACTION}`}>
                     <IconTrash size={18} />
                   </button>
                   )}

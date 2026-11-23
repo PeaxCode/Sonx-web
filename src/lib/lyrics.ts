@@ -1,4 +1,5 @@
 import { callProxy } from "@/lib/api";
+import { cleanTitle } from "@/lib/titles";
 
 interface PredictionResponse {
   predictionID?: string;
@@ -25,6 +26,14 @@ function extractLyrics(output: unknown): string | undefined {
     ?? (Array.isArray(record.choices) ? record.choices.map(extractLyrics).find(Boolean) : undefined);
 }
 
+/** The writer's own song title, when its output has one. */
+function extractTitle(output: unknown): string {
+  if (Array.isArray(output)) return output.map(extractTitle).find(Boolean) ?? "";
+  if (!output || typeof output !== "object") return "";
+  const record = output as Record<string, unknown>;
+  return cleanTitle(record.title) || (Array.isArray(record.choices) ? record.choices.map(extractTitle).find(Boolean) ?? "" : "");
+}
+
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
@@ -32,13 +41,18 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
  * soon as the job is queued, so the lyrics are polled until it finishes.
  */
 export async function generateLyrics(topic: string): Promise<string> {
+  return (await writeLyrics(topic)).lyrics;
+}
+
+/** Lyrics plus the title the writer gave them ("" when it gave none). */
+export async function writeLyrics(topic: string): Promise<{ lyrics: string; title: string }> {
   const created = await callProxy<PredictionResponse>("eachlabs-create", {
     model: "mureka-generate-lyrics",
     input: { prompt: topic },
     webhook_url: "",
   });
   const immediate = extractLyrics(created.output);
-  if (immediate) return immediate;
+  if (immediate) return { lyrics: immediate, title: extractTitle(created.output) };
 
   const predictionId = created.predictionID || created.prediction_id;
   if (!predictionId) throw new Error("Lyrics could not be started. Try again.");
@@ -49,7 +63,7 @@ export async function generateLyrics(topic: string): Promise<string> {
     const status = (response.status ?? "").toLowerCase();
     if (["success", "succeeded", "completed"].includes(status)) {
       const lyrics = extractLyrics(response.output);
-      if (lyrics) return lyrics;
+      if (lyrics) return { lyrics, title: extractTitle(response.output) };
       throw new Error("No lyrics came back. Try a different topic.");
     }
     if (status === "failed" || status === "error") {

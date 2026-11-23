@@ -26,18 +26,19 @@ export const WAYS = [
 export const STEPS = [
   { time: "0:00", title: "Describe it", text: "A mood, a moment or a story in one sentence. Or paste your own lyrics." },
   { time: "0:05", title: "Sonx writes and sings", text: "Lyrics, voice and arrangement come together while you wait or browse." },
-  { time: "1:00", title: "Play, download, share", text: "The song lands in your library as an MP3, on the web and in the app." },
+  { time: "1–3 min", title: "Play, download, share", text: "The song lands in your library as an MP3, on the web and in the app." },
 ];
 
+// Each starter sets the genre too, so the form never says Pop under an R&B prompt.
 export const STARTERS = [
-  { label: "Lo-fi to study to", prompt: "A calm lo-fi beat for a late study session, soft rain and warm keys" },
-  { label: "Pop about summer love", prompt: "An upbeat pop song about falling in love on a summer trip" },
-  { label: "Rock anthem for game day", prompt: "A loud rock anthem for game day with a chant-along chorus" },
-  { label: "Jazz for a rainy café", prompt: "Smooth jazz for a rainy afternoon in a small café" },
-  { label: "EDM for a night out", prompt: "An energetic EDM track for getting ready for a night out" },
-  { label: "Afrobeat beach party", prompt: "A sunny afrobeat song for a beach party with friends" },
-  { label: "R&B slow jam", prompt: "A slow R&B love song with a smooth, soulful voice" },
-  { label: "Country road trip", prompt: "A feel-good country song about a road trip with old friends" },
+  { label: "Lo-fi to study to", genre: "lofi", prompt: "A calm lo-fi beat for a late study session, soft rain and warm keys" },
+  { label: "Pop about summer love", genre: "pop", prompt: "An upbeat pop song about falling in love on a summer trip" },
+  { label: "Rock anthem for game day", genre: "rock", prompt: "A loud rock anthem for game day with a chant-along chorus" },
+  { label: "Jazz for a rainy café", genre: "jazz", prompt: "Smooth jazz for a rainy afternoon in a small café" },
+  { label: "EDM for a night out", genre: "edm", prompt: "An energetic EDM track for getting ready for a night out" },
+  { label: "Afrobeat beach party", genre: "afrobeat", prompt: "A sunny afrobeat song for a beach party with friends" },
+  { label: "R&B slow jam", genre: "rnb", prompt: "A slow R&B love song with a smooth, soulful voice" },
+  { label: "Country road trip", genre: "country", prompt: "A feel-good country song about a road trip with old friends" },
 ];
 
 export const FAQ = [
@@ -54,7 +55,7 @@ export const FAQ = [
   {
     question: "How long does a song take?",
     answer:
-      "Usually about a minute. You can leave the page while it works; the result waits in your library.",
+      "Usually 1 to 3 minutes. You can leave the page or keep browsing while it works; we let you know when it is ready, and it waits in your library.",
   },
   {
     question: "Are my songs the same on my phone?",
@@ -99,13 +100,15 @@ export const APP_STORE_RATING = { value: "4.5", count: 45 };
 export const FEATURES = [
   {
     image: "/images/feature-song.png",
+    alt: "Illustration of a glowing AI beat machine with music notes rising from it",
     title: "A whole song from one sentence",
-    text: "Describe a mood, a moment or a story. Sonx writes the lyrics, picks a voice and produces the track, in about a minute.",
+    text: "Describe a mood, a moment or a story. Sonx writes the lyrics, picks a voice and produces the track, in a few minutes.",
     points: ["18 genres, from lo-fi to K-pop", "Vocals or instrumental", "MP3 download for every song"],
     cta: "Describe a song",
   },
   {
     image: "/images/feature-lyrics.png",
+    alt: "Illustration of a tablet showing song lyrics being written, with music notes flowing out",
     title: "Your words, sung back to you",
     text: "Paste lyrics you wrote, or start from a topic and edit what Sonx writes. Pick a male or female voice and hear it sung.",
     points: ["Write lyrics with AI for free", "Keep full control of every line", "Commercial use on paid plans"],
