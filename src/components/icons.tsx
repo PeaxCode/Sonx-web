@@ -73,3 +73,6 @@ export const IconClose = (props: IconProps) => (
 export const IconChevronDown = (props: IconProps) => (
   <Icon {...props}><path d="m6 9 6 6 6-6" /></Icon>
 );
+export const IconShare = (props: IconProps) => (
+  <Icon {...props}><path d="M12 3v12m0-12-4 4m4-4 4 4M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" /></Icon>
+);

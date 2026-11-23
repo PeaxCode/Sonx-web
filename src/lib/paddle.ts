@@ -35,6 +35,38 @@ const PACKS: { credits: number; priceId: string | undefined }[] = [
 const TOKEN = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
 const ENVIRONMENT = process.env.NEXT_PUBLIC_PADDLE_ENV === "sandbox" ? "sandbox" : "production";
 
+/**
+ * USD list prices, tax included, as set in Paddle. They are in the server HTML
+ * (search engines, first paint) and are replaced by Paddle's localized prices
+ * once they load. Keep in step with the Paddle catalog.
+ */
+export const LIST_PRICES_USD = {
+  plans: { PRO: { monthly: 5.99, yearly: 59.88 }, STUDIO: { monthly: 14.99, yearly: 143.88 } },
+  credits: { 100: 2.99, 250: 5.99, 600: 11.99, 1500: 24.99 } as Record<number, number>,
+} satisfies { plans: Record<WebTier, Record<BillingCycle, number>>; credits: Record<number, number> };
+
+const usd = (amount: number): WebPrice => ({
+  formatted: new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount),
+  amount,
+  currency: "USD",
+});
+
+/** LIST_PRICES_USD keyed by Paddle price ID, the shape fetchWebPrices returns. */
+export function listPrices(): Record<string, WebPrice> {
+  const entries: [string, WebPrice][] = [];
+  for (const tier of ["PRO", "STUDIO"] as const) {
+    for (const cycle of ["monthly", "yearly"] as const) {
+      const id = PLAN_PRICE_IDS[tier][cycle];
+      if (id) entries.push([id, usd(LIST_PRICES_USD.plans[tier][cycle])]);
+    }
+  }
+  for (const pack of PACKS) {
+    const amount = LIST_PRICES_USD.credits[pack.credits];
+    if (pack.priceId && amount) entries.push([pack.priceId, usd(amount)]);
+  }
+  return Object.fromEntries(entries);
+}
+
 /** Tiers with both a monthly and a yearly price configured, in display order. */
 export const WEB_TIERS = (["PRO", "STUDIO"] as const).filter(
   (tier) => PLAN_PRICE_IDS[tier].monthly && PLAN_PRICE_IDS[tier].yearly,

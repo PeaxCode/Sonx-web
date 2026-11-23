@@ -4,7 +4,9 @@ import { FaqList, type FaqItem } from "@/components/faq-list";
 import { CreditPacks } from "@/components/pricing/credit-packs";
 import { PlanCards } from "@/components/pricing/plan-cards";
 import { ClosingCta, SiteFooter } from "@/components/site-footer";
-import { SONG_CREDIT_COST } from "@/lib/billing-config";
+import { SONG_CREDIT_COST, songsIn } from "@/lib/billing-config";
+import { SITE_URL } from "@/lib/journal";
+import { LIST_PRICES_USD } from "@/lib/paddle";
 
 const TITLE = "Pricing — Sonx Pro and Studio Plans";
 const DESCRIPTION =
@@ -65,6 +67,56 @@ const PRICING_FAQ: FaqItem[] = [
   },
 ];
 
+// Product/Offer markup for the plans and packs, from the USD list prices in the server HTML.
+const PLAN_OFFERS = [
+  { name: "Sonx Pro", plan: "MONTHLY", prices: LIST_PRICES_USD.plans.PRO },
+  { name: "Sonx Studio", plan: "STUDIO", prices: LIST_PRICES_USD.plans.STUDIO },
+] as const;
+
+const PRICING_GRAPH = {
+  "@context": "https://schema.org",
+  "@graph": [
+    ...PLAN_OFFERS.map(({ name, plan, prices }) => ({
+      "@type": "Product",
+      name,
+      description: `${songsIn(plan)} AI songs a month with vocals, MP3 downloads and a commercial use license. Works on the web and in the Sonx app.`,
+      brand: { "@type": "Brand", name: "Sonx" },
+      url: `${SITE_URL}/pricing`,
+      offers: (["monthly", "yearly"] as const).map((cycle) => ({
+        "@type": "Offer",
+        name: `${name}, billed ${cycle}`,
+        price: prices[cycle].toFixed(2),
+        priceCurrency: "USD",
+        availability: "https://schema.org/InStock",
+        url: `${SITE_URL}/pricing`,
+        priceSpecification: {
+          "@type": "UnitPriceSpecification",
+          price: prices[cycle].toFixed(2),
+          priceCurrency: "USD",
+          billingDuration: 1,
+          billingIncrement: 1,
+          unitCode: cycle === "monthly" ? "MON" : "ANN",
+        },
+      })),
+    })),
+    {
+      "@type": "Product",
+      name: "Sonx credit packs",
+      description: `One-time credits for Pro and Studio members, ${SONG_CREDIT_COST} credits per song.`,
+      brand: { "@type": "Brand", name: "Sonx" },
+      url: `${SITE_URL}/pricing`,
+      offers: Object.entries(LIST_PRICES_USD.credits).map(([credits, price]) => ({
+        "@type": "Offer",
+        name: `${credits} credits`,
+        price: price.toFixed(2),
+        priceCurrency: "USD",
+        availability: "https://schema.org/InStock",
+        url: `${SITE_URL}/pricing`,
+      })),
+    },
+  ],
+};
+
 export default function PricingPage() {
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-16 px-4 py-8 md:px-8 lg:py-12">
@@ -96,6 +148,10 @@ export default function PricingPage() {
       <FaqList id="pricing-faq-title" title="Pricing questions" items={PRICING_FAQ} />
       <ClosingCta />
       <SiteFooter />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(PRICING_GRAPH).replace(/</g, "\\u003c") }}
+      />
     </div>
   );
 }

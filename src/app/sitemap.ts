@@ -16,6 +16,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: post.priority,
     })),
     { url: `${SITE_URL}/privacy.html`, lastModified: "2026-11-04", changeFrequency: "monthly", priority: 0.3 },
-    { url: `${SITE_URL}/terms.html`, lastModified: "2026-11-04", changeFrequency: "monthly", priority: 0.3 },
+    { url: `${SITE_URL}/terms.html`, lastModified: "2026-11-23", changeFrequency: "monthly", priority: 0.3 },
   ];
 }

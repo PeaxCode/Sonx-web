@@ -103,6 +103,18 @@ export function downloadLink(generation: Generation): { href: string; filename?:
   return { href: `/api/download/${generation.id}` };
 }
 
+/** The public page for a shared song. */
+export const songUrl = (id: string) => `${window.location.origin}/song/${id}`;
+
+/** Makes a song readable on its public page (generations.shared_at). */
+export async function shareGeneration(id: string) {
+  const { error } = await getSupabase()
+    .from("generations")
+    .update({ shared_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) throw error;
+}
+
 export async function setFavorite(id: string, isFavorite: boolean) {
   const { error } = await getSupabase().from("generations").update({ is_favorite: isFavorite }).eq("id", id);
   if (error) throw error;
