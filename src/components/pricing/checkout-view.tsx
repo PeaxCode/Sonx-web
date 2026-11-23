@@ -13,6 +13,7 @@ import { PLAN_LABELS, SONG_CREDIT_COST, songsIn } from "@/lib/billing-config";
 import { hasDraft } from "@/lib/draft";
 import {
   closeWebCheckout,
+  preloadPaddle,
   describePrice,
   formatMoney,
   onCheckoutTotals,
@@ -61,48 +62,74 @@ export function CheckoutView({ priceId }: { priceId: string }) {
   const { billing, awaitPurchase } = useBilling();
   const { notify } = useFeedback();
   const [totals, setTotals] = useState<CheckoutTotals | null>(null);
-  const [failed, setFailed] = useState(false);
-  const opened = useRef<string | null>(null);
+  const [failed, setFailed] = useState<null | "error" | "slow">(null);
+  const opened = useRef(false);
+  const kind = info?.kind ?? null;
 
   // Who may buy this: a plan needs no plan yet, a credit pack needs one.
   const blocked = !billing || !info ? null
     : info.kind === "plan" && billing.isPro
       ? billing.store === "paddle" ? "web-plan" : "app-plan"
       : info.kind === "credits" && !billing.isPro ? "needs-plan" : null;
-  const ready = Boolean(signedIn && billing && info && !blocked);
 
   useEffect(() => onCheckoutTotals(setTotals), []);
 
-  // Open Paddle's form in the frame once the buyer is known; it stays open while the price switches.
+  // Paddle.js and its checkout host start loading as soon as the page does.
   useEffect(() => {
-    if (!ready || !info || opened.current) return;
-    opened.current = priceId;
-    let cancelled = false;
+    void preloadPaddle();
+  }, []);
+
+  // Latest completion handler, so opening the form does not depend on it.
+  const completed = useRef<() => void>(() => undefined);
+  useEffect(() => {
+    completed.current = () => {
+      if (!kind) return;
+      awaitPurchase(kind);
+      // A song waiting from the paywall is made right away; otherwise Account shows the plan or credits arriving.
+      router.push(hasDraft() ? "/create?resume=1" : "/account");
+    };
+  }, [awaitPurchase, kind, router]);
+
+  // Open the form as soon as the session is known. Billing (which can take a few
+  // seconds) is not waited for; if it then says this buyer cannot buy this, the
+  // form closes and the reason shows instead.
+  useEffect(() => {
+    if (!signedIn || !kind || opened.current) return;
+    opened.current = true;
     (async () => {
-      const { data: { user } } = await getSupabase().auth.getUser();
-      if (cancelled || !user) return;
+      const { data: { session } } = await getSupabase().auth.getSession();
+      if (!session) {
+        opened.current = false;
+        return;
+      }
       try {
         await openWebCheckout({
           priceId,
-          kind: info.kind,
-          userId: user.id,
-          email: user.email ?? null,
+          kind,
+          userId: session.user.id,
+          email: session.user.email ?? null,
           inlineTarget: FRAME_CLASS,
-          // A song waiting from the paywall is made right away; otherwise Account shows the plan or credits arriving.
-          onCompleted: () => {
-            awaitPurchase(info.kind);
-            router.push(hasDraft() ? "/create?resume=1" : "/account");
-          },
+          onCompleted: () => completed.current(),
         });
       } catch (error) {
-        setFailed(true);
+        setFailed("error");
         notify(error instanceof Error ? error.message : "Checkout could not open.", "error");
       }
     })();
-    return () => {
-      cancelled = true;
-    };
-  }, [ready, info, priceId, awaitPurchase, notify, router]);
+    // priceId changes (monthly/yearly) switch the open form instead of reopening it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signedIn, kind, notify]);
+
+  useEffect(() => {
+    if (blocked) void closeWebCheckout();
+  }, [blocked]);
+
+  // A form that has not loaded after 15 seconds (blocker, flaky network) gets a way out.
+  useEffect(() => {
+    if (!signedIn || blocked || totals || failed) return;
+    const timer = setTimeout(() => setFailed("slow"), 15_000);
+    return () => clearTimeout(timer);
+  }, [signedIn, blocked, totals, failed]);
 
   useEffect(() => () => void closeWebCheckout(), []);
 
@@ -228,8 +255,16 @@ export function CheckoutView({ priceId }: { priceId: string }) {
             <Blocked title="Credit packs top up a plan" text="Subscribe to Pro or Studio first; credits keep you going when the month's songs run out."
               href="/pricing" label="See plans" />
           ) : failed ? (
-            <Blocked title="Checkout could not open" text="Check your connection or turn off a blocker for this page, then try again."
-              href={checkoutHref(priceId)} label="Try again" />
+            <div className="flex flex-col gap-3 py-4">
+              <h2 className="font-display text-lg font-semibold">
+                {failed === "slow" ? "The payment form is taking long" : "Checkout could not open"}
+              </h2>
+              <p className="text-sm text-fog">Check your connection or turn off an ad blocker for this page, then try again.</p>
+              <button type="button" onClick={() => window.location.reload()}
+                className="bg-signature mt-2 w-fit rounded-full px-5 py-2.5 text-sm font-semibold">
+                Try again
+              </button>
+            </div>
           ) : (
             <>
               {!totals && <div className="h-[450px] animate-pulse rounded-[var(--radius-control)] bg-raised/60" aria-label="Loading payment form" />}

@@ -210,6 +210,11 @@ function getPaddle() {
   return paddlePromise;
 }
 
+/** Starts loading Paddle.js ahead of use (checkout page, plan buttons). */
+export function preloadPaddle() {
+  return getPaddle();
+}
+
 const ZERO_DECIMAL = new Set(["JPY", "KRW", "CLP"]);
 
 /**
