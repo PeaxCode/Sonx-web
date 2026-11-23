@@ -8,6 +8,7 @@ import { IconClose, IconHeart, IconPause, IconPlay, IconTrash, IconVideo } from 
 import { GENRES } from "@/lib/billing-config";
 import type { Generation } from "@/lib/generations";
 import { DownloadButton } from "./download-button";
+import { ShareButton } from "./share-button";
 import { useFeedback } from "./feedback";
 import { useLibrary } from "./library";
 import { usePlayer } from "./player";
@@ -28,7 +29,7 @@ const HOVER_ACTION = "md:opacity-0 md:group-hover/row:opacity-100 md:group-focus
 
 export const genreName = (id: string | null) => GENRES.find((genre) => genre.id === id)?.name ?? id ?? "";
 
-export const kindLabel = (generation: Generation) => {
+export const kindLabel = (generation: Pick<Generation, "feature">) => {
   switch (generation.feature) {
     case "AI_MUSIC_VIDEO": return "Music video";
     case "LYRICS_MUSIC": return "Song with vocals";
@@ -188,6 +189,7 @@ export function TrackList({ generations, emptyText }: { generations: Generation[
                         <IconHeart size={18} filled={generation.is_favorite} />
                       </button>
                       )}
+                      <ShareButton generation={generation} className={`rounded-full p-2 transition hover:bg-paper/10 hover:text-paper ${HOVER_ACTION}`} />
                       <DownloadButton generation={generation} className={`rounded-full p-2 transition hover:bg-paper/10 hover:text-paper ${HOVER_ACTION}`} />
                     </>
                   )}

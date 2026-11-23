@@ -8,6 +8,7 @@ import { PLAN_LABELS, songsIn, type Plan } from "@/lib/billing-config";
 import {
   fetchWebPrices,
   formatMoney,
+  listPrices,
   planPriceId,
   webCheckoutEnabled,
   type BillingCycle,
@@ -25,7 +26,7 @@ interface TierInfo {
   badge: string;
 }
 
-const TIERS: TierInfo[] = [
+export const TIERS: TierInfo[] = [
   { tier: "PRO", name: "Pro", plan: "MONTHLY", pitch: "For making songs every week.", badge: "Most popular" },
   { tier: "STUDIO", name: "Studio", plan: "STUDIO", pitch: "For creators who make music every day.", badge: "Best value" },
 ];
@@ -64,10 +65,11 @@ function Feature({ included, children }: { included: boolean; children: React.Re
 }
 
 export function usePrices() {
-  const [prices, setPrices] = useState<Record<string, WebPrice> | null>(null);
+  // USD list prices first (in the server HTML), then the visitor's own currency from Paddle.
+  const [prices, setPrices] = useState<Record<string, WebPrice> | null>(listPrices);
   useEffect(() => {
     let active = true;
-    fetchWebPrices().then((result) => active && setPrices(result));
+    fetchWebPrices().then((result) => active && Object.keys(result).length > 0 && setPrices(result));
     return () => {
       active = false;
     };
