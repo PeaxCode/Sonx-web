@@ -6,6 +6,7 @@ import { Aurora } from "@/components/aurora";
 import { CoverArt } from "@/components/cover-art";
 import { SharedSongPlayButton } from "@/components/studio/shared-song-player";
 import { genreName, kindLabel } from "@/components/studio/track-list";
+import { isGenre } from "@/lib/billing-config";
 import { fetchSharedSong } from "@/lib/shared-songs";
 
 type Props = { params: Promise<{ id: string }> };
@@ -56,7 +57,7 @@ async function SharedSong({ params }: Props) {
       <div className="mt-14 rounded-[var(--radius-panel)] border border-line bg-plum/70 px-6 py-6 backdrop-blur">
         <p className="font-semibold">Make a song like this</p>
         <p className="mt-1 text-sm text-fog">Describe it in a sentence. Your first song each month is free.</p>
-        <Link href={`/create${song.genre ? `?genre=${song.genre}` : ""}`}
+        <Link href={isGenre(song.genre) ? `/create?genre=${encodeURIComponent(song.genre)}` : "/create"}
           className="mt-4 inline-block rounded-full bg-paper px-6 py-3 text-sm font-semibold text-night transition hover:bg-paper/90">
           Create your song
         </Link>
