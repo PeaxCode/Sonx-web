@@ -46,6 +46,36 @@ export const CREDIT_PACKS = PACKS.filter((pack): pack is typeof pack & { priceId
 export const webCheckoutEnabled = Boolean(TOKEN) && WEB_TIERS.length > 0;
 export const webCreditsEnabled = Boolean(TOKEN) && CREDIT_PACKS.length > 0;
 
+/** Switches the open checkout to another price (monthly <-> yearly) without reloading the frame. */
+export async function switchCheckoutPrice(priceId: string) {
+  const paddle = await getPaddle();
+  if (!paddle || !openCheckout) return;
+  openCheckout.priceId = priceId;
+  paddle.Checkout.updateItems([{ priceId, quantity: 1 }]);
+}
+
+export async function closeWebCheckout() {
+  const paddle = await getPaddle();
+  paddle?.Checkout.close();
+  openCheckout = null;
+}
+
+export type PriceInfo =
+  | { kind: "plan"; tier: WebTier; cycle: BillingCycle }
+  | { kind: "credits"; credits: number };
+
+/** What a configured price ID sells; null for anything else, so /checkout?price= cannot sell unknown items. */
+export function describePrice(priceId: string | null | undefined): PriceInfo | null {
+  if (!priceId) return null;
+  for (const tier of ["PRO", "STUDIO"] as const) {
+    for (const cycle of ["monthly", "yearly"] as const) {
+      if (PLAN_PRICE_IDS[tier][cycle] === priceId) return { kind: "plan", tier, cycle };
+    }
+  }
+  const pack = PACKS.find((item) => item.priceId === priceId);
+  return pack ? { kind: "credits", credits: pack.credits } : null;
+}
+
 export const planPriceId = (tier: WebTier, cycle: BillingCycle) => PLAN_PRICE_IDS[tier][cycle];
 
 /** A localized price: `formatted` for display, `amount` in major units for per-song maths. */
@@ -57,7 +87,7 @@ export interface WebPrice {
 
 let completedListener: (() => void) | null = null;
 /** The checkout on screen, for analytics: what is being bought and whether it was paid. */
-let openCheckout: { priceId: string; kind: CheckoutKind; completed: boolean } | null = null;
+let openCheckout: { priceId: string; kind: CheckoutKind; completed: boolean; inline: boolean } | null = null;
 let paddlePromise: Promise<Paddle | undefined> | null = null;
 let pricesPromise: Promise<Record<string, WebPrice>> | null = null;
 
@@ -67,7 +97,41 @@ const CLOSE_AFTER_COMPLETED_MS = 1500;
 
 export type CheckoutKind = "plan" | "credits";
 
+/** Live totals of the checkout on screen, for the summary next to the inline frame. */
+export interface CheckoutTotals {
+  currency: string;
+  subtotal: number;
+  tax: number;
+  discount: number;
+  total: number;
+  /** Recurring charge after the first one, for plans. */
+  recurringTotal: number | null;
+}
+
+const totalsListeners = new Set<(totals: CheckoutTotals) => void>();
+
+/** Calls `listener` whenever Paddle reports new totals (country, tax ID, currency changes). */
+export function onCheckoutTotals(listener: (totals: CheckoutTotals) => void) {
+  totalsListeners.add(listener);
+  return () => {
+    totalsListeners.delete(listener);
+  };
+}
+
 function onPaddleEvent(event: PaddleEventData) {
+  if ((event.name === CheckoutEventNames.CHECKOUT_LOADED || event.name === CheckoutEventNames.CHECKOUT_UPDATED ||
+    event.name === CheckoutEventNames.CHECKOUT_ITEMS_UPDATED) && event.data?.totals) {
+    const { totals, recurring_totals: recurring, currency_code: currency } = event.data;
+    const update = {
+      currency,
+      subtotal: totals.subtotal,
+      tax: totals.tax,
+      discount: totals.discount,
+      total: totals.total,
+      recurringTotal: recurring?.total ?? null,
+    };
+    totalsListeners.forEach((listener) => listener(update));
+  }
   if (event.name === CheckoutEventNames.CHECKOUT_CLOSED) {
     // Closed without paying: the abandoned half of checkout_start.
     if (openCheckout && !openCheckout.completed) {
@@ -77,6 +141,7 @@ function onPaddleEvent(event: PaddleEventData) {
     return;
   }
   if (event.name !== CheckoutEventNames.CHECKOUT_COMPLETED) return;
+  const inline = openCheckout?.inline ?? false;
   if (openCheckout) {
     openCheckout.completed = true;
     const data = event.data;
@@ -94,9 +159,12 @@ function onPaddleEvent(event: PaddleEventData) {
   const listener = completedListener;
   completedListener = null;
   listener?.();
-  window.setTimeout(() => {
-    void paddlePromise?.then((paddle) => paddle?.Checkout.close());
-  }, CLOSE_AFTER_COMPLETED_MS);
+  // The overlay closes itself after the success step; the inline frame belongs to a page that navigates away.
+  if (!inline) {
+    window.setTimeout(() => {
+      void paddlePromise?.then((paddle) => paddle?.Checkout.close());
+    }, CLOSE_AFTER_COMPLETED_MS);
+  }
 }
 
 function getPaddle() {
@@ -156,17 +224,30 @@ export async function openWebCheckout(options: {
   userId: string;
   email: string | null;
   onCompleted: () => void;
+  /** Renders into the element with this class (the /checkout page) instead of the overlay. */
+  inlineTarget?: string;
 }) {
   const paddle = await getPaddle();
   if (!paddle) throw new Error("Checkout is unavailable right now. Try again in a moment.");
   completedListener = options.onCompleted;
-  openCheckout = { priceId: options.priceId, kind: options.kind, completed: false };
+  openCheckout = { priceId: options.priceId, kind: options.kind, completed: false, inline: Boolean(options.inlineTarget) };
   trackEvent("checkout_start", { kind: options.kind, price_id: options.priceId });
   paddle.Checkout.open({
     items: [{ priceId: options.priceId, quantity: 1 }],
     ...(options.email ? { customer: { email: options.email } } : {}),
     customData: { [REVENUECAT_USER_KEY]: options.userId },
     // No coupons are offered, so the discount field would only send buyers looking for one.
-    settings: { displayMode: "overlay", theme: "dark", allowLogout: false, showAddDiscounts: false },
+    settings: options.inlineTarget
+      ? {
+        displayMode: "inline",
+        variant: "one-page",
+        frameTarget: options.inlineTarget,
+        frameInitialHeight: 450,
+        frameStyle: "width: 100%; min-width: 312px; background-color: transparent; border: none;",
+        theme: "dark",
+        allowLogout: false,
+        showAddDiscounts: false,
+      }
+      : { displayMode: "overlay", theme: "dark", allowLogout: false, showAddDiscounts: false },
   });
 }

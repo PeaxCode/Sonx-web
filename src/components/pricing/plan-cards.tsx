@@ -25,7 +25,7 @@ interface TierInfo {
   badge: string;
 }
 
-const TIERS: TierInfo[] = [
+export const TIERS: TierInfo[] = [
   { tier: "PRO", name: "Pro", plan: "MONTHLY", pitch: "For making songs every week.", badge: "Most popular" },
   { tier: "STUDIO", name: "Studio", plan: "STUDIO", pitch: "For creators who make music every day.", badge: "Best value" },
 ];

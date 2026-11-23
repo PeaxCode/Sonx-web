@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
 import { QRCodeSVG } from "qrcode.react";
@@ -105,7 +106,7 @@ function PaywallDialog({ onClose, reason }: { onClose: () => void; reason?: stri
 /** Toast messages and the paywall (web plans via Paddle, or the app). */
 export function FeedbackProvider({ children }: { children: React.ReactNode }) {
   const [toast, setToast] = useState<{ message: string; tone: "info" | "error"; id: number; action?: ToastAction } | null>(null);
-  const [paywall, setPaywall] = useState<{ reason?: string } | null>(null);
+  const [paywall, setPaywall] = useState<{ reason?: string; path: string } | null>(null);
 
   const notify = useCallback((message: string, tone: "info" | "error" = "info", action?: ToastAction) => {
     const id = Date.now();
@@ -115,6 +116,9 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const closePaywall = useCallback(() => setPaywall(null), []);
+
+  // A plan or pack button navigates to /checkout; the paywall belongs to the page it opened on.
+  const pathname = usePathname();
 
   // Announce a finished web purchase wherever the buyer is, for a few seconds.
   const { outcome } = useBilling();
@@ -130,7 +134,7 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
       : { message: outcome.kind === "plan" ? "Your plan is active. Create away." : `${outcome.credits.toLocaleString("en-US")} credits added. Create away.`, tone: "info" as const }
     : null;
   const shown: { message: string; tone: "info" | "error"; action?: ToastAction } | null = purchaseToast ?? toast;
-  const value = useMemo(() => ({ notify, openPaywall: (reason?: string) => setPaywall({ reason }) }), [notify]);
+  const value = useMemo(() => ({ notify, openPaywall: (reason?: string) => setPaywall({ reason, path: window.location.pathname }) }), [notify]);
 
   return (
     <FeedbackContext.Provider value={value}>
@@ -154,7 +158,7 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
         )}
       </div>
 
-      {paywall && <PaywallDialog onClose={closePaywall} reason={paywall.reason} />}
+      {paywall && paywall.path === pathname && <PaywallDialog onClose={closePaywall} reason={paywall.reason} />}
     </FeedbackContext.Provider>
   );
 }
