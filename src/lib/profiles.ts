@@ -56,6 +56,13 @@ interface SongRow {
   is_house: boolean;
 }
 
+/**
+ * Avatar hosts the database accepts (Google sign-in pictures and Sonx). Anything
+ * else could log every visitor who sees the avatar, so it is never rendered.
+ */
+export const isAllowedAvatar = (url: string | null | undefined): url is string =>
+  typeof url === "string" && /^https:\/\/(([a-z0-9-]+\.)*googleusercontent\.com|getsonx\.com)\//.test(url);
+
 /** A session-less client for public reads (works on the server and in the browser). */
 function anonClient() {
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, {

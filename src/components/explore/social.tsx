@@ -4,12 +4,12 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useMyProfile } from "@/components/studio/my-profile";
 import { useSession } from "@/components/studio/session";
-import { isFollowing, setFollowing } from "@/lib/profiles";
+import { isAllowedAvatar, isFollowing, setFollowing } from "@/lib/profiles";
 
 /** Round avatar: the profile picture, or the first letter on the signature gradient. */
 export function Avatar({ url, name, size, className = "" }: { url: string | null; name: string; size: number; className?: string }) {
-  if (url) {
-    // Avatars come from the sign-in provider or getsonx.com: shown as they are.
+  if (isAllowedAvatar(url)) {
+    // Only Google sign-in pictures and getsonx.com (the database refuses other hosts).
     return <Image src={url} alt="" width={size} height={size} unoptimized referrerPolicy="no-referrer" className={`rounded-full bg-raised object-cover ${className}`} style={{ width: size, height: size }} />;
   }
   return (

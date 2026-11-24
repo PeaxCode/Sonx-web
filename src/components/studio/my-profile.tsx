@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { fetchMyProfile, suggestHandle, type ProfileInput, type PublicProfile } from "@/lib/profiles";
+import { fetchMyProfile, isAllowedAvatar, suggestHandle, type ProfileInput, type PublicProfile } from "@/lib/profiles";
 import { getSupabase } from "@/lib/supabase/client";
 import { ProfileDialog } from "./profile-dialog";
 import { useSession } from "./session";
@@ -47,7 +47,7 @@ export function MyProfileProvider({ children }: { children: React.ReactNode }) {
       const name = metadataString(metadata, "full_name", "name") ?? data.user?.email?.split("@")[0] ?? "";
       const avatar = metadataString(metadata, "avatar_url", "picture");
       setEditing({
-        initial: { handle: suggestHandle(name), display_name: name.slice(0, 40), bio: "", avatar_url: avatar?.startsWith("https://") ? avatar : null },
+        initial: { handle: suggestHandle(name), display_name: name.slice(0, 40), bio: "", avatar_url: isAllowedAvatar(avatar) ? avatar : null },
         isNew: true,
       });
     });
