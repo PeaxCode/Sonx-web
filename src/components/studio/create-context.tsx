@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 
 /** What the form is doing before the song exists: writing lyrics, then asking the server to start it. */
 export type MakingStage = "lyrics" | "starting";
@@ -18,6 +18,8 @@ export interface Making {
 export interface Tracked {
   id: string;
   withLyrics: boolean;
+  /** When Create was pressed, so the timer includes writing the lyrics. Filled in by the provider. */
+  startedAt: number;
 }
 
 /** An idea picked from the list, for the form to apply. `nonce` makes picking the same idea twice count. */
@@ -34,7 +36,7 @@ interface CreateValue {
   /** When the current `making` began, for the card's timer. */
   startedAt: number | null;
   tracked: Tracked | null;
-  setTracked: (tracked: Tracked | null) => void;
+  setTracked: (tracked: Omit<Tracked, "startedAt"> | null) => void;
   fill: PromptFill | null;
   requestFill: (fill: Omit<PromptFill, "nonce">) => void;
 }
@@ -45,11 +47,18 @@ const CreateContext = createContext<CreateValue | null>(null);
 export function CreateProvider({ children }: { children: React.ReactNode }) {
   // The start time rides along with `making`, so moving from lyrics to starting keeps the timer running.
   const [current, setCurrent] = useState<(Making & { startedAt: number }) | null>(null);
-  const [tracked, setTracked] = useState<Tracked | null>(null);
+  const currentRef = useRef(current);
+  const [tracked, setTrackedState] = useState<Tracked | null>(null);
   const [fill, setFill] = useState<PromptFill | null>(null);
 
   const setMaking = useCallback((next: Making | null) => {
-    setCurrent((previous) => (next ? { ...next, startedAt: previous?.startedAt ?? Date.now() } : null));
+    const value = next ? { ...next, startedAt: currentRef.current?.startedAt ?? Date.now() } : null;
+    currentRef.current = value;
+    setCurrent(value);
+  }, []);
+  // Called while `making` is still set, so the song keeps the moment Create was pressed.
+  const setTracked = useCallback((next: Omit<Tracked, "startedAt"> | null) => {
+    setTrackedState(next ? { ...next, startedAt: currentRef.current?.startedAt ?? Date.now() } : null);
   }, []);
   const making = useMemo<Making | null>(() => {
     if (!current) return null;
@@ -64,7 +73,7 @@ export function CreateProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<CreateValue>(
     () => ({ making, setMaking, startedAt, tracked, setTracked, fill, requestFill }),
-    [making, setMaking, startedAt, tracked, fill, requestFill],
+    [making, setMaking, startedAt, tracked, setTracked, fill, requestFill],
   );
   return <CreateContext.Provider value={value}>{children}</CreateContext.Provider>;
 }

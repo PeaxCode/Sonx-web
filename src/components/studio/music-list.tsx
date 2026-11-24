@@ -3,6 +3,7 @@
 import { MUSIC_FEATURES } from "@/lib/generations";
 import { SAMPLE_GENERATIONS } from "@/lib/samples";
 import { useLibrary } from "./library";
+import { MakingCard } from "./making-card";
 import { useSession } from "./session";
 import { TrackList } from "./track-list";
 
@@ -12,6 +13,7 @@ const heading = "mb-4 text-2xl font-semibold tracking-[-0.035em]";
 export function MusicList() {
   const { generations, loading } = useLibrary();
   const { signedIn } = useSession();
+  const songs = generations.filter((generation) => MUSIC_FEATURES.includes(generation.feature));
 
   if (signedIn === false) {
     return (
@@ -24,12 +26,12 @@ export function MusicList() {
   }
   return (
     <>
+      <MakingCard />
       <h2 id="songs-title" className={heading}>Your songs</h2>
       {loading || signedIn === null ? <p className="text-paper/60">Loading your songs</p> : (
-        <TrackList
-          generations={generations.filter((generation) => MUSIC_FEATURES.includes(generation.feature))}
-          emptyText="Your songs show up here, along with the ones you make in the Sonx app."
-        />
+        <>
+          <TrackList generations={songs} emptyText="Your songs show up here, along with the ones you make in the Sonx app." />
+        </>
       )}
     </>
   );
