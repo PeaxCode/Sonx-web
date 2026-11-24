@@ -1,15 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { CoverArt } from "@/components/cover-art";
-import { IconHeart, IconPause, IconPlay } from "@/components/icons";
+import { IconPause, IconPlay } from "@/components/icons";
 import { usePlayer } from "@/components/studio/player";
 import { genreName } from "@/components/studio/track-list";
-import type { ExploreTrack } from "@/lib/explore-mock";
-
-/** A stable hue shift per song, so mock covers vary like real artwork would. */
-const hueFor = (seed: string) => [...seed].reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) % 360, 7);
+import type { PublicSong } from "@/lib/profiles";
 
 export const compact = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });
 
@@ -23,8 +21,8 @@ export function Chevron({ direction }: { direction: "left" | "right" }) {
   );
 }
 
-/** A song: square cover that plays on click, title and genre, artist, plays and likes. */
-export function TrackTile({ track, queue, wide = false }: { track: ExploreTrack; queue: ExploreTrack[]; wide?: boolean }) {
+/** A published song: square cover that plays on click, title and genre, artist, plays. */
+export function TrackTile({ track, queue, wide = false }: { track: PublicSong; queue: PublicSong[]; wide?: boolean }) {
   const { current, playing, play, open } = usePlayer();
   const isCurrent = current?.id === track.id;
   return (
@@ -32,9 +30,11 @@ export function TrackTile({ track, queue, wide = false }: { track: ExploreTrack;
       <button type="button" onClick={() => play(track, queue)}
         aria-label={isCurrent && playing ? `Pause ${track.title}` : `Play ${track.title}`}
         className="group relative block aspect-square w-full overflow-hidden rounded-[12px] bg-raised">
-        <span className="block size-full" style={{ filter: `hue-rotate(${hueFor(track.title)}deg) saturate(1.2)` }}>
+        {track.cover_url ? (
+          <Image src={track.cover_url} alt="" fill sizes="(min-width: 768px) 172px, 148px" className="object-cover transition duration-500 ease-out group-hover:scale-105" />
+        ) : (
           <CoverArt seed={track.id} className="size-full transition duration-500 ease-out group-hover:scale-105" />
-        </span>
+        )}
         <span aria-hidden="true" className={`absolute inset-0 bg-black/30 transition-opacity duration-200 ${isCurrent ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`} />
         <span className={`absolute left-1/2 top-1/2 flex size-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-paper text-night shadow-xl transition duration-200 ${
           isCurrent ? "scale-100 opacity-100" : "scale-90 opacity-0 group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100"
@@ -49,12 +49,11 @@ export function TrackTile({ track, queue, wide = false }: { track: ExploreTrack;
         </button>
         {track.genre && <span className="shrink-0 text-[11px] text-orchid/80">{genreName(track.genre)}</span>}
       </div>
-      <Link href={artistHref(track.artistHandle)} className="block truncate text-[13px] text-paper/55 hover:text-paper hover:underline">
-        {track.artist}
+      <Link href={artistHref(track.handle)} className="block truncate text-[13px] text-paper/55 hover:text-paper hover:underline">
+        {track.display_name}
       </Link>
-      <p className="mt-0.5 flex items-center gap-3 text-[11px] text-paper/45 tabular-nums">
-        <span className="flex items-center gap-1"><IconPlay size={10} /><span className="sr-only">Plays: </span>{compact.format(track.plays)}</span>
-        <span className="flex items-center gap-1"><IconHeart size={11} /><span className="sr-only">Likes: </span>{compact.format(track.likes)}</span>
+      <p className="mt-0.5 flex items-center gap-1 text-[11px] text-paper/45 tabular-nums">
+        <IconPlay size={10} /><span className="sr-only">Plays: </span>{compact.format(track.play_count)}
       </p>
     </li>
   );

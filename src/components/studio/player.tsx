@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { Generation } from "@/lib/generations";
+import { recordPlay } from "@/lib/profiles";
 
 interface PlayerValue {
   current: Generation | null;
@@ -44,6 +45,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     setCurrent(track);
     audio.src = track.output_url;
     void audio.play().catch(() => setPlaying(false));
+    // Plays from Explore and profiles (published songs, read-only rows) count once per browser
+    // session; examples and the owner's own library are not counted.
+    if (track.is_sample && track.published_at) recordPlay(track.id);
   }, []);
 
   const next = useCallback(() => {

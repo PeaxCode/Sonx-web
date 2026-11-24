@@ -6,11 +6,17 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { PLAN_LABELS, PLAN_LIMITS, SONG_POOL, STORE_LINKS, type Feature } from "@/lib/billing-config";
 import { Aurora } from "@/components/aurora";
+import { compact } from "@/components/explore/tiles";
+import { exploreEnabled } from "@/lib/flags";
+import { MUSIC_FEATURES } from "@/lib/generations";
 import { webCheckoutEnabled, webCreditsEnabled } from "@/lib/paddle";
 import { getSupabase } from "@/lib/supabase/client";
 import { useBilling } from "./billing";
 import { ConfirmDialog } from "./confirm-dialog";
 import { useFeedback } from "./feedback";
+import { useLibrary } from "./library";
+import { useMyProfile } from "./my-profile";
+import { TrackList } from "./track-list";
 
 const STORE_NAMES: Record<string, string> = {
   paddle: "Paddle (web)",
@@ -35,6 +41,9 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
   const { notify } = useFeedback();
   const [busy, setBusy] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const { profile, editProfile } = useMyProfile();
+  const { generations, loading: songsLoading } = useLibrary();
+  const songs = generations.filter((generation) => MUSIC_FEATURES.includes(generation.feature));
   const webPlan = billing?.isPro && billing.store === "paddle";
   const appPlan = billing?.isPro && billing.store && billing.store !== "paddle" ? STORE_NAMES[billing.store] ?? "your app store" : null;
 
@@ -61,19 +70,55 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
 
   return (
     <div className="flex flex-col gap-8">
-      <section className="flex items-center gap-4">
-        {avatarUrl ? (
-          <Image src={avatarUrl} alt="" width={64} height={64} unoptimized className="rounded-full ring-2 ring-paper/10" />
+      <section className="flex flex-col gap-5 sm:flex-row sm:items-center">
+        {(profile?.avatar_url ?? avatarUrl) ? (
+          <Image src={(profile?.avatar_url ?? avatarUrl)!} alt="" width={88} height={88} unoptimized referrerPolicy="no-referrer" className="size-[88px] rounded-full object-cover ring-2 ring-paper/10" />
         ) : (
-          <span className="bg-signature flex size-16 items-center justify-center rounded-full text-2xl font-semibold">
-            {(name ?? email ?? "S").charAt(0).toUpperCase()}
+          <span className="bg-signature flex size-[88px] items-center justify-center rounded-full text-3xl font-semibold">
+            {(profile?.display_name ?? name ?? email ?? "S").charAt(0).toUpperCase()}
           </span>
         )}
-        <div className="min-w-0">
-          <p className="truncate text-2xl font-semibold tracking-[-0.02em]">{name ?? email}</p>
-          {name && email && <p className="truncate text-paper/60">{email}</p>}
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-2xl font-semibold tracking-[-0.02em]">{profile?.display_name ?? name ?? email}</p>
+          <p className="truncate text-sm text-paper/60">
+            {exploreEnabled && profile ? `@${profile.handle}` : email}
+          </p>
+          {exploreEnabled && profile?.bio && <p className="mt-2 max-w-xl text-sm text-paper/80">{profile.bio}</p>}
+          {exploreEnabled && profile && (
+            <p className="mt-2 flex flex-wrap gap-4 text-sm text-paper/60 tabular-nums">
+              <span><strong className="font-semibold text-paper">{compact.format(profile.followers)}</strong> {profile.followers === 1 ? "follower" : "followers"}</span>
+              <span><strong className="font-semibold text-paper">{compact.format(profile.following)}</strong> following</span>
+              <span><strong className="font-semibold text-paper">{profile.songs}</strong> published</span>
+              <span><strong className="font-semibold text-paper">{compact.format(profile.plays)}</strong> {profile.plays === 1 ? "play" : "plays"}</span>
+            </p>
+          )}
         </div>
+        {exploreEnabled && profile !== undefined && (
+          <div className="flex shrink-0 gap-2">
+            <button type="button" onClick={() => editProfile()}
+              className="rounded-full bg-paper/[0.08] px-4 py-2 text-sm font-medium transition hover:bg-paper/15">
+              {profile ? "Edit profile" : "Set up your profile"}
+            </button>
+            {profile && (
+              <Link href={`/artist/${profile.handle}`} className="rounded-full px-4 py-2 text-sm font-medium text-paper/70 transition hover:bg-paper/10 hover:text-paper">
+                View profile
+              </Link>
+            )}
+          </div>
+        )}
       </section>
+
+      {exploreEnabled && (
+        <section aria-labelledby="your-songs-title">
+          <div className="mb-3 flex items-baseline justify-between gap-3">
+            <h2 id="your-songs-title" className="text-xl font-semibold tracking-[-0.03em]">Your songs</h2>
+            <p className="text-xs text-fog">Public songs show on your profile and in Explore.</p>
+          </div>
+          {songsLoading ? <p className="text-paper/60">Loading your songs</p> : (
+            <TrackList generations={songs} emptyText="Songs you make, here or in the Sonx app, show up here." />
+          )}
+        </section>
+      )}
 
       {pending && (
         <p role="status" className="rounded-[var(--radius-control)] border border-orchid/40 bg-raised px-4 py-3 text-sm">

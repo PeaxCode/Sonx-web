@@ -3,8 +3,6 @@ import type { Generation } from "@/lib/generations";
 // Examples on Home, Create and the video form, served from /public/samples. Made
 // on 24 Nov 2026 with the same models as user songs (Mureka lyrics + mureka-8 for
 // vocals, mureka-7.5 for instrumentals, through EachLabs), covers by Flux 3.
-// The mobile app's own bundled examples (midnight-wanderer, stable-diffusion-beats)
-// stay in /public/samples for Explore's mock data.
 const sample = (fields: Pick<Generation, "id" | "feature" | "title" | "genre" | "output_url"> & Partial<Generation>): Generation => ({
   client_request_id: fields.id,
   prompt: null,

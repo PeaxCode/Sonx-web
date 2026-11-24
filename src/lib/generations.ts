@@ -21,14 +21,16 @@ export interface Generation {
   completed_at: string | null;
   /** Bundled example from the Sonx app, not a row in the user's library. */
   is_sample?: boolean;
-  /** Real artwork when one exists (sample video thumbnails); otherwise CoverArt. */
+  /** Real artwork when one exists (examples, house songs); otherwise CoverArt. */
   cover_url?: string;
+  /** Set while the song is published on the owner's profile and Explore. */
+  published_at?: string | null;
 }
 
 export const MUSIC_FEATURES: Feature[] = ["PROMPT_MUSIC", "PHOTO_MUSIC", "LYRICS_MUSIC", "AI_SINGING"];
 
 const COLUMNS =
-  "id,client_request_id,feature,title,genre,prompt,lyrics,status,output_url,error,is_favorite,created_at,completed_at";
+  "id,client_request_id,feature,title,genre,prompt,lyrics,status,output_url,error,is_favorite,created_at,completed_at,published_at,cover_url";
 
 export const newRequestId = (prefix: string) => `${prefix}_${crypto.randomUUID().replaceAll("-", "")}`;
 

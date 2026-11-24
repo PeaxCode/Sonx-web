@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ExploreView } from "@/components/explore/explore-view";
 import { exploreEnabled } from "@/lib/flags";
 
-// Mock content for now (lib/explore-mock.ts): kept out of search results until the feed is real.
+// Published songs; kept out of search results (and off getsonx.com) until launch.
 export const metadata: Metadata = { title: "Explore", robots: { index: false } };
 
 export default function ExplorePage() {

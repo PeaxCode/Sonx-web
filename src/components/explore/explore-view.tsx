@@ -1,15 +1,26 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { genreName } from "@/components/studio/track-list";
-import { ALL_EXPLORE_TRACKS, ARTISTS, EXPLORE_SECTIONS, GENRE_PLAYLISTS, tracksBy, type ExploreArtist, type ExploreTrack } from "@/lib/explore-mock";
-import { useFollowing } from "@/lib/follows";
+import { useSession } from "@/components/studio/session";
+import { fetchExplore, fetchFollowingSongs, type ExploreData, type PublicArtist, type PublicSong } from "@/lib/profiles";
 import { ArtistRow } from "./artist";
 import { Chevron, Shelf, TrackTile } from "./tiles";
 
+// Two colours per genre for the "Best of" tiles; genres not listed use the signature pair.
+const GENRE_COLORS: Record<string, [string, string]> = {
+  pop: ["#ff4fd8", "#7b5cff"], hiphop: ["#ff7a59", "#8e1f5b"], lofi: ["#5ad1c6", "#2c3e8f"], edm: ["#3cf2ff", "#6a2cff"],
+  rnb: ["#ffb36b", "#c2185b"], jazz: ["#ffd166", "#d1495b"], rock: ["#ff5a5a", "#2b1055"], kpop: ["#ff9de2", "#5b8cff"],
+  country: ["#f4a261", "#6b3e26"], latin: ["#ff6b6b", "#ffb347"], reggae: ["#7bd389", "#1b7f3b"], folk: ["#c9a66b", "#4a5d3a"],
+  blues: ["#4f8cff", "#1a2a6c"], metal: ["#9a9a9a", "#1c1c1c"], punk: ["#ff2e63", "#252a34"], indie: ["#a29bfe", "#2d3436"],
+  afrobeat: ["#fdcb6e", "#e17055"], classical: ["#dfe6e9", "#636e72"],
+};
+const DEFAULT_COLORS: [string, string] = ["#e563f1", "#6c5ce7"];
+
 /** "Best of" a genre: a gradient mesh card with two cards stacked behind it. */
-function PlaylistTile({ playlist, onOpen }: { playlist: (typeof GENRE_PLAYLISTS)[number]; onOpen: () => void }) {
-  const [from, to] = playlist.colors;
+function PlaylistTile({ genre, count, onOpen }: { genre: string; count: number; onOpen: () => void }) {
+  const [from, to] = GENRE_COLORS[genre] ?? DEFAULT_COLORS;
+  const name = genreName(genre);
   return (
     <li className="w-[148px] shrink-0 snap-start md:w-[172px]">
       <button type="button" onClick={onOpen} className="group block w-full text-left">
@@ -20,47 +31,73 @@ function PlaylistTile({ playlist, onOpen }: { playlist: (typeof GENRE_PLAYLISTS)
             style={{
               background: `radial-gradient(circle at 25% 30%, ${from} 0%, transparent 55%), radial-gradient(circle at 75% 75%, ${to} 0%, transparent 60%), linear-gradient(135deg, ${to}, ${from})`,
             }}>
-            <span className="absolute left-4 top-3 text-2xl font-medium tracking-[-0.03em] text-paper drop-shadow">{playlist.name}</span>
+            <span className="absolute left-4 top-3 text-2xl font-medium tracking-[-0.03em] text-paper drop-shadow">{name}</span>
           </span>
         </span>
-        <span className="mt-2 block text-sm font-medium">Best of {playlist.name}</span>
-        <span className="block text-[13px] text-paper/55">Sonx, {playlist.songs} songs</span>
+        <span className="mt-2 block text-sm font-medium">Best of {name}</span>
+        <span className="block text-[13px] text-paper/55">{count} {count === 1 ? "song" : "songs"}</span>
       </button>
     </li>
   );
 }
 
-const matches = (track: ExploreTrack, query: string) => {
-  const needle = query.trim().toLowerCase();
-  return [track.title, track.artist, genreName(track.genre)].some((field) => field.toLowerCase().includes(needle));
-};
-
-const matchesArtist = (artist: ExploreArtist, query: string) => {
-  const needle = query.trim().toLowerCase();
-  return [artist.name, artist.handle, artist.location].some((field) => field.toLowerCase().includes(needle));
-};
+const matches = (song: PublicSong, needle: string) =>
+  [song.title, song.display_name, song.handle, genreName(song.genre)].some((field) => field.toLowerCase().includes(needle));
+const matchesArtist = (artist: PublicArtist, needle: string) =>
+  [artist.display_name, artist.handle].some((field) => field.toLowerCase().includes(needle));
 
 const GRID = "grid grid-cols-2 gap-x-4 gap-y-7 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5";
 
+interface Section { id: string; title: string; songs: PublicSong[] }
+
+/** Explore from songs people published: newest, most played, followed artists, genres. */
 export function ExploreView() {
+  const { signedIn } = useSession();
+  const [data, setData] = useState<ExploreData | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [followingSongs, setFollowingSongs] = useState<PublicSong[]>([]);
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState<string | null>(null);
-  const { following } = useFollowing();
-  const results = query.trim() ? ALL_EXPLORE_TRACKS.filter((track) => matches(track, query)) : null;
-  const artistResults = query.trim() ? ARTISTS.filter((artist) => matchesArtist(artist, query)) : [];
-  const fromFollowed = following.flatMap((handle) => tracksBy(handle));
-  const sections = fromFollowed.length
-    ? [{ id: "following", title: "From artists you follow", tracks: fromFollowed }, ...EXPLORE_SECTIONS]
-    : EXPLORE_SECTIONS;
-  const expandedSection = sections.find((section) => section.id === expanded);
-  // Suggestions skip artists already followed, so the row keeps offering someone new.
-  const suggested = ARTISTS.filter((artist) => !following.includes(artist.handle));
 
-  const searchGenre = (name: string) => {
-    setExpanded(null);
-    setQuery(name);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  useEffect(() => {
+    let active = true;
+    fetchExplore().then((value) => active && setData(value)).catch(() => active && setFailed(true));
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!signedIn) return;
+    let active = true;
+    fetchFollowingSongs().then((value) => active && setFollowingSongs(value)).catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [signedIn]);
+
+  if (failed) return <p className="py-20 text-center text-paper/60">Explore could not load. Refresh to try again.</p>;
+  if (!data) return <p className="py-20 text-center text-paper/60">Loading songs</p>;
+
+  const played = data.top.filter((song) => song.play_count > 0);
+  const genres = Object.entries(data.byGenre).sort((a, b) => b[1].length - a[1].length);
+  const sections: Section[] = [
+    ...(signedIn && followingSongs.length ? [{ id: "following", title: "From artists you follow", songs: followingSongs }] : []),
+    { id: "new", title: "New on Sonx", songs: data.newest },
+    // Only songs someone has listened to; before any plays it would repeat New on Sonx.
+    ...(played.length ? [{ id: "top", title: "Most played", songs: played }] : []),
+  ];
+  const genreSections: Section[] = genres.map(([genre, songs]) => ({ id: `genre-${genre}`, title: `Best of ${genreName(genre)}`, songs }));
+  const expandedSection = [...sections, ...genreSections].find((section) => section.id === expanded);
+
+  const needle = query.trim().toLowerCase();
+  const allSongs = Object.values(data.byGenre).flat();
+  const results = needle ? allSongs.filter((song) => matches(song, needle)) : null;
+  const artistResults = needle ? data.artists.filter((artist) => matchesArtist(artist, needle)) : [];
+
+  if (!data.newest.length) {
+    return <p className="py-20 text-center text-paper/60">No songs published yet. Publish one from your Account to be the first.</p>;
+  }
 
   return (
     <div className="flex flex-col gap-10">
@@ -86,7 +123,7 @@ export function ExploreView() {
             </h2>
             {results.length > 0 ? (
               <ul className={GRID}>
-                {results.map((track) => <TrackTile key={track.id} track={track} queue={results} wide />)}
+                {results.map((song) => <TrackTile key={song.id} track={song} queue={results} wide />)}
               </ul>
             ) : (
               <p className="text-paper/60">Try a genre like lo-fi or pop, or an artist name.</p>
@@ -103,7 +140,7 @@ export function ExploreView() {
             <h2 id="expanded-title" className="text-xl font-semibold tracking-[-0.03em]">{expandedSection.title}</h2>
           </div>
           <ul className={GRID}>
-            {expandedSection.tracks.map((track) => <TrackTile key={track.id} track={track} queue={expandedSection.tracks} wide />)}
+            {expandedSection.songs.map((song) => <TrackTile key={song.id} track={song} queue={expandedSection.songs} wide />)}
           </ul>
         </section>
       ) : (
@@ -111,17 +148,19 @@ export function ExploreView() {
           {sections.map((section, index) => (
             <Fragment key={section.id}>
               <Shelf id={section.id} title={section.title} onSeeAll={() => setExpanded(section.id)}>
-                {section.tracks.map((track) => <TrackTile key={track.id} track={track} queue={section.tracks} />)}
+                {section.songs.map((song) => <TrackTile key={song.id} track={song} queue={section.songs} />)}
               </Shelf>
               {/* Artists to follow sits under the first row of songs. */}
-              {index === 0 && suggested.length > 0 && <ArtistRow id="artists" title="Artists to follow" artists={suggested} />}
+              {index === 0 && data.artists.length > 0 && <ArtistRow id="artists" title="Artists to follow" artists={data.artists} />}
             </Fragment>
           ))}
-          <Shelf id="best-of" title="Best of">
-            {GENRE_PLAYLISTS.map((playlist) => (
-              <PlaylistTile key={playlist.genre} playlist={playlist} onOpen={() => searchGenre(playlist.name)} />
-            ))}
-          </Shelf>
+          {genres.length > 0 && (
+            <Shelf id="best-of" title="Best of">
+              {genres.map(([genre, songs]) => (
+                <PlaylistTile key={genre} genre={genre} count={songs.length} onOpen={() => { setExpanded(`genre-${genre}`); window.scrollTo({ top: 0 }); }} />
+              ))}
+            </Shelf>
+          )}
         </>
       )}
     </div>
