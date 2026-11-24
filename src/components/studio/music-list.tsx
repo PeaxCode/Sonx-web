@@ -20,7 +20,8 @@ export function MusicList() {
     return (
       <>
         <h2 id="songs-title" className={heading}>Hear what Sonx makes</h2>
-        <TrackList generations={SAMPLE_GENERATIONS.filter((item) => MUSIC_FEATURES.includes(item.feature))} emptyText="" />
+        {/* A handful, so the ideas below stay in reach; Home has the full shelf. */}
+        <TrackList generations={SAMPLE_GENERATIONS.filter((item) => MUSIC_FEATURES.includes(item.feature)).slice(0, 5)} emptyText="" />
         <p className="mt-4 text-sm text-fog">Songs you create show up here, along with the ones you make in the Sonx app.</p>
         <PromptIdeas />
       </>
