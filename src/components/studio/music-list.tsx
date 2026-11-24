@@ -4,6 +4,7 @@ import { MUSIC_FEATURES } from "@/lib/generations";
 import { SAMPLE_GENERATIONS } from "@/lib/samples";
 import { useLibrary } from "./library";
 import { MakingCard } from "./making-card";
+import { PromptIdeas } from "./prompt-ideas";
 import { useSession } from "./session";
 import { TrackList } from "./track-list";
 
@@ -21,6 +22,7 @@ export function MusicList() {
         <h2 id="songs-title" className={heading}>Hear what Sonx makes</h2>
         <TrackList generations={SAMPLE_GENERATIONS.filter((item) => MUSIC_FEATURES.includes(item.feature))} emptyText="" />
         <p className="mt-4 text-sm text-fog">Songs you create show up here, along with the ones you make in the Sonx app.</p>
+        <PromptIdeas />
       </>
     );
   }
@@ -31,6 +33,8 @@ export function MusicList() {
       {loading || signedIn === null ? <p className="text-paper/60">Loading your songs</p> : (
         <>
           <TrackList generations={songs} emptyText="Your songs show up here, along with the ones you make in the Sonx app." />
+          {/* A new account's column is mostly empty: give it somewhere to start. */}
+          {songs.length < 3 && <PromptIdeas />}
         </>
       )}
     </>
