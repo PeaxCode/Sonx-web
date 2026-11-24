@@ -16,6 +16,7 @@ import {
   type WebTier,
 } from "@/lib/paddle";
 import { useCheckout } from "./use-checkout";
+import { Spinner } from "@/components/spinner";
 
 interface TierInfo {
   tier: WebTier;
@@ -155,7 +156,8 @@ export function PlanCards() {
         </div>
       )}
       {pending === "plan" && (
-        <p role="status" className="rounded-[var(--radius-control)] border border-orchid/40 bg-raised px-4 py-3 text-sm">
+        <p role="status" className="flex items-center gap-3 rounded-[var(--radius-control)] border border-orchid/40 bg-raised px-4 py-3 text-sm">
+          <Spinner size={18} />
           Payment received. Activating your plan, this takes up to a minute.
         </p>
       )}
@@ -245,7 +247,7 @@ export function PlanCards() {
                     className={`w-full rounded-full py-3 text-sm font-semibold transition disabled:opacity-40 ${
                       featured ? "bg-paper text-night hover:bg-paper/90" : "bg-signature text-paper hover:brightness-110"
                     }`}>
-                    {opening === priceId ? "Opening checkout" : `Get ${name}`}
+                    {opening === priceId ? <span className="inline-flex items-center justify-center gap-2"><Spinner size={16} /> Opening checkout</span> : `Get ${name}`}
                   </button>
                 )}
               </div>

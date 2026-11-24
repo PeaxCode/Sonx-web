@@ -7,6 +7,7 @@ import { MakingCard } from "./making-card";
 import { PromptIdeas } from "./prompt-ideas";
 import { useSession } from "./session";
 import { TrackList } from "./track-list";
+import { Loading } from "@/components/spinner";
 
 const heading = "mb-4 text-2xl font-semibold tracking-[-0.035em]";
 
@@ -31,7 +32,7 @@ export function MusicList() {
     <>
       <MakingCard />
       <h2 id="songs-title" className={heading}>Your songs</h2>
-      {loading || signedIn === null ? <p className="text-paper/60">Loading your songs</p> : (
+      {loading || signedIn === null ? <Loading label="Loading your songs" /> : (
         <>
           <TrackList generations={songs} emptyText="Your songs show up here, along with the ones you make in the Sonx app." />
           {/* A new account's column is mostly empty: give it somewhere to start. */}

@@ -7,6 +7,7 @@ import { SONG_CREDIT_COST } from "@/lib/billing-config";
 import { CREDIT_PACKS, formatMoney, webCreditsEnabled } from "@/lib/paddle";
 import { usePrices } from "./plan-cards";
 import { useCheckout } from "./use-checkout";
+import { Spinner } from "@/components/spinner";
 
 
 /**
@@ -31,7 +32,8 @@ export function CreditPacks({ onSubscribeClick }: { onSubscribeClick?: () => voi
   return (
     <div>
       {pending === "credits" && (
-        <p role="status" className="mb-4 rounded-[var(--radius-control)] border border-orchid/40 bg-raised px-4 py-3 text-sm">
+        <p role="status" className="mb-4 flex items-center gap-3 rounded-[var(--radius-control)] border border-orchid/40 bg-raised px-4 py-3 text-sm">
+          <Spinner size={18} />
           Payment received. Adding your credits, this takes up to a minute.
         </p>
       )}
@@ -75,7 +77,7 @@ export function CreditPacks({ onSubscribeClick }: { onSubscribeClick?: () => voi
                 disabled={!subscribed || opening !== null || pending === "credits"}
                 aria-describedby={subscribed ? undefined : "credits-locked"}
                 className="mt-4 rounded-full border border-line py-2.5 text-sm font-semibold transition hover:bg-raised disabled:cursor-not-allowed disabled:hover:bg-transparent">
-                {opening === pack.priceId ? "Opening checkout" : "Buy credits"}
+                {opening === pack.priceId ? <span className="inline-flex items-center justify-center gap-2"><Spinner size={16} /> Opening checkout</span> : "Buy credits"}
               </button>
             </li>
           );

@@ -6,6 +6,7 @@ import { addToAlbum, albumsWithSong, cleanAlbumTitle, createAlbum, fetchAlbums, 
 import type { Generation } from "@/lib/generations";
 import { useFeedback } from "./feedback";
 import { useSession } from "./session";
+import { Loading } from "@/components/spinner";
 
 const ALBUM_FEATURES = new Set(["PROMPT_MUSIC", "PHOTO_MUSIC", "LYRICS_MUSIC", "AI_SINGING"]);
 
@@ -134,7 +135,7 @@ function AlbumPicker({ song, onClose }: { song: Generation; onClose: () => void 
 
         <ul className="mt-4 max-h-72 overflow-y-auto">
           {albums === null ? (
-            <li className="py-3 text-sm text-paper/60">Loading your albums</li>
+            <li><Loading label="Loading your albums" className="py-4" /></li>
           ) : albums.length === 0 ? (
             <li className="py-3 text-sm text-paper/60">No albums yet. Name one above to start.</li>
           ) : albums.map((album) => (

@@ -27,6 +27,7 @@ import {
 import { getSupabase } from "@/lib/supabase/client";
 import { TIERS, usePrices } from "./plan-cards";
 import { checkoutHref } from "./use-checkout";
+import { Loading } from "@/components/spinner";
 
 const FRAME_CLASS = "sonx-checkout-frame";
 
@@ -267,7 +268,7 @@ export function CheckoutView({ priceId }: { priceId: string }) {
             </div>
           ) : (
             <>
-              {!totals && <div className="h-[450px] animate-pulse rounded-[var(--radius-control)] bg-raised/60" aria-label="Loading payment form" />}
+              {!totals && <Loading label="Loading the payment form" className="h-[450px] rounded-[var(--radius-control)] bg-raised/40" />}
               {/* Paddle renders the payment form here. */}
               <div className={FRAME_CLASS} />
             </>

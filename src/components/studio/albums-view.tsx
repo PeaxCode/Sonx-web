@@ -10,6 +10,7 @@ import { ConfirmDialog } from "./confirm-dialog";
 import { useFeedback } from "./feedback";
 import { usePlayer } from "./player";
 import { genreName } from "./track-list";
+import { Loading } from "@/components/spinner";
 
 const field = "min-w-0 rounded-[var(--radius-control)] border border-line bg-night px-3 py-2 text-sm focus:border-paper/40 focus:outline-none";
 
@@ -60,7 +61,7 @@ export function AlbumsView() {
         </button>
       </form>
       {albums === null ? (
-        <p className="text-paper/60">Loading your albums</p>
+        <Loading label="Loading your albums" />
       ) : albums.length === 0 ? (
         <p className="rounded-[24px] border border-dashed border-paper/10 px-6 py-12 text-center text-paper/60">
           No albums yet. Name one above, or use the album button on any song, here or in Explore.
@@ -171,7 +172,7 @@ function AlbumDetail({ album, onBack, onChanged }: { album: Album; onBack: () =>
       </header>
 
       {songs === null ? (
-        <p className="text-paper/60">Loading songs</p>
+        <Loading label="Loading songs" />
       ) : songs.length === 0 ? (
         <p className="rounded-[24px] border border-dashed border-paper/10 px-6 py-12 text-center text-paper/60">
           This album is empty. Use the album button on a song to add it.

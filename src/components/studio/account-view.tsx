@@ -17,7 +17,9 @@ import { useFeedback } from "./feedback";
 import { useLibrary } from "./library";
 import { LoadMore } from "./load-more";
 import { useMyProfile } from "./my-profile";
+import { RetentionDialog } from "./retention-dialog";
 import { TrackList } from "./track-list";
+import { Loading, Spinner } from "@/components/spinner";
 
 const STORE_NAMES: Record<string, string> = {
   paddle: "Paddle (web)",
@@ -42,6 +44,8 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
   const { notify } = useFeedback();
   const [busy, setBusy] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  // "Before you go" opens first; it leads on to the subscription manager in one click.
+  const [retaining, setRetaining] = useState(false);
   const { profile, editProfile } = useMyProfile();
   const { generations, loading: songsLoading, hasMore, loadingMore, loadMore } = useLibrary();
   const songs = generations.filter((generation) => MUSIC_FEATURES.includes(generation.feature));
@@ -115,7 +119,7 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
             <h2 id="your-songs-title" className="text-xl font-semibold tracking-[-0.03em]">Your songs</h2>
             <p className="text-xs text-fog">Public songs show on your profile and in Explore.</p>
           </div>
-          {songsLoading ? <p className="text-paper/60">Loading your songs</p> : (
+          {songsLoading ? <Loading label="Loading your songs" /> : (
             <>
               <TrackList generations={songs} emptyText="Songs you make, here or in the Sonx app, show up here." />
               <LoadMore hasMore={hasMore} loading={loadingMore} onLoad={loadMore} />
@@ -125,7 +129,8 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
       )}
 
       {pending && (
-        <p role="status" className="rounded-[var(--radius-control)] border border-orchid/40 bg-raised px-4 py-3 text-sm">
+        <p role="status" className="flex items-center gap-3 rounded-[var(--radius-control)] border border-orchid/40 bg-raised px-4 py-3 text-sm">
+          <Spinner size={18} />
           Payment received. {pending === "plan" ? "Activating your plan" : "Adding your credits"}, this usually takes a few seconds.
         </p>
       )}
@@ -207,9 +212,9 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
           <p className="mt-6 text-sm text-paper/60">
             {billing.store && STORE_NAMES[billing.store] ? `Billed by ${STORE_NAMES[billing.store]}. ` : ""}
             {billing.managementUrl ? (
-              <a href={billing.managementUrl} target="_blank" rel="noreferrer" className="font-medium text-paper underline-offset-4 hover:underline">
+              <button type="button" onClick={() => setRetaining(true)} className="font-medium text-paper underline-offset-4 hover:underline">
                 {billing.store === "paddle" ? "Manage subscription and invoices" : "Manage subscription"}
-              </a>
+              </button>
             ) : (
               "Manage it where you subscribed."
             )}
@@ -248,6 +253,11 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
           Delete account
         </button>
       </section>
+
+      {retaining && billing?.isPro && billing.managementUrl && (
+        <RetentionDialog plan={billing.currentPlan} periodStart={billing.periodStart} periodEnd={billing.periodEnd}
+          managementUrl={billing.managementUrl} onClose={() => setRetaining(false)} />
+      )}
 
       {confirmingDelete && (
         <ConfirmDialog title="Delete your account?" confirmLabel="Delete account" typeToConfirm="DELETE" busy={busy}
