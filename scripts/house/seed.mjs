@@ -34,6 +34,10 @@ async function findUserByEmail(email) {
 const stats = { accountsCreated: 0, profilesUpdated: 0, songsCreated: 0, songsMoved: 0 };
 let order = 0;
 
+// Resolve every artist's account first: songs are only ever looked up among these
+// accounts. client_request_id is chosen by the app, so anyone could name a song
+// "house_<slug>"; a lookup across all users would move that user's song.
+const users = new Map();
 for (const artist of ARTISTS) {
   let user = await findUserByEmail(artist.email);
   if (!user) {
@@ -42,6 +46,12 @@ for (const artist of ARTISTS) {
     user = data.user;
     stats.accountsCreated++;
   }
+  users.set(artist.handle, user);
+}
+const houseUserIds = [...users.values()].map((user) => user.id);
+
+for (const artist of ARTISTS) {
+  const user = users.get(artist.handle);
 
   const profile = {
     user_id: user.id, handle: artist.handle, display_name: artist.name, bio: artist.bio,
@@ -61,7 +71,7 @@ for (const artist of ARTISTS) {
     const clientRequestId = `house_${song.slug}`;
     order++;
     const { data: rows, error: findError } = await supabase.from("generations").select("id, user_id")
-      .eq("client_request_id", clientRequestId);
+      .eq("client_request_id", clientRequestId).in("user_id", houseUserIds);
     if (findError) throw findError;
     const existing = rows?.[0];
     if (existing) {
