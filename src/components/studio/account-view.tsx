@@ -15,6 +15,7 @@ import { useBilling } from "./billing";
 import { ConfirmDialog } from "./confirm-dialog";
 import { useFeedback } from "./feedback";
 import { useLibrary } from "./library";
+import { LoadMore } from "./load-more";
 import { useMyProfile } from "./my-profile";
 import { TrackList } from "./track-list";
 
@@ -42,7 +43,7 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
   const [busy, setBusy] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const { profile, editProfile } = useMyProfile();
-  const { generations, loading: songsLoading } = useLibrary();
+  const { generations, loading: songsLoading, hasMore, loadingMore, loadMore } = useLibrary();
   const songs = generations.filter((generation) => MUSIC_FEATURES.includes(generation.feature));
   const webPlan = billing?.isPro && billing.store === "paddle";
   const appPlan = billing?.isPro && billing.store && billing.store !== "paddle" ? STORE_NAMES[billing.store] ?? "your app store" : null;
@@ -115,7 +116,10 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
             <p className="text-xs text-fog">Public songs show on your profile and in Explore.</p>
           </div>
           {songsLoading ? <p className="text-paper/60">Loading your songs</p> : (
-            <TrackList generations={songs} emptyText="Songs you make, here or in the Sonx app, show up here." />
+            <>
+              <TrackList generations={songs} emptyText="Songs you make, here or in the Sonx app, show up here." />
+              <LoadMore hasMore={hasMore} loading={loadingMore} onLoad={loadMore} />
+            </>
           )}
         </section>
       )}

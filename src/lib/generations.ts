@@ -72,12 +72,22 @@ export async function startGeneration(
   }
 }
 
-export async function fetchGenerations(): Promise<Generation[]> {
-  const { data, error } = await getSupabase()
+/** Songs per page in the library; later pages load as the list scrolls. */
+export const LIBRARY_PAGE_SIZE = 30;
+
+/**
+ * One page of the user's library, newest first. `before` is the created_at of
+ * the last row already shown; `favorites` limits it to hearted songs.
+ */
+export async function fetchGenerations(options: { before?: string; favorites?: boolean; limit?: number } = {}): Promise<Generation[]> {
+  let query = getSupabase()
     .from("generations")
     .select(COLUMNS)
     .order("created_at", { ascending: false })
-    .limit(500);
+    .limit(options.limit ?? LIBRARY_PAGE_SIZE);
+  if (options.before) query = query.lt("created_at", options.before);
+  if (options.favorites) query = query.eq("is_favorite", true);
+  const { data, error } = await query;
   if (error) throw error;
   return (data ?? []) as Generation[];
 }
