@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { Aurora } from "@/components/aurora";
+import { CreateProvider } from "@/components/studio/create-context";
 import { CreateLinkParams } from "@/components/studio/create-link-params";
 import { CreateMusicForm } from "@/components/studio/create-music-form";
 import { MusicList } from "@/components/studio/music-list";
@@ -25,6 +26,7 @@ async function PrefilledForm({ searchParams }: { searchParams: CreateSearchParam
 
 export default function CreatePage({ searchParams }: { searchParams: CreateSearchParams }) {
   return (
+    <CreateProvider>
     <div className="mx-auto grid max-w-6xl gap-10 px-4 py-8 md:px-8 grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,440px)_minmax(0,1fr)] lg:gap-14 lg:py-14">
       <CreateLinkParams />
       <section aria-labelledby="create-title"
@@ -39,5 +41,6 @@ export default function CreatePage({ searchParams }: { searchParams: CreateSearc
         <MusicList />
       </section>
     </div>
+    </CreateProvider>
   );
 }

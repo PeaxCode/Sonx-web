@@ -9,7 +9,9 @@ import { webCheckoutEnabled } from "@/lib/paddle";
 import { saveDraft, takeBlogSource, takeDraft, type DraftMode, type DraftVoice } from "@/lib/draft";
 import { generateLyrics, writeLyrics } from "@/lib/lyrics";
 import { titleFromLyrics, titleFromPrompt } from "@/lib/titles";
+import { prefersReducedMotion } from "@/lib/motion";
 import { useBilling } from "./billing";
+import { useCreateOptional } from "./create-context";
 import { useFeedback } from "./feedback";
 import { useLibrary } from "./library";
 import { useSession } from "./session";
@@ -34,7 +36,9 @@ export function CreateMusicForm({ initialPrompt = "", initialGenre, restoreDraft
   const { notify, openPaywall } = useFeedback();
   const { track } = useLibrary();
   const { signedIn, requestSignIn } = useSession();
+  const create = useCreateOptional();
   const formRef = useRef<HTMLFormElement>(null);
+  const textRef = useRef<HTMLTextAreaElement>(null);
   // Set when a draft arrives to be made right away (after sign-in, or from Home's Create).
   // State, not a ref: the submit must run after the restored draft has rendered, or it sees an empty form.
   // "now": a restored draft to make at once. "after-purchase": the paywall is open; make it once the plan or credits land.
@@ -99,6 +103,22 @@ export function CreateMusicForm({ initialPrompt = "", initialGenre, restoreDraft
     if (resume === "after-purchase") takeDraft();
     formRef.current?.requestSubmit();
   }, [resume, signedIn, access, pending]);
+
+  // An idea picked beside the form fills it and brings it into view (on phones it is far above the ideas).
+  const fill = create?.fill;
+  useEffect(() => {
+    if (!fill) return;
+    /* eslint-disable react-hooks/set-state-in-effect */
+    setMode("describe");
+    setPrompt(fill.prompt.slice(0, PROMPT_LIMIT));
+    setGenre(fill.genre);
+    setInstrumental(fill.instrumental);
+    /* eslint-enable react-hooks/set-state-in-effect */
+    genrePicked.current = true;
+    const box = textRef.current;
+    box?.focus({ preventScroll: true });
+    box?.scrollIntoView({ block: "center", behavior: prefersReducedMotion() ? "auto" : "smooth" });
+  }, [fill]);
 
   const askToSignIn = (next: string) => {
     saveDraft({ mode, prompt, lyrics, instrumental, voice, genre, title });
@@ -169,31 +189,41 @@ export function CreateMusicForm({ initialPrompt = "", initialGenre, restoreDraft
       return;
     }
 
+    // Sonx writes the lyrics for a described song with vocals; the card beside the form shows that step.
+    const withLyrics = mode === "describe" && !instrumental;
+    create?.setMaking({ stage: withLyrics ? "lyrics" : "starting", title: title.trim(), genre, withLyrics });
     try {
       let songLyrics = mode === "lyrics" ? lyrics.trim() : undefined;
       let writerTitle = "";
-      if (mode === "describe" && !instrumental) {
+      if (withLyrics) {
         setBusy("lyrics");
         ({ lyrics: songLyrics, title: writerTitle } = await writeLyrics(`${genreLabel} song about: ${prompt.trim()}`));
       }
       // Unnamed songs get a real name: the lyric writer's, else the prompt's or the lyrics' opening phrase.
       const autoTitle = writerTitle || (mode === "describe" ? titleFromPrompt(prompt) : titleFromLyrics(lyrics));
 
+      const songTitle = title.trim() || autoTitle || `${genreLabel} track`;
+      create?.setMaking({ stage: "starting", title: songTitle, genre, withLyrics });
+
       setBusy("song");
-      await startGeneration({
+      const { generationId } = await startGeneration({
         feature,
         clientRequestId: newRequestId("web"),
-        title: title.trim() || autoTitle || `${genreLabel} track`,
+        title: songTitle,
         genre,
         ...(feature === "LYRICS_MUSIC" ? { lyrics: songLyrics, vocalGender: voice } : { prompt: prompt.trim() }),
       });
       await track("");
+      create?.setTracked({ id: generationId, withLyrics });
+      create?.setMaking(null);
       setPrompt("");
       setLyrics("");
       setTitle("");
       setTopicBefore(null);
-      notify("Your song is being made. It takes 1 to 3 minutes, and we will tell you when it is ready.");
+      // On /create the card beside the form shows the progress; elsewhere a toast says it started.
+      if (!create) notify("Your song is being made. It takes 1 to 3 minutes, and we will tell you when it is ready.");
     } catch (error) {
+      create?.setMaking(null);
       if (isInsufficientBalance(error)) paywall();
       else notify(error instanceof Error ? error.message : "The song could not be started.", "error");
     } finally {
@@ -215,6 +245,7 @@ export function CreateMusicForm({ initialPrompt = "", initialGenre, restoreDraft
       <label className="flex flex-col gap-2">
         <span className="text-sm font-medium">{mode === "describe" ? "What is the song about?" : "Lyrics, or a topic to write them from"}</span>
         <textarea
+          ref={textRef}
           value={text}
           maxLength={mode === "describe" ? PROMPT_LIMIT : LYRICS_LIMIT}
           onChange={(event) => {
