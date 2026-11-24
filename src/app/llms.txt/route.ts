@@ -15,7 +15,7 @@ export function GET() {
 - [Terms of Service](${SITE_URL}/terms.html): Full terms of service
 - [Full product overview](${SITE_URL}/llms-full.txt): Features, pricing, comparisons, and original research in one file
 
-## Journal
+## Blog
 
 Long-form articles, original data studies, and practical guides on AI music generation.
 

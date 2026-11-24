@@ -115,5 +115,14 @@ Excel'le karşılaştırma notları (24 Kasım):
 - S8: menü ve footer ikisi de "Blog"; statik blog sayfalarının `<title>`'ı hâlâ "Sonx Journal" ve tasarımları uygulamadan farklı.
 - U3 (Create sağ kolon/alt kısım boş) ve G11 birlikte ele alınabilir: sağ kolonun başında gerçek üretim kartı.
 
-Hâlâ açık: M9 gerçek örnek şarkılar (içerik), F4 Explore gerçek veriyle, G11 gerçek üretimde adım adım ilerleme,
+Hâlâ açık: M9 gerçek örnek şarkılar (içerik), F4 Explore gerçek veriyle,
 ücretsiz şarkı dosyasının tam kilitlenmesi (imzalı URL), mobil uygulama güncellemesi.
+
+## 24 Kasım
+
+- [x] Yeniden testler: O1, O2, O3, O7, G7, M11 test edildi, çalışıyor (Google Sheet'te "Bitti").
+- [x] G11 + U3 (PR #3, dev'e birleşti): Create'te gerçek aşamalı "Now making" kartı ve listenin altında fikir kartları.
+      Tasarım: docs/superpowers/specs/2026-11-24-create-progress-design.md
+- Takip tablosu: Google Sheet "Sonx Web: Test Bulguları ve Yapılacaklar" (Durum/Not sütunları güncel).
+- Açık: M9, F4, S8 (blog sayfası başlıkları "Sonx Journal"), G14 (aboneye ana sayfada pazarlama içeriği).
+- Ertelenen küçükler: şarkı başlarken seçilen fikir form sıfırlanınca siliniyor; "Made in" süresi söz yazma saniyelerini içermiyor.

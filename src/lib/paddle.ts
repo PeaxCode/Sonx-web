@@ -245,9 +245,13 @@ export function fetchWebPrices(): Promise<Record<string, WebPrice>> {
   return pricesPromise;
 }
 
-/** Formats an amount in the same currency as a Paddle price, e.g. formatMoney(price, price.amount / 12). */
+/**
+ * Formats an amount in the same currency as a Paddle price, e.g. formatMoney(price, price.amount / 12).
+ * Fixed to en-US like the rest of the site: with the default locale the server and the
+ * visitor's browser format differently ("$4,99" vs "$4.99") and hydration fails.
+ */
 export function formatMoney(price: WebPrice, amount: number) {
-  return new Intl.NumberFormat(undefined, { style: "currency", currency: price.currency }).format(amount);
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: price.currency }).format(amount);
 }
 
 /**

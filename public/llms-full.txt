@@ -104,7 +104,7 @@ Example, after: "Lo fi hip hop, rainy melancholy, 72 BPM, dusty Rhodes chords, v
 
 Sonx published original prompts written to this specification, covering genres, moods, occasions, workouts, video and social use, plus prompts for the lyrics generator. All are free to copy and use.
 
-## Journal Articles
+## Blog Articles
 
 - How AI Music Generation Actually Works in 2026 — https://getsonx.com/blog/how-ai-music-generation-works-2026/
 - Suno Alternatives in 2026: Which AI Music App Is Right for You? — https://getsonx.com/blog/suno-alternatives-2026/
@@ -126,4 +126,4 @@ Sonx published original prompts written to this specification, covering genres, 
 - Privacy Policy: https://getsonx.com/privacy.html
 - Terms of Service: https://getsonx.com/terms.html
 - Download: https://aimusicgeneratorsonx.go.link/iCF6Q
-- Journal: https://getsonx.com/blog/
+- Blog: https://getsonx.com/blog/
