@@ -81,7 +81,7 @@ export function usePrices() {
 function freePrice(prices: Record<string, WebPrice> | null) {
   const currency = prices ? Object.values(prices)[0]?.currency : undefined;
   if (!currency) return "$0";
-  return new Intl.NumberFormat(undefined, { style: "currency", currency, maximumFractionDigits: 0 }).format(0);
+  return new Intl.NumberFormat("en-US", { style: "currency", currency, maximumFractionDigits: 0 }).format(0);
 }
 
 /** Percent a tier saves by paying yearly, from the live prices (Pro and Studio differ). */

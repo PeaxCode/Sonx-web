@@ -47,7 +47,7 @@ function Check() {
 }
 
 const money = (currency: string, amount: number) =>
-  new Intl.NumberFormat(undefined, { style: "currency", currency }).format(amount);
+  new Intl.NumberFormat("en-US", { style: "currency", currency }).format(amount);
 
 /**
  * Sonx's own checkout: what you are buying, in our design, beside Paddle's
