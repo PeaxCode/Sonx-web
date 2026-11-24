@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { Spinner } from "@/components/spinner";
 
 /**
  * The end of a paged list: loads the next page when it scrolls into view, with a
@@ -23,7 +24,7 @@ export function LoadMore({ hasMore, loading, onLoad }: { hasMore: boolean; loadi
     <div ref={ref} className="mt-6 flex justify-center">
       <button type="button" onClick={onLoad} disabled={loading}
         className="rounded-full bg-paper/[0.06] px-5 py-2.5 text-sm font-medium transition hover:bg-paper/10 disabled:opacity-50">
-        {loading ? "Loading" : "Show more"}
+        {loading ? <span className="inline-flex items-center gap-2"><Spinner size={16} /> Loading</span> : "Show more"}
       </button>
     </div>
   );

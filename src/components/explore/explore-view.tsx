@@ -6,6 +6,7 @@ import { useSession } from "@/components/studio/session";
 import { fetchExplore, fetchFollowingSongs, type ExploreData, type PublicArtist, type PublicSong } from "@/lib/profiles";
 import { ArtistRow } from "./artist";
 import { Chevron, Shelf, TrackTile } from "./tiles";
+import { Loading } from "@/components/spinner";
 
 // Two colours per genre for the "Best of" tiles; genres not listed use the signature pair.
 const GENRE_COLORS: Record<string, [string, string]> = {
@@ -77,7 +78,7 @@ export function ExploreView() {
   }, [signedIn]);
 
   if (failed) return <p className="py-20 text-center text-paper/60">Explore could not load. Refresh to try again.</p>;
-  if (!data) return <p className="py-20 text-center text-paper/60">Loading songs</p>;
+  if (!data) return <Loading label="Loading songs" className="py-20" />;
 
   const played = data.top.filter((song) => song.play_count > 0);
   const genres = Object.entries(data.byGenre).sort((a, b) => b[1].length - a[1].length);

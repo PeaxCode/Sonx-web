@@ -8,6 +8,7 @@ import { useLibrary } from "./library";
 import { LoadMore } from "./load-more";
 import { useSession } from "./session";
 import { TrackList } from "./track-list";
+import { Loading } from "@/components/spinner";
 
 const FILTERS = [
   { id: "all", label: "All", match: () => true },
@@ -94,9 +95,9 @@ export function LibraryView() {
           </button>
         </div>
       ) : filter === "albums" ? (
-        signedIn ? <AlbumsView /> : <p className="text-paper/60">Loading your library</p>
+        signedIn ? <AlbumsView /> : <Loading label="Loading your library" />
       ) : loading || signedIn === null || (filter === "favorites" && favorites.loading && !favorites.rows.length) ? (
-        <p className="text-paper/60">Loading your library</p>
+        <Loading label="Loading your library" />
       ) : (
         <>
           <TrackList
