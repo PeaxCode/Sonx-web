@@ -4,20 +4,27 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ArtistProfile } from "@/components/explore/artist";
 import { Chevron } from "@/components/explore/tiles";
-import { ARTISTS, findArtist, tracksBy } from "@/lib/explore-mock";
 import { exploreEnabled } from "@/lib/flags";
+import { fetchProfile, fetchProfileSongs, type PublicProfile } from "@/lib/profiles";
 
 type Props = { params: Promise<{ handle: string }> };
 
-// Mock artists (lib/explore-mock.ts): every profile is known at build time.
+// Profiles are created after deploys, so none are known at build time. One placeholder
+// (an invalid handle, read without a network call) gives the shell a route to prerender.
 export function generateStaticParams() {
-  return ARTISTS.map((artist) => ({ handle: artist.handle }));
+  return [{ handle: "--" }];
+}
+
+/** The profile, or null when Explore is off, the handle is malformed or nobody has it. */
+async function profileFor(handle: string): Promise<PublicProfile | null> {
+  if (!exploreEnabled || !/^[a-z0-9][a-z0-9-]{2,29}$/i.test(handle)) return null;
+  return fetchProfile(handle).catch(() => null);
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const artist = findArtist((await params).handle);
-  // Kept out of search results with the rest of Explore until profiles are real.
-  return { title: artist ? artist.name : "Artist", robots: { index: false } };
+  const profile = await profileFor((await params).handle);
+  // Kept out of search results with the rest of Explore until launch.
+  return { title: profile ? `${profile.display_name} (@${profile.handle})` : "Artist", robots: { index: false } };
 }
 
 export default function ArtistPage({ params }: Props) {
@@ -36,7 +43,8 @@ export default function ArtistPage({ params }: Props) {
 }
 
 async function Artist({ params }: Props) {
-  const artist = exploreEnabled ? findArtist((await params).handle) : undefined;
-  if (!artist) notFound();
-  return <ArtistProfile artist={artist} tracks={tracksBy(artist.handle)} />;
+  const profile = await profileFor((await params).handle);
+  if (!profile) notFound();
+  const songs = await fetchProfileSongs(profile).catch(() => []);
+  return <ArtistProfile profile={profile} songs={songs} />;
 }

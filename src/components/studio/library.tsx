@@ -33,6 +33,8 @@ interface LibraryValue {
   removeWithUndo: (generation: Generation) => () => void;
   /** Songs that finished (or failed) while this tab was open, newest last; for the ready alert. */
   finished: Generation[];
+  /** Reflects a publish or unpublish done on the server. */
+  markPublished: (id: string, publishedAt: string | null) => void;
 }
 
 const LibraryContext = createContext<LibraryValue | null>(null);
@@ -154,6 +156,9 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
         pendingDeletes.current.delete(generation.id);
         setGenerations((current) => [...current, generation].sort((a, b) => b.created_at.localeCompare(a.created_at)));
       };
+    },
+    markPublished: (id, publishedAt) => {
+      setGenerations((current) => current.map((item) => (item.id === id ? { ...item, published_at: publishedAt } : item)));
     },
     remove: async (generation) => {
       setGenerations((current) => current.filter((item) => item.id !== generation.id));

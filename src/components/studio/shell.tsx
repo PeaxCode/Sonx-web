@@ -10,6 +10,7 @@ import { exploreEnabled } from "@/lib/flags";
 import { BillingProvider, useBilling } from "./billing";
 import { FeedbackProvider } from "./feedback";
 import { LibraryProvider } from "./library";
+import { MyProfileProvider } from "./my-profile";
 import { PlayerProvider } from "./player";
 import { PlayerBar } from "./player-bar";
 import { ReadyAlerts } from "./ready-alerts";
@@ -210,11 +211,13 @@ export function StudioShell({ children }: { children: React.ReactNode }) {
         <LibraryProvider>
           <PlayerProvider>
             <FeedbackProvider>
+              <MyProfileProvider>
               <MobileTopBar />
               <Navigation />
               <ReadyAlerts />
               <main className="min-h-dvh pb-40 md:pl-60 md:pb-28">{children}</main>
               <PlayerBar />
+              </MyProfileProvider>
             </FeedbackProvider>
           </PlayerProvider>
         </LibraryProvider>

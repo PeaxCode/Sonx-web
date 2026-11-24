@@ -8,6 +8,7 @@ import { IconClose, IconHeart, IconPause, IconPlay, IconTrash, IconVideo } from 
 import { GENRES } from "@/lib/billing-config";
 import type { Generation } from "@/lib/generations";
 import { DownloadButton } from "./download-button";
+import { PublishToggle } from "./publish-toggle";
 import { ShareButton } from "./share-button";
 import { useFeedback } from "./feedback";
 import { useLibrary } from "./library";
@@ -182,6 +183,10 @@ export function TrackList({ generations, emptyText }: { generations: Generation[
                 <div className="flex items-center gap-0.5 text-paper/50">
                   {ready && (
                     <>
+                      {/* A published song keeps its "Public" label in view, like a favorite's heart. */}
+                      <span className={generation.published_at ? "mr-1" : `mr-1 ${HOVER_ACTION}`}>
+                        <PublishToggle generation={generation} variant="compact" />
+                      </span>
                       {!generation.is_sample && (
                       <button type="button" aria-label={generation.is_favorite ? "Remove from favorites" : "Add to favorites"}
                         aria-pressed={generation.is_favorite} onClick={() => toggleFavorite(generation)}
