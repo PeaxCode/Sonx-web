@@ -104,10 +104,16 @@ Web (dev'de):
 - [x] Çerez onayı: Consent Mode v2, AB/UK/CH/TR'de onaysız analitik kapalı (A3)
 - [x] Terms: kredi paketleri, aylık ücretsiz şarkı, paylaşılan linkler (M10)
 
-Backend (commit'li, DEPLOY EDİLMEDİ — migration için onay gerekiyor):
-- [ ] supabase/migrations/20261123000000_free_song_claims_and_sharing.sql → `supabase db push`
-- [ ] Ardından provider-proxy deploy (aynı e-postaya ayda tek ücretsiz şarkı)
-- [ ] PADDLE_API_KEY / PADDLE_SANDBOX_API_KEY secret'ları (hesap silinince web aboneliği iptali)
+Backend (24 Kasım'da teyit edildi: canlıda):
+- [x] supabase/migrations/20261123000000_free_song_claims_and_sharing.sql uzak veritabanında uygulanmış
+- [x] provider-proxy v33 (23 Kas 13:07 UTC, son commit d0e5fe8'den sonra): aynı e-postaya ayda tek ücretsiz şarkı
+- [x] PADDLE_SANDBOX_API_KEY secret'ı var (sandbox'ta hesap silinince web aboneliği iptali)
+- [ ] PADDLE_API_KEY (canlı) secret'ı yok → canlı Paddle'a geçmeden önce eklenmeli
+
+Excel'le karşılaştırma notları (24 Kasım):
+- F2/G9: model değil, sezgisel başlık (src/lib/titles.ts) + söz yazarının başlığı; "Pop track" artık sadece son çare.
+- S8: menü ve footer ikisi de "Blog"; statik blog sayfalarının `<title>`'ı hâlâ "Sonx Journal" ve tasarımları uygulamadan farklı.
+- U3 (Create sağ kolon/alt kısım boş) ve G11 birlikte ele alınabilir: sağ kolonun başında gerçek üretim kartı.
 
 Hâlâ açık: M9 gerçek örnek şarkılar (içerik), F4 Explore gerçek veriyle, G11 gerçek üretimde adım adım ilerleme,
 ücretsiz şarkı dosyasının tam kilitlenmesi (imzalı URL), mobil uygulama güncellemesi.
