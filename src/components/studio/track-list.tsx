@@ -7,6 +7,7 @@ import { CoverArt } from "@/components/cover-art";
 import { IconClose, IconHeart, IconPause, IconPlay, IconTrash, IconVideo } from "@/components/icons";
 import { GENRES } from "@/lib/billing-config";
 import type { Generation } from "@/lib/generations";
+import { AddToAlbumButton } from "./album-picker";
 import { DownloadButton } from "./download-button";
 import { PublishToggle } from "./publish-toggle";
 import { ShareButton } from "./share-button";
@@ -194,6 +195,7 @@ export function TrackList({ generations, emptyText }: { generations: Generation[
                         <IconHeart size={18} filled={generation.is_favorite} />
                       </button>
                       )}
+                      <AddToAlbumButton song={generation} className={`rounded-full p-2 transition hover:bg-paper/10 hover:text-paper ${HOVER_ACTION}`} />
                       <ShareButton generation={generation} className={`rounded-full p-2 transition hover:bg-paper/10 hover:text-paper ${HOVER_ACTION}`} />
                       <DownloadButton generation={generation} className={`rounded-full p-2 transition hover:bg-paper/10 hover:text-paper ${HOVER_ACTION}`} />
                     </>

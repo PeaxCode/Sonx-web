@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { MUSIC_FEATURES, type Generation } from "@/lib/generations";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { fetchGenerations, LIBRARY_PAGE_SIZE, MUSIC_FEATURES, type Generation } from "@/lib/generations";
 import { SAMPLE_GENERATIONS } from "@/lib/samples";
+import { AlbumsView } from "./albums-view";
 import { useLibrary } from "./library";
+import { LoadMore } from "./load-more";
 import { useSession } from "./session";
 import { TrackList } from "./track-list";
 
@@ -13,13 +15,64 @@ const FILTERS = [
   // Hidden with music video, pending payment provider review:
   // { id: "videos", label: "Videos", match: (item: Generation) => item.feature === "AI_MUSIC_VIDEO" },
   { id: "favorites", label: "Favorites", match: (item: Generation) => item.is_favorite },
+  { id: "albums", label: "Albums", match: () => false },
 ] as const;
 
+/** Hearted songs, a page at a time, fetched while the Favorites tab is open. */
+function useFavoritePages(enabled: boolean) {
+  const [rows, setRows] = useState<Generation[]>([]);
+  const [hasMore, setHasMore] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!enabled) return;
+    let active = true;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLoading(true);
+    fetchGenerations({ favorites: true })
+      .then((page) => {
+        if (!active) return;
+        setRows(page);
+        setHasMore(page.length === LIBRARY_PAGE_SIZE);
+      })
+      .catch(() => undefined)
+      .finally(() => active && setLoading(false));
+    return () => {
+      active = false;
+    };
+  }, [enabled]);
+
+  const loadMore = useCallback(() => {
+    const last = rows[rows.length - 1];
+    if (!hasMore || loading || !last) return;
+    setLoading(true);
+    fetchGenerations({ favorites: true, before: last.created_at })
+      .then((page) => {
+        setRows((current) => [...current, ...page.filter((row) => !current.some((item) => item.id === row.id))]);
+        setHasMore(page.length === LIBRARY_PAGE_SIZE);
+      })
+      .catch(() => undefined)
+      .finally(() => setLoading(false));
+  }, [rows, hasMore, loading]);
+
+  return { rows, hasMore, loading, loadMore };
+}
+
 export function LibraryView() {
-  const { generations, loading } = useLibrary();
+  const { generations, loading, hasMore, loadingMore, loadMore } = useLibrary();
   const { signedIn, requestSignIn } = useSession();
   const [filter, setFilter] = useState<(typeof FILTERS)[number]["id"]>("all");
   const active = FILTERS.find((item) => item.id === filter)!;
+  const favorites = useFavoritePages(filter === "favorites" && Boolean(signedIn));
+  // The favorites tab reads hearted songs from the server (they may be pages down);
+  // rows also in the main list take its copy, so un-hearting one hides it at once.
+  const byId = useMemo(() => new Map(generations.map((row) => [row.id, row])), [generations]);
+  const shown = filter === "favorites"
+    ? favorites.rows.map((row) => byId.get(row.id) ?? row).filter((row) => row.is_favorite)
+    : generations.filter(active.match);
+  const paging = filter === "favorites"
+    ? { hasMore: favorites.hasMore, loading: favorites.loading, onLoad: favorites.loadMore }
+    : { hasMore, loading: loadingMore, onLoad: loadMore };
 
   return (
     <>
@@ -40,17 +93,22 @@ export function LibraryView() {
             Sign in
           </button>
         </div>
-      ) : loading || signedIn === null ? (
+      ) : filter === "albums" ? (
+        signedIn ? <AlbumsView /> : <p className="text-paper/60">Loading your library</p>
+      ) : loading || signedIn === null || (filter === "favorites" && favorites.loading && !favorites.rows.length) ? (
         <p className="text-paper/60">Loading your library</p>
       ) : (
-        <TrackList
-          generations={generations.filter(active.match)}
-          emptyText={filter === "favorites" ? "Tap the heart on a song to keep it here." : "Nothing here yet. Create a song to get started."}
-        />
+        <>
+          <TrackList
+            generations={shown}
+            emptyText={filter === "favorites" ? "Tap the heart on a song to keep it here." : "Nothing here yet. Create a song to get started."}
+          />
+          <LoadMore {...paging} />
+        </>
       )}
 
       {/* The same examples the mobile app shows in its library. */}
-      {filter !== "favorites" && SAMPLE_GENERATIONS.some(active.match) && (
+      {filter !== "favorites" && filter !== "albums" && SAMPLE_GENERATIONS.some(active.match) && (
         <section aria-labelledby="samples-title" className="mt-12">
           <h2 id="samples-title" className="text-2xl font-semibold tracking-[-0.03em]">Examples from Sonx</h2>
           <p className="mb-4 mt-1 text-paper/60">Made with Sonx. Play them to hear what you can create.</p>

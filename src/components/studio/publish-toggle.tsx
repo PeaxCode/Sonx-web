@@ -5,7 +5,7 @@ import { useState } from "react";
 import { trackEvent } from "@/lib/analytics";
 import { exploreEnabled } from "@/lib/flags";
 import type { Generation } from "@/lib/generations";
-import { ProfileRequiredError, setPublished } from "@/lib/profiles";
+import { setPublished } from "@/lib/profiles";
 import { useFeedback } from "./feedback";
 import { useLibrary } from "./library";
 import { useMyProfile } from "./my-profile";
@@ -14,12 +14,12 @@ const PUBLISHABLE = new Set(["PROMPT_MUSIC", "PHOTO_MUSIC", "LYRICS_MUSIC", "AI_
 
 /**
  * Public / Private switch for one of the user's finished songs. The first publish
- * without a profile opens the profile dialog, then publishes. Hidden where
+ * creates the profile from the sign-in name and picture (editable later). Hidden where
  * profiles are off (production until launch) and for examples, videos and songs
  * still being made.
  */
 export function PublishToggle({ generation, variant = "switch" }: { generation: Generation; variant?: "switch" | "compact" }) {
-  const { profile, editProfile } = useMyProfile();
+  const { profile, editProfile, ensureProfile } = useMyProfile();
   const { markPublished } = useLibrary();
   const { notify } = useFeedback();
   const [busy, setBusy] = useState(false);
@@ -30,26 +30,24 @@ export function PublishToggle({ generation, variant = "switch" }: { generation: 
   const apply = async (next: boolean) => {
     setBusy(true);
     try {
+      // Publishing needs a profile: the first publish makes one, no form in the way.
+      const created = next && !profile;
+      const owner = next ? await ensureProfile() : profile;
       const at = await setPublished(generation.id, next);
       markPublished(generation.id, at);
       trackEvent(next ? "song_publish" : "song_unpublish", { feature: generation.feature });
-      notify(next ? `“${generation.title}” is on your profile and Explore.` : `“${generation.title}” is private again.`);
+      if (!next) notify(`“${generation.title}” is private again.`);
+      else if (created && owner) notify(`Published. Your profile is @${owner.handle}.`, "info", { label: "Edit profile", onClick: () => editProfile() });
+      else notify(`“${generation.title}” is on your profile and Explore.`);
     } catch (error) {
-      if (error instanceof ProfileRequiredError) editProfile(() => void apply(true));
-      else notify(error instanceof Error ? error.message : "That did not work. Try again.", "error");
+      notify(error instanceof Error ? error.message : "That did not work. Try again.", "error");
     } finally {
       setBusy(false);
     }
   };
 
   const onClick = () => {
-    if (busy) return;
-    // Without a profile there is nowhere to publish to yet: set it up, then publish.
-    if (!published && profile === null) {
-      editProfile(() => void apply(true));
-      return;
-    }
-    void apply(!published);
+    if (!busy) void apply(!published);
   };
 
   if (variant === "compact") {

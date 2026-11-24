@@ -5,6 +5,7 @@ import { getSupabase } from "@/lib/supabase/client";
 import {
   deleteGeneration,
   fetchGenerations,
+  LIBRARY_PAGE_SIZE,
   refreshGeneration,
   renameGeneration,
   setFavorite,
@@ -22,8 +23,13 @@ const REFRESH_INTERVAL_MS = 60 * 1000;
 export const UNDO_MS = 10_000;
 
 interface LibraryValue {
+  /** The pages loaded so far, newest first. */
   generations: Generation[];
   loading: boolean;
+  /** More songs exist beyond the loaded pages. */
+  hasMore: boolean;
+  loadingMore: boolean;
+  loadMore: () => Promise<void>;
   /** Shows a just-started generation before the next poll. */
   track: (generationId: string) => Promise<void>;
   toggleFavorite: (generation: Generation) => Promise<void>;
@@ -44,6 +50,8 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
   const { signedIn } = useSession();
   const [fetched, setGenerations] = useState<Generation[]>([]);
   const [fetching, setLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   // Visitors have an empty library; the studio shows the examples instead.
   const generations = useMemo(() => (signedIn ? fetched : []), [signedIn, fetched]);
   const loading = signedIn === null || (signedIn && fetching);
@@ -65,11 +73,32 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("pagehide", flush);
   }, []);
 
+  // Refreshes the newest page and merges it in, keeping pages loaded further down.
   const reload = useCallback(async () => {
     const rows = await fetchGenerations();
-    setGenerations(rows);
+    const fresh = new Map(rows.map((row) => [row.id, row]));
+    setGenerations((current) => [
+      ...rows,
+      ...current.filter((row) => !fresh.has(row.id)),
+    ].sort((a, b) => b.created_at.localeCompare(a.created_at)));
     setLoading(false);
   }, []);
+
+  const loadMore = useCallback(async () => {
+    const last = fetched[fetched.length - 1];
+    if (!hasMore || loadingMore || !last) return;
+    setLoadingMore(true);
+    try {
+      const rows = await fetchGenerations({ before: last.created_at });
+      setGenerations((current) => {
+        const known = new Set(current.map((row) => row.id));
+        return [...current, ...rows.filter((row) => !known.has(row.id))];
+      });
+      setHasMore(rows.length === LIBRARY_PAGE_SIZE);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [fetched, hasMore, loadingMore]);
 
   useEffect(() => {
     if (!signedIn) return;
@@ -78,6 +107,7 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
       .then((rows) => {
         if (!active) return;
         setGenerations(rows);
+        setHasMore(rows.length === LIBRARY_PAGE_SIZE);
         setLoading(false);
       })
       .catch(() => active && setLoading(false));
@@ -129,6 +159,9 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<LibraryValue>(() => ({
     generations,
     loading,
+    hasMore: Boolean(signedIn) && hasMore,
+    loadingMore,
+    loadMore,
     finished,
     track: async () => {
       await reload();
@@ -164,7 +197,7 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
       setGenerations((current) => current.filter((item) => item.id !== generation.id));
       await deleteGeneration(generation.id).catch(() => reload());
     },
-  }), [generations, loading, finished, reload, refreshBilling]);
+  }), [generations, loading, signedIn, hasMore, loadingMore, loadMore, finished, reload, refreshBilling]);
 
   return <LibraryContext.Provider value={value}>{children}</LibraryContext.Provider>;
 }

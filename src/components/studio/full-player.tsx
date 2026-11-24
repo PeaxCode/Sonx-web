@@ -40,9 +40,11 @@ function SyncedLyrics({ text }: { text: string }) {
     manualUntil.current = Date.now() + MANUAL_SCROLL_PAUSE_MS;
   };
 
+  // Only the bottom keeps a deep pad, so the last lines can still reach the middle; a deep
+  // top pad left a third of the screen empty before the first line was sung.
   return (
     <div ref={scrollerRef} onWheel={pauseFollow} onTouchMove={pauseFollow}
-      className="h-full overflow-y-auto overscroll-contain px-1 py-[30vh] [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)] [scrollbar-width:none]">
+      className="h-full overflow-y-auto overscroll-contain px-1 pb-[30vh] pt-[8vh] [mask-image:linear-gradient(to_bottom,transparent,black_6%,black_82%,transparent)] [scrollbar-width:none]">
       {lines.map((line, index) => {
         if (line.kind === "gap") return <div key={index} className="h-5" />;
         if (line.kind === "section") {

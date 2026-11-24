@@ -76,3 +76,6 @@ export const IconChevronDown = (props: IconProps) => (
 export const IconShare = (props: IconProps) => (
   <Icon {...props}><path d="M12 3v12m0-12-4 4m4-4 4 4M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" /></Icon>
 );
+export const IconAlbumAdd = (props: IconProps) => (
+  <Icon {...props}><rect x="3" y="3" width="13" height="13" rx="2" /><path d="M21 8v11a2 2 0 0 1-2 2H8M9.5 6.5v6M6.5 9.5h6" /></Icon>
+);

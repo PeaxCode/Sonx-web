@@ -5,7 +5,7 @@ import { useState } from "react";
 import { IconPause, IconPlay } from "@/components/icons";
 import { usePlayer } from "@/components/studio/player";
 import type { PublicArtist, PublicProfile, PublicSong } from "@/lib/profiles";
-import { Avatar, FollowButton, HouseBadge } from "./social";
+import { Avatar, FollowButton } from "./social";
 import { artistHref, compact, Shelf, TrackTile } from "./tiles";
 
 /** A round avatar with name and followers, for the "Artists to follow" row. */
@@ -21,7 +21,6 @@ export function ArtistTile({ artist }: { artist: PublicArtist }) {
       </Link>
       <span className="mb-2 flex items-center gap-1.5 text-xs text-paper/50 tabular-nums">
         {compact.format(followers)} {followers === 1 ? "follower" : "followers"}
-        {artist.is_house && <HouseBadge />}
       </span>
       <FollowButton handle={artist.handle} name={artist.display_name} size="sm" onChange={(delta) => setFollowers((count) => count + delta)} />
     </li>
@@ -48,7 +47,7 @@ export function ArtistProfile({ profile, songs }: { profile: PublicProfile; song
         <Avatar url={profile.avatar_url} name={profile.display_name} size={176} className="shrink-0 shadow-2xl" />
         <div className="min-w-0 flex-1">
           <p className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-paper/50 md:justify-start">
-            Artist {profile.is_house && <HouseBadge />}
+            Artist
           </p>
           <h1 className="mt-1 text-3xl font-semibold tracking-[-0.04em] md:text-5xl">{profile.display_name}</h1>
           <p className="mt-2 text-sm text-paper/55">@{profile.handle}</p>

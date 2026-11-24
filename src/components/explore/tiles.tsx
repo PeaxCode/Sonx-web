@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { CoverArt } from "@/components/cover-art";
 import { IconPause, IconPlay } from "@/components/icons";
+import { AddToAlbumButton } from "@/components/studio/album-picker";
 import { usePlayer } from "@/components/studio/player";
 import { genreName } from "@/components/studio/track-list";
 import type { PublicSong } from "@/lib/profiles";
@@ -26,7 +27,8 @@ export function TrackTile({ track, queue, wide = false }: { track: PublicSong; q
   const { current, playing, play, open } = usePlayer();
   const isCurrent = current?.id === track.id;
   return (
-    <li className={`${wide ? "" : "w-[148px] shrink-0 snap-start md:w-[172px]"}`}>
+    <li className={`group/tile ${wide ? "" : "w-[148px] shrink-0 snap-start md:w-[172px]"}`}>
+      <div className="relative">
       <button type="button" onClick={() => play(track, queue)}
         aria-label={isCurrent && playing ? `Pause ${track.title}` : `Play ${track.title}`}
         className="group relative block aspect-square w-full overflow-hidden rounded-[12px] bg-raised">
@@ -42,6 +44,10 @@ export function TrackTile({ track, queue, wide = false }: { track: PublicSong; q
           {isCurrent && playing ? <IconPause size={18} /> : <IconPlay size={18} />}
         </span>
       </button>
+      {/* Over the cover's corner, so titles keep their width; shown on hover, always on touch. */}
+      <AddToAlbumButton song={track} size={15}
+        className="absolute right-2 top-2 rounded-full bg-night/70 p-1.5 text-paper backdrop-blur transition hover:bg-night md:opacity-0 md:group-hover/tile:opacity-100 md:focus-visible:opacity-100" />
+      </div>
       <div className="mt-2 flex items-baseline gap-2">
         <button type="button" onClick={() => open(track, queue)}
           className={`min-w-0 truncate text-left text-sm font-medium hover:underline ${isCurrent ? "text-orchid" : ""}`}>

@@ -1,14 +1,23 @@
-// Sonx's own (house) accounts and their published songs on Explore.
+// Sonx's own (house) artists and their published songs on Explore.
 // The M9 examples live in /public/samples; the songs generated for the house
 // accounts live in /public/samples/house. Titles of vocal songs come from the
 // lyrics writer (generate.mjs records them); instrumentals are named here.
 
-export const HOUSE_ACCOUNTS = [
-  { handle: "sonx-originals", name: "Sonx Originals", bio: "Songs made by the Sonx team with Sonx. Pop, R&B and everything with a chorus." },
-  { handle: "sonx-lofi-lab", name: "Sonx Lo-fi Lab", bio: "Calm instrumentals made with Sonx, for studying, reading and rainy days." },
-  { handle: "sonx-beats", name: "Sonx Beats", bio: "Hip-hop, EDM and afrobeat made with Sonx. Turn it up." },
-  { handle: "sonx-live-room", name: "Sonx Live Room", bio: "Guitars, drums and voices: country, indie, blues and loud rock, made with Sonx." },
+// Artists on Explore (is_house in the database). Bios are about the music, never a
+// person; avatars are abstract artwork (scripts/house/avatars.mjs), never faces.
+// `email` keeps the four original house users; the others are new support+ aliases.
+export const ARTISTS = [
+  { handle: "nightdrive", name: "Nightdrive", email: "support+originals@getsonx.com", bio: "Late-night pop for open windows and empty highways. Made with Sonx.", avatar: "neon synthwave sunset over an empty highway, abstract shapes, purple and pink glow" },
+  { handle: "velvet-hours", name: "Velvet Hours", email: "support+velvet-hours@getsonx.com", bio: "Slow R&B for the hours after midnight. Made with Sonx.", avatar: "abstract flowing velvet fabric in deep burgundy with soft golden light, moody and smooth" },
+  { handle: "juniper-lane", name: "Juniper Lane", email: "support+juniper-lane@getsonx.com", bio: "Porch-light country and fingerpicked folk. Made with Sonx.", avatar: "a single juniper tree on a rolling hill at golden hour, warm painterly illustration" },
+  { handle: "rooftop-static", name: "Rooftop Static", email: "support+live-room@getsonx.com", bio: "Loud guitars, fast drums, songs about leaving. Made with Sonx.", avatar: "abstract torn paper collage of a city skyline with static noise texture, bold red and black" },
+  { handle: "mara-sol", name: "Mara Sol", email: "support+mara-sol@getsonx.com", bio: "Latin, afrobeat and island rhythms for long summers. Made with Sonx.", avatar: "abstract sun over a turquoise sea in bold flat shapes, warm orange and teal, risograph print style" },
+  { handle: "lowlight-tapes", name: "Lowlight Tapes", email: "support+lofi-lab@getsonx.com", bio: "Lo-fi, jazz and quiet piano for reading and rain. Made with Sonx.", avatar: "a stack of cassette tapes with blank labels glowing under a desk lamp, cozy illustrated lo-fi style" },
+  { handle: "kilo-nine", name: "Kilo Nine", email: "support+beats@getsonx.com", bio: "Hip-hop beats and festival drops. Made with Sonx.", avatar: "abstract graffiti-inspired shapes in electric blue and yellow on dark concrete" },
+  { handle: "grey-harbor", name: "Grey Harbor", email: "support+grey-harbor@getsonx.com", bio: "Blues and heavy riffs from the edge of the storm. Made with Sonx.", avatar: "a stormy grey harbor with a lone lighthouse, moody charcoal painting" },
 ];
+
+export const AVATAR_BASE = "https://dfsxnkfdnyubcigcrycn.supabase.co/storage/v1/object/public/profile-images";
 
 // New songs for the house accounts (generate.mjs). Genre ids are from GENRES in billing-config.
 export const NEW_SONGS = [
@@ -28,13 +37,17 @@ export const NEW_SONGS = [
   { slug: "hiphop-boom-bap", genre: "hiphop", title: "Corner Store Beat", instrumental: "Classic boom bap hip-hop instrumental, crunchy drums, jazzy sample chops and deep bass, head-nodding groove", cover: "a corner store at night with a glowing neon sign, wet street reflections, gritty urban photo" },
 ];
 
-// Which account publishes which song. Paths are relative to /public.
+// Which artist publishes which song. Paths are relative to /public.
 const m9 = (slug) => ({ slug, dir: "samples" });
 const house = (slug) => ({ slug, dir: "samples/house" });
 
 export const PUBLISHED = {
-  "sonx-originals": [m9("pop-bonfire"), m9("rnb-late-night"), m9("kpop-own-stage"), m9("rock-starting-over"), house("pop-golden-hour"), house("rnb-slow-dance"), house("latin-verano")],
-  "sonx-lofi-lab": [m9("lofi-rainy-study"), m9("classical-new-dawn"), house("lofi-night-bus"), house("jazz-blue-cafe"), house("folk-cabin-morning")],
-  "sonx-beats": [m9("hiphop-city"), m9("edm-sunrise"), m9("afrobeat-city-lights"), house("edm-neon-pulse"), house("hiphop-boom-bap"), house("reggae-island-time")],
-  "sonx-live-room": [m9("country-dirt-road"), house("country-front-porch"), house("indie-paper-planes"), house("blues-midnight-train"), house("metal-iron-sky"), house("punk-no-sleep")],
+  "nightdrive": [m9("pop-bonfire"), house("pop-golden-hour"), m9("kpop-own-stage")],
+  "velvet-hours": [m9("rnb-late-night"), house("rnb-slow-dance")],
+  "juniper-lane": [m9("country-dirt-road"), house("country-front-porch"), house("folk-cabin-morning")],
+  "rooftop-static": [house("indie-paper-planes"), m9("rock-starting-over"), house("punk-no-sleep")],
+  "mara-sol": [house("latin-verano"), m9("afrobeat-city-lights"), house("reggae-island-time")],
+  "lowlight-tapes": [m9("lofi-rainy-study"), house("lofi-night-bus"), house("jazz-blue-cafe"), m9("classical-new-dawn")],
+  "kilo-nine": [m9("hiphop-city"), house("hiphop-boom-bap"), m9("edm-sunrise"), house("edm-neon-pulse")],
+  "grey-harbor": [house("blues-midnight-train"), house("metal-iron-sky")],
 };
