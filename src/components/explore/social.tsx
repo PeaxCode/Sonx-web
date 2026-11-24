@@ -20,11 +20,6 @@ export function Avatar({ url, name, size, className = "" }: { url: string | null
   );
 }
 
-/** Small "By Sonx" label for Sonx's own accounts, so they never pass as independent artists. */
-export function HouseBadge() {
-  return <span className="rounded-full bg-orchid/15 px-2 py-0.5 text-[11px] font-semibold text-orchid">By Sonx</span>;
-}
-
 /**
  * Follow / Following. Visitors get the sign-in window; it is hidden on your own profile.
  * `onChange` gets +1 or -1 so the caller can update the follower count it shows.
