@@ -57,11 +57,13 @@ interface SongRow {
 }
 
 /**
- * Avatar hosts the database accepts (Google sign-in pictures and Sonx). Anything
- * else could log every visitor who sees the avatar, so it is never rendered.
+ * Avatars the database accepts: Google profile pictures (lh3-lh6) and Sonx's own
+ * images, no query string. Any other host could log every visitor who sees the
+ * avatar, so it is never rendered.
  */
 export const isAllowedAvatar = (url: string | null | undefined): url is string =>
-  typeof url === "string" && /^https:\/\/(([a-z0-9-]+\.)*googleusercontent\.com|getsonx\.com)\//.test(url);
+  typeof url === "string" && url.length <= 1000 &&
+  (/^https:\/\/lh[3-6]\.googleusercontent\.com\/[A-Za-z0-9/_=.-]+$/.test(url) || /^https:\/\/getsonx\.com\/images\/[A-Za-z0-9/_.-]+$/.test(url));
 
 /** A session-less client for public reads (works on the server and in the browser). */
 function anonClient() {
