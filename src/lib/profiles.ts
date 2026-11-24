@@ -57,14 +57,15 @@ interface SongRow {
 }
 
 /**
- * Avatars the database accepts: Google sign-in pictures (lh3-lh6, /a/ paths) and
- * Sonx's own images (no dot segments, no query string). Any other host could log every visitor who sees the
+ * Avatars the database accepts: Google sign-in pictures (lh3-lh6, /a/ paths), Sonx's
+ * own images (no dot segments, no query string) and the profile-images bucket. Any other host could log every visitor who sees the
  * avatar, so it is never rendered.
  */
 export const isAllowedAvatar = (url: string | null | undefined): url is string =>
   typeof url === "string" && url.length <= 1000 &&
   (/^https:\/\/lh[3-6]\.googleusercontent\.com\/a-?\/[A-Za-z0-9_=-]+$/.test(url) ||
-    /^https:\/\/getsonx\.com\/images\/([A-Za-z0-9_-][A-Za-z0-9_.-]*\/)*[A-Za-z0-9_-][A-Za-z0-9_.-]*$/.test(url));
+    /^https:\/\/getsonx\.com\/images\/([A-Za-z0-9_-][A-Za-z0-9_.-]*\/)*[A-Za-z0-9_-][A-Za-z0-9_.-]*$/.test(url) ||
+    /^https:\/\/dfsxnkfdnyubcigcrycn\.supabase\.co\/storage\/v1\/object\/public\/profile-images\/[a-z0-9-]+\.(jpg|png|webp)$/.test(url));
 
 /** A session-less client for public reads (works on the server and in the browser). */
 function anonClient() {

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchGenerations, LIBRARY_PAGE_SIZE, MUSIC_FEATURES, type Generation } from "@/lib/generations";
 import { SAMPLE_GENERATIONS } from "@/lib/samples";
+import { AlbumsView } from "./albums-view";
 import { useLibrary } from "./library";
 import { LoadMore } from "./load-more";
 import { useSession } from "./session";
@@ -14,6 +15,7 @@ const FILTERS = [
   // Hidden with music video, pending payment provider review:
   // { id: "videos", label: "Videos", match: (item: Generation) => item.feature === "AI_MUSIC_VIDEO" },
   { id: "favorites", label: "Favorites", match: (item: Generation) => item.is_favorite },
+  { id: "albums", label: "Albums", match: () => false },
 ] as const;
 
 /** Hearted songs, a page at a time, fetched while the Favorites tab is open. */
@@ -91,6 +93,8 @@ export function LibraryView() {
             Sign in
           </button>
         </div>
+      ) : filter === "albums" ? (
+        signedIn ? <AlbumsView /> : <p className="text-paper/60">Loading your library</p>
       ) : loading || signedIn === null || (filter === "favorites" && favorites.loading && !favorites.rows.length) ? (
         <p className="text-paper/60">Loading your library</p>
       ) : (
@@ -104,7 +108,7 @@ export function LibraryView() {
       )}
 
       {/* The same examples the mobile app shows in its library. */}
-      {filter !== "favorites" && SAMPLE_GENERATIONS.some(active.match) && (
+      {filter !== "favorites" && filter !== "albums" && SAMPLE_GENERATIONS.some(active.match) && (
         <section aria-labelledby="samples-title" className="mt-12">
           <h2 id="samples-title" className="text-2xl font-semibold tracking-[-0.03em]">Examples from Sonx</h2>
           <p className="mb-4 mt-1 text-paper/60">Made with Sonx. Play them to hear what you can create.</p>
