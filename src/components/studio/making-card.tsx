@@ -8,7 +8,7 @@ import { prefersReducedMotion } from "@/lib/motion";
 import { useCreateOptional } from "./create-context";
 import { useLibrary } from "./library";
 import { usePlayer } from "./player";
-import { genreName } from "./track-list";
+import { genreName } from "@/lib/song-labels";
 
 type Phase = "lyrics" | "starting" | "processing" | "completed" | "failed";
 type StepState = "todo" | "active" | "done" | "failed";
@@ -122,7 +122,7 @@ export function MakingCard() {
   }[phase];
   const timing = phase === "completed"
     ? row?.completed_at ? `Made in ${clock(Date.parse(row.completed_at) - Date.parse(row.created_at))}` : ""
-    : phase === "failed" ? "" : `${clock(startedAt === null || now === null ? 0 : now - startedAt)} · usually 1 to 3 minutes`;
+    : phase === "failed" ? "" : `${clock(startedAt === null || now === null ? 0 : now - startedAt)} · usually 2 to 5 minutes`;
 
   return (
     <div ref={ref} className="mb-8 scroll-mt-20 rounded-[24px] border border-paper/10 bg-paper/[0.04] p-4 md:p-5">

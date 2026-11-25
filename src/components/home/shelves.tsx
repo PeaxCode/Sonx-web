@@ -11,7 +11,8 @@ import { SAMPLE_GENERATIONS } from "@/lib/samples";
 import { useLibrary } from "@/components/studio/library";
 import { usePlayer } from "@/components/studio/player";
 import { useSession } from "@/components/studio/session";
-import { genreName, kindLabel, VideoDialog } from "@/components/studio/track-list";
+import { VideoDialog } from "@/components/studio/track-list";
+import { genreName, kindLabel } from "@/lib/song-labels";
 import { STARTERS } from "./content";
 
 const isVideo = (item: Generation) => item.feature === "AI_MUSIC_VIDEO";

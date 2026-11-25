@@ -7,7 +7,7 @@ import { CoverArt } from "@/components/cover-art";
 import { IconPause, IconPlay } from "@/components/icons";
 import { AddToAlbumButton } from "@/components/studio/album-picker";
 import { usePlayer } from "@/components/studio/player";
-import { genreName } from "@/components/studio/track-list";
+import { genreName } from "@/lib/song-labels";
 import type { PublicSong } from "@/lib/profiles";
 
 export const compact = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });

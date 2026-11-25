@@ -79,3 +79,6 @@ export const IconShare = (props: IconProps) => (
 export const IconAlbumAdd = (props: IconProps) => (
   <Icon {...props}><rect x="3" y="3" width="13" height="13" rx="2" /><path d="M21 8v11a2 2 0 0 1-2 2H8M9.5 6.5v6M6.5 9.5h6" /></Icon>
 );
+export const IconMore = (props: IconProps) => (
+  <Icon {...props}><circle cx="5" cy="12" r="1.2" fill="currentColor" /><circle cx="12" cy="12" r="1.2" fill="currentColor" /><circle cx="19" cy="12" r="1.2" fill="currentColor" /></Icon>
+);

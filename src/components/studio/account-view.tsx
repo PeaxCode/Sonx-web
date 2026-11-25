@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { PLAN_LABELS, PLAN_LIMITS, SONG_POOL, STORE_LINKS, type Feature } from "@/lib/billing-config";
+import { PLAN_LABELS, PLAN_LIMITS, SONG_POOL, STORE_LINKS, type Feature, type Plan } from "@/lib/billing-config";
 import { Aurora } from "@/components/aurora";
 import { compact } from "@/components/explore/tiles";
 import { exploreEnabled } from "@/lib/flags";
@@ -32,8 +32,9 @@ const SUPPORT_EMAIL = "support@getsonx.com";
 const SUPPORT_MAILTO = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Web purchase not on my account")}`;
 
 // One row: instrumentals and songs with vocals share the plan's songs.
-const USAGE_ROWS: { feature: Feature; label: string }[] = [
-  { feature: SONG_POOL, label: "Songs this month" },
+// The weekly plan's songs reset every week, every other plan's every month.
+const USAGE_ROWS: { feature: Feature; label: (plan: Plan) => string }[] = [
+  { feature: SONG_POOL, label: (plan) => (plan === "WEEKLY" ? "Songs this week" : "Songs this month") },
   // Hidden with music video, pending payment provider review:
   // { feature: "AI_MUSIC_VIDEO", label: "Music videos" },
 ];
@@ -195,7 +196,7 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
               return (
                 <div key={feature}>
                   <div className="flex items-center justify-between gap-4 text-sm">
-                    <dt className="text-paper/70">{label}</dt>
+                    <dt className="text-paper/70">{label(billing.currentPlan)}</dt>
                     <dd className="font-medium tabular-nums">{limit === 0 ? "Credits only" : `${limit - used} of ${limit} left`}</dd>
                   </div>
                   {limit > 0 && (

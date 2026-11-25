@@ -5,11 +5,12 @@ import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
 import Image from "next/image";
 import { CoverArt } from "@/components/cover-art";
 import { IconClose, IconHeart, IconPause, IconPlay, IconTrash, IconVideo } from "@/components/icons";
-import { GENRES } from "@/lib/billing-config";
+import { genreName, kindLabel } from "@/lib/song-labels";
 import type { Generation } from "@/lib/generations";
 import { AddToAlbumButton } from "./album-picker";
 import { DownloadButton } from "./download-button";
 import { PublishToggle } from "./publish-toggle";
+import { RowMenu, ROW_MENU_ITEM } from "./row-menu";
 import { ShareButton } from "./share-button";
 import { useFeedback } from "./feedback";
 import { useLibrary } from "./library";
@@ -28,18 +29,6 @@ function madeOn(iso: string) {
 
 // Row actions appear on hover on desktop; a favorited heart stays visible.
 const HOVER_ACTION = "md:opacity-0 md:group-hover/row:opacity-100 md:group-focus-within/row:opacity-100";
-
-export const genreName = (id: string | null) => GENRES.find((genre) => genre.id === id)?.name ?? id ?? "";
-
-export const kindLabel = (generation: Pick<Generation, "feature">) => {
-  switch (generation.feature) {
-    case "AI_MUSIC_VIDEO": return "Music video";
-    case "LYRICS_MUSIC": return "Song with vocals";
-    // AI Voice is hidden; older AI_SINGING rows read as a plain song.
-    case "AI_SINGING": return "Song with vocals";
-    default: return "Instrumental";
-  }
-};
 
 /** Three bars that bounce while the row's song plays. */
 function NowPlaying({ playing }: { playing: boolean }) {
@@ -62,7 +51,7 @@ function Writing() {
             style={{ height: `${6 + bar * 3}px`, animationDelay: `${bar * 150}ms` }} />
         ))}
       </span>
-      Making your song, usually 1 to 3 minutes
+      Making your song, usually 2 to 5 minutes
     </span>
   );
 }
@@ -117,6 +106,12 @@ export function TrackList({ generations, emptyText }: { generations: Generation[
   }, { scope: listRef, dependencies: [idsKey] });
 
   const playable = generations.filter((item) => item.status === "completed" && item.feature !== "AI_MUSIC_VIDEO");
+
+  // Undo instead of a confirm box: one tap to delete, one to bring it back.
+  const deleteSong = (generation: Generation) => {
+    const undo = removeWithUndo(generation);
+    notify(`Deleted “${generation.title}” here and in the app.`, "info", { label: "Undo", onClick: undo });
+  };
 
   if (generations.length === 0) {
     return <p className="rounded-[24px] border border-dashed border-paper/10 px-6 py-12 text-center text-paper/60">{emptyText}</p>;
@@ -184,8 +179,9 @@ export function TrackList({ generations, emptyText }: { generations: Generation[
                 <div className="flex items-center gap-0.5 text-paper/50">
                   {ready && (
                     <>
-                      {/* A published song keeps its "Public" label in view, like a favorite's heart. */}
-                      <span className={generation.published_at ? "mr-1" : `mr-1 ${HOVER_ACTION}`}>
+                      {/* A published song keeps its "Public" label in view, like a favorite's heart.
+                          On phones an unpublished song's switch lives in the "…" menu instead. */}
+                      <span className={generation.published_at ? "mr-1" : `mr-1 hidden md:inline ${HOVER_ACTION}`}>
                         <PublishToggle generation={generation} variant="compact" />
                       </span>
                       {!generation.is_sample && (
@@ -195,22 +191,48 @@ export function TrackList({ generations, emptyText }: { generations: Generation[
                         <IconHeart size={18} filled={generation.is_favorite} />
                       </button>
                       )}
-                      <AddToAlbumButton song={generation} className={`rounded-full p-2 transition hover:bg-paper/10 hover:text-paper ${HOVER_ACTION}`} />
-                      <ShareButton generation={generation} className={`rounded-full p-2 transition hover:bg-paper/10 hover:text-paper ${HOVER_ACTION}`} />
-                      <DownloadButton generation={generation} className={`rounded-full p-2 transition hover:bg-paper/10 hover:text-paper ${HOVER_ACTION}`} />
+                      {/* Desktop: icons that appear on hover. Phones: the same actions in a "…" menu,
+                          so the title keeps its room at ~370px. */}
+                      <span className="hidden items-center gap-0.5 md:flex">
+                        <AddToAlbumButton song={generation} className={`rounded-full p-2 transition hover:bg-paper/10 hover:text-paper ${HOVER_ACTION}`} />
+                        <ShareButton generation={generation} className={`rounded-full p-2 transition hover:bg-paper/10 hover:text-paper ${HOVER_ACTION}`} />
+                        <DownloadButton generation={generation} className={`rounded-full p-2 transition hover:bg-paper/10 hover:text-paper ${HOVER_ACTION}`} />
+                      </span>
                     </>
                   )}
                   {/* Examples are not rows in the user's library, so they cannot be deleted. */}
                   {!generation.is_sample && (
                   <button type="button" aria-label={`Delete ${generation.title}`}
-                    onClick={() => {
-                      // Undo instead of a confirm box: one tap to delete, one to bring it back.
-                      const undo = removeWithUndo(generation);
-                      notify(`Deleted “${generation.title}” here and in the app.`, "info", { label: "Undo", onClick: undo });
-                    }}
-                    className={`rounded-full p-2 transition hover:bg-danger/10 hover:text-danger ${HOVER_ACTION}`}>
+                    onClick={() => deleteSong(generation)}
+                    className={`hidden rounded-full p-2 transition hover:bg-danger/10 hover:text-danger md:inline-flex ${HOVER_ACTION}`}>
                     <IconTrash size={18} />
                   </button>
+                  )}
+                  {(ready || !generation.is_sample) && (
+                  <span className="md:hidden">
+                    <RowMenu title={generation.title}>
+                      {ready && !generation.published_at && (
+                        <div className="flex items-center justify-between gap-3 px-3 py-2 text-sm text-paper/85">
+                          <span>Profile</span>
+                          <PublishToggle generation={generation} variant="compact" />
+                        </div>
+                      )}
+                      {ready && (
+                        <>
+                          <AddToAlbumButton song={generation} className={ROW_MENU_ITEM} label="Add to album" />
+                          <ShareButton generation={generation} className={ROW_MENU_ITEM} label="Share" />
+                          <DownloadButton generation={generation} className={ROW_MENU_ITEM} label="Download MP3" />
+                        </>
+                      )}
+                      {!generation.is_sample && (
+                        <button type="button" onClick={() => deleteSong(generation)}
+                          className={`${ROW_MENU_ITEM} text-danger hover:bg-danger/10 hover:text-danger`}>
+                          <IconTrash size={18} />
+                          <span>Delete</span>
+                        </button>
+                      )}
+                    </RowMenu>
+                  </span>
                   )}
                 </div>
               )}

@@ -17,7 +17,7 @@ export function canAddToAlbum(song: Generation) {
 }
 
 /** Opens the album picker for a song; visitors get the sign-in window. */
-export function AddToAlbumButton({ song, className, size = 18 }: { song: Generation; className: string; size?: number }) {
+export function AddToAlbumButton({ song, className, size = 18, label }: { song: Generation; className: string; size?: number; label?: string }) {
   const { signedIn, requestSignIn } = useSession();
   const [open, setOpen] = useState(false);
   if (!canAddToAlbum(song)) return null;
@@ -32,6 +32,7 @@ export function AddToAlbumButton({ song, className, size = 18 }: { song: Generat
     <>
       <button type="button" aria-label={`Add ${song.title} to an album`} title="Add to album" onClick={onClick} className={className}>
         <IconAlbumAdd size={size} />
+        {label && <span>{label}</span>}
       </button>
       {open && <AlbumPicker song={song} onClose={() => setOpen(false)} />}
     </>
@@ -112,7 +113,7 @@ function AlbumPicker({ song, onClose }: { song: Generation; onClose: () => void 
 
   return (
     <div role="dialog" aria-modal="true" aria-labelledby={titleId}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={onClose}>
+      className="pointer-events-auto visible fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={onClose}>
       <div className="w-full max-w-sm rounded-[var(--radius-panel)] border border-line bg-plum p-5" onClick={(event) => event.stopPropagation()}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
