@@ -4,6 +4,7 @@ import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 import { FaqList } from "@/components/faq-list";
 import { APP_STORE_RATING, FAQ, FEATURES, REVIEWS, STEPS } from "@/components/home/content";
+import { ForNonSubscribers } from "@/components/home/for-non-subscribers";
 import { Hero } from "@/components/home/hero";
 import { ExamplesShelf, RecentShelf, StyleGrid } from "@/components/home/shelves";
 import { PlanCards } from "@/components/pricing/plan-cards";
@@ -151,6 +152,8 @@ export default function Home() {
         </section>
       ))}
 
+      {/* Subscribers already chose a plan: no reviews, plans or FAQ for them. */}
+      <ForNonSubscribers>
       <section aria-labelledby="reviews-title">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <h2 id="reviews-title" className="text-3xl font-semibold tracking-[-0.035em] md:text-4xl">People keep pressing create</h2>
@@ -180,6 +183,7 @@ export default function Home() {
         </div>
         <PlanCards />
       </section>
+      </ForNonSubscribers>
 
       <section aria-labelledby="app-title"
         className="flex flex-col gap-8 rounded-[28px] bg-plum p-7 md:flex-row md:items-center md:justify-between md:p-10">
@@ -196,7 +200,9 @@ export default function Home() {
         </div>
       </section>
 
-      <FaqList id="faq-title" title="Questions, answered" items={FAQ} />
+      <ForNonSubscribers>
+        <FaqList id="faq-title" title="Questions, answered" items={FAQ} />
+      </ForNonSubscribers>
 
       <ClosingCta />
       <SiteFooter />
