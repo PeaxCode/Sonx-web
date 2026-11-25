@@ -36,6 +36,12 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Song and artist pages stream after a 200 shell, so their own notFound() cannot
+  // set the status. Unknown ones are answered here, before rendering, with a real 404.
+  if (await isMissingPublicPage(path)) {
+    return NextResponse.rewrite(new URL("/_missing", request.url));
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -67,6 +73,39 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/create", request.url));
   }
   return response;
+}
+
+const SONG_PATH = /^\/song\/([^/]+)$/;
+const ARTIST_PATH = /^\/artist\/([^/]+)$/;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const HANDLE = /^[a-z0-9][a-z0-9-]{2,29}$/i;
+
+/**
+ * Whether /song/<id> or /artist/<handle> names nothing: a malformed value, or one
+ * the public RPCs return no row for. Any doubt (timeout, Supabase error) lets the
+ * page render as before, so a slow check never hides a real page.
+ */
+async function isMissingPublicPage(path: string): Promise<boolean> {
+  const song = SONG_PATH.exec(path)?.[1];
+  const handle = ARTIST_PATH.exec(path)?.[1];
+  if (song === undefined && handle === undefined) return false;
+  if (song !== undefined && !UUID.test(song)) return true;
+  if (handle !== undefined && !HANDLE.test(handle)) return true;
+  const [fn, body] = song !== undefined ? ["get_shared_song", { p_id: song }] : ["get_profile", { p_handle: handle }];
+  try {
+    const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+      method: "POST",
+      headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(1500),
+    });
+    if (!res.ok) return false;
+    const rows: unknown = await res.json();
+    return Array.isArray(rows) && rows.length === 0;
+  } catch {
+    return false;
+  }
 }
 
 function redirectTo(request: NextRequest, pathname: string) {
