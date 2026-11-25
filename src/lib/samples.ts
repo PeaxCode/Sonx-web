@@ -1,8 +1,8 @@
 import type { Generation } from "@/lib/generations";
 
-// The examples the mobile app ships in its library (constants/sampleSongs.ts
-// and sampleVideos.ts), served from /public/samples. The AI cover example is
-// left out while AI Voice is hidden, and the music videos while video is hidden.
+// Examples on Home, Create and the video form, served from /public/samples. Made
+// on 24 Nov 2026 with the same models as user songs (Mureka lyrics + mureka-8 for
+// vocals, mureka-7.5 for instrumentals, through EachLabs), covers by Flux 3.
 const sample = (fields: Pick<Generation, "id" | "feature" | "title" | "genre" | "output_url"> & Partial<Generation>): Generation => ({
   client_request_id: fields.id,
   prompt: null,
@@ -10,26 +10,109 @@ const sample = (fields: Pick<Generation, "id" | "feature" | "title" | "genre" | 
   status: "completed",
   error: null,
   is_favorite: false,
-  created_at: "2026-01-01T00:00:00.000Z",
-  completed_at: "2026-01-01T00:00:00.000Z",
+  created_at: "2026-11-24T00:00:00.000Z",
+  completed_at: "2026-11-24T00:00:00.000Z",
   is_sample: true,
   ...fields,
 });
 
 export const SAMPLE_GENERATIONS: Generation[] = [
   sample({
-    id: "sample_minimax_001",
+    id: "sample_web_pop_bonfire",
     feature: "LYRICS_MUSIC",
-    title: "Midnight Wanderer",
+    title: "Summer Bonfire Love",
     genre: "pop",
-    output_url: "/samples/midnight-wanderer.mp3",
+    output_url: "/samples/pop-bonfire.mp3",
+    cover_url: "/samples/pop-bonfire.jpg",
+    prompt: "a summer love that started at a beach bonfire",
+    lyrics: "[Verse]\nThe wood was stacked up high\nAgainst a deep blue sky\nWe sat on driftwood logs\nAnd watched the sparks go by\nYou had that old guitar\nStrumming under every star\nI knew right then and there\nWe wouldn't go too far\n\n[Chorus]\nSalt in the air\nSmoke in your hair\nSummer started with a spark\nDancing in the dark\nSand on our feet\nThe night felt so sweet\nSummer started with a spark\nDancing in the dark\n\n[Verse]\nThe tide was coming in\nCool water on our skin\nWe shared a plastic cup\nAnd let the stories begin\nNobody checked the time\nLeaving everything behind\nJust the glow of the red\nAnd the things we never said\n\n[Chorus]\nSalt in the air\nSmoke in your hair\nSummer started with a spark\nDancing in the dark\nSand on our feet\nThe night felt so sweet\nSummer started with a spark\nDancing in the dark\n\n[Bridge]\nMorning light was far away\nWe didn't want to see the day\nJust keep the embers burning bright\nStay inside this orange light\n\n[Chorus]\nSalt in the air\nSmoke in your hair\nSummer started with a spark\nDancing in the dark\nSand on our feet\nThe night felt so sweet\nSummer started with a spark\nDancing in the dark\n\n[Outro]",
   }),
   sample({
-    id: "sample_stable_audio_003",
+    id: "sample_web_hiphop_city",
+    feature: "LYRICS_MUSIC",
+    title: "City Never Sleeps",
+    genre: "hiphop",
+    output_url: "/samples/hiphop-city.mp3",
+    cover_url: "/samples/hiphop-city.jpg",
+    prompt: "chasing dreams in the city, grinding through late nights and never giving up",
+    lyrics: "[Verse]\nTwo A.M. and the train is mostly ghosts\nHead against the glass, counting every single post\nI got a pocket full of maps and a heart full of doubt\nBut I’m too far in to find the easy way out\nCoffee gone cold while the moon turns gray\nJust another dollar and a dream in the way\nThey told me pack it up, go back to the start\nBut they don’t see the engine pumping deep inside my heart\n\n[Chorus]\nSleep is for the lucky, I’m just tryna win\nDo it all today then I do it all again\nI’m never giving up\nI’m never giving up\nWatch the skyline burning while the world stays still\nIf the pressure don’t get me then the hunger surely will\nI’m never giving up\nI’m never giving up\n\n[Verse]\nStairs smelling like rain and some cheap takeout\nThis is what the magazines don’t talk about\nThe landlord’s knocking and the check didn’t clear\nBut the vision in my head is getting crystal clear\nI’m outworkin’ everyone who’s tucked in tight\nFound a little magic in the middle of the night\nMy sneakers are thin but my spirit is thick\nI’m building up the kingdom, brick by heavy brick\n\n[Chorus]\nSleep is for the lucky, I’m just tryna win\nDo it all today then I do it all again\nI’m never giving up\nI’m never giving up\nWatch the skyline burning while the world stays still\nIf the pressure don’t get me then the hunger surely will\nI’m never giving up\nI’m never giving up\n\n[Bridge]\nThey see the diamond, they don't see the coal\nThey don't see the hours that it took to find a soul\nI’m tired of the waiting, I’m tired of the \"no\"\nI’m planting every seed just to watch the garden grow\n\n[Chorus]\nSleep is for the lucky, I’m just tryna win\nDo it all today then I do it all again\nI’m never giving up\nI’m never giving up\nWatch the skyline burning while the world stays still\nIf the pressure don’t get me then the hunger surely will\nI’m never giving up\nI’m never giving up\n\n[Outro]",
+  }),
+  sample({
+    id: "sample_web_rnb_late_night",
+    feature: "LYRICS_MUSIC",
+    title: "Can't Stop Thinking",
+    genre: "rnb",
+    output_url: "/samples/rnb-late-night.mp3",
+    cover_url: "/samples/rnb-late-night.jpg",
+    prompt: "a slow late-night conversation with someone you can't stop thinking about",
+    lyrics: "[Verse]\nTwo AM and the clock just stopped\nWatching the rain in a single drop\nI’m leaning back with the phone pressed tight\nJust your voice in the middle of the night\nWe’re talking circles 'bout where we’ve been\nTracing the places we’re living in\nI try to act like I’m keeping my cool\nBut I’m breaking every single rule\n\n[Chorus]\nI can't get you off my mind\nNo matter how hard I try\nI’m losing sleep tonight\nI can't get you off my mind\nThinking 'bout you and I\nIt happens every time\nI can't get you off my mind\nYeah, I can't get you off my mind\n\n[Verse]\nYou laugh a little and the room goes warm\nI’m safe right here in the quiet storm\nYou’re telling stories I’ve heard before\nBut I’m still wanting to hear some more\nThe coffee’s cold and the candle’s low\nBut I don’t ever want to let you go\nIt’s getting late but I’m wide awake\nGiving more than I’m meant to take\n\n[Chorus]\nI can't get you off my mind\nNo matter how hard I try\nI’m losing sleep tonight\nI can't get you off my mind\nThinking 'bout you and I\nIt happens every time\nI can't get you off my mind\nYeah, I can't get you off my mind\n\n[Bridge]\nMaybe it’s the way the moonlight hits the floor\nOr how I’m always wanting something more\nI should hang up and close my eyes\nBut I’m caught up in these blue-black skies\nJust one more minute, just one more word\nThe sweetest thing that I’ve ever heard\n\n[Chorus]\nI can't get you off my mind\nNo matter how hard I try\nI’m losing sleep tonight\nI can't get you off my mind\nThinking 'bout you and I\nIt happens every time\nI can't get you off my mind\nYeah, I can't get you off my mind\n\n[Outro]",
+  }),
+  sample({
+    id: "sample_web_lofi_rainy_study",
     feature: "PROMPT_MUSIC",
-    title: "Stable Diffusion Beats",
-    genre: null,
-    output_url: "/samples/stable-diffusion-beats.mp3",
+    title: "Rainy Window Study",
+    genre: "lofi",
+    output_url: "/samples/lofi-rainy-study.mp3",
+    cover_url: "/samples/lofi-rainy-study.jpg",
+    prompt: "Calm lo-fi hip-hop beat for studying, soft vinyl crackle, mellow piano chords, rain ambience, slow steady groove",
+  }),
+  sample({
+    id: "sample_web_country_dirt_road",
+    feature: "LYRICS_MUSIC",
+    title: "Dirt Road Home",
+    genre: "country",
+    output_url: "/samples/country-dirt-road.mp3",
+    cover_url: "/samples/country-dirt-road.jpg",
+    prompt: "driving home on a dirt road to the small town where I grew up",
+    lyrics: "[Verse]\nThe asphalt ends where the tall pines lean\nLeft the interstate for a shade of green\nDust starts kicking up behind the tires\nPassing cattle guards and rusted wires\n\n[Verse]\nThat old oak tree still guards the creek\nFound the quiet place I came to seek\nWindows down to catch the summer air\nSmell of mown hay everywhere\n\n[Chorus]\nComing home to the red clay ground\nSlow it down for a one-stop town\nEverything stays just the same\nComing home to the red clay ground\nGoing back where they know my name\n\n[Verse]\nGrandpa’s tractor’s parked beside the shed\nSun is dipping low and turning red\nThe water tower stands against the blue\nCounting miles until the barn’s in view\n\n[Chorus]\nComing home to the red clay ground\nSlow it down for a one-stop town\nEverything stays just the same\nComing home to the red clay ground\nGoing back where they know my name\n\n[Outro]\nJust a dirt road mile to go\nDriving slow\nDriving slow\n\n[Outro]",
+  }),
+  sample({
+    id: "sample_web_kpop_own_stage",
+    feature: "LYRICS_MUSIC",
+    title: "My Own Stage",
+    genre: "kpop",
+    output_url: "/samples/kpop-own-stage.mp3",
+    cover_url: "/samples/kpop-own-stage.jpg",
+    prompt: "a bright, confident anthem about shining on your own stage",
+    lyrics: "[Intro]\nOh-oh, oh-oh.\nNa-na-na, alright.\n\n[Verse]\n커튼이 열려 눈부신 spotlight\n어제의 고민은 던져버려 다\n거울 속 비친 낯선 내 모습\n완벽한 timing 시작될 테니까\n어색한 시선은 신경 안 써\n내가 걷는 길이 곧 runway인걸\n숨겨왔던 색깔을 펼쳐봐\n준비는 끝났어 watch me now\n\n[Pre-Chorus]\n심장 소리는 더 크게 울려\n온 세상이 나를 주목해\n망설임 따위는 필요 없어\n지금 이 순간만 믿어봐\n\n[Chorus]\nI’m on my stage\n가장 빛나는 건 바로 나야\n누구도 대신할 수 없는걸\nI’m on my stage\n눈이 부시게 더 타오를래\n지금 내 모습이 좋아\nI’m on my stage\nI’m on my stage\n\n[Verse]\n정해진 규칙은 읽지 않아\n내 방식대로 다 그려낼 거야\n어제의 나보다 조금 더 높이\n발끝을 세우고 날아올라 봐\n가끔은 숨이 차오르겠지만\n멈출 생각은 전혀 없는걸\n내가 만든 리듬을 따라와\n모두가 놀라게 될 거야\n\n[Pre-Chorus]\n심장 소리는 더 크게 울려\n온 세상이 나를 주목해\n망설임 따위는 필요 없어\n지금 이 순간만 믿어봐\n\n[Chorus]\nI’m on my stage\n가장 빛나는 건 바로 나야\n누구도 대신할 수 없는걸\nI’m on my stage\n눈이 부시게 더 타오를래\n지금 내 모습이 좋아\nI’m on my stage\nI’m on my stage\n\n[Bridge]\n한 번도 본 적 없는 story\n내가 써 내려갈 테니까\n겁내지 마 자신 있게\nShow them what you got\n\n[Chorus]\nI’m on my stage\n가장 빛나는 건 바로 나야\n누구도 대신할 수 없는걸\nI’m on my stage\n눈이 부시게 더 타오를래\n지금 내 모습이 좋아\nI’m on my stage\nI’m on my stage\n\n[Outro]\nYeah, keep it shining.\n내가 주인공인 이 무대\nIt’s my stage.\nOh-oh, I’m the one.\n\n[Outro]",
+  }),
+  sample({
+    id: "sample_web_edm_sunrise",
+    feature: "PROMPT_MUSIC",
+    title: "Sunrise Drop",
+    genre: "edm",
+    output_url: "/samples/edm-sunrise.mp3",
+    cover_url: "/samples/edm-sunrise.jpg",
+    prompt: "Euphoric festival EDM track, soaring synth leads, big build-up and drop, uplifting sunrise energy, 128 BPM",
+  }),
+  sample({
+    id: "sample_web_rock_starting_over",
+    feature: "LYRICS_MUSIC",
+    title: "Clock Out Forever",
+    genre: "rock",
+    output_url: "/samples/rock-starting-over.mp3",
+    cover_url: "/samples/rock-starting-over.jpg",
+    prompt: "quitting a dead-end job, breaking free and starting over",
+    lyrics: "[Verse]\nThe fluorescent lights are humming a dirge\nCounting every minute till the five o’clock surge\nI’ve got ten years buried in a cubicle grave\nJust a cog in a machine that I don't want to save\nCoffee’s gone cold and the water’s gone stale\nThe ink is drying up on a story so pale\nI’m packing up the pictures and the lucky pen\nI’m never coming back to this cage again\n\n[Chorus]\nCut the ties and let it burn\nThis is the point of no return\nI’m walking out the door\nI don’t work here anymore\nLiving for a Friday is a heavy debt\nThe sun hasn't even started setting yet\nI’m walking out the door\nI don’t work here anymore\n\n[Verse]\nGot a tank full of gas and a map in the seat\nLeaving all the gray for the open heat\nThey told me I was lucky just to have a chair\nBut I’d rather starve in the mountain air\nNo more fake smiles or the corporate talk\nI’m taking off the tie and I’m starting to walk\nThe boss can keep the bonus and the desk by the wall\nI’m trading in the safety for the thrill of the fall\n\n[Chorus]\nCut the ties and let it burn\nThis is the point of no return\nI’m walking out the door\nI don’t work here anymore\nLiving for a Friday is a heavy debt\nThe sun hasn't even started setting yet\nI’m walking out the door\nI don’t work here anymore\n\n[Bridge]\nMaybe I’ll fail or maybe I’ll fly\nBut I won't spend my life just waiting to die\nThe rearview mirror shows the ghost of a man\nI’m tearing up the blueprint and I’m changing the plan\n\n[Chorus]\nCut the ties and let it burn\nThis is the point of no return\nI’m walking out the door\nI don’t work here anymore\nLiving for a Friday is a heavy debt\nThe sun hasn't even started setting yet\nI’m walking out the door\nI don’t work here anymore\n\n[Outro]",
+  }),
+  sample({
+    id: "sample_web_afrobeat_city_lights",
+    feature: "LYRICS_MUSIC",
+    title: "City Lights Dance",
+    genre: "afrobeat",
+    output_url: "/samples/afrobeat-city-lights.mp3",
+    cover_url: "/samples/afrobeat-city-lights.jpg",
+    prompt: "dancing all night with friends under warm city lights",
+    lyrics: "[Verse]\nThe traffic hums a low melody\nMy people out in the avenue\nForget the stress of the company\nWe got a vibe that is overdue\nPark the car by the corner shop\nLace the boots for the long way\nOnce we start we will never stop\nTurning the night into yesterday\n\n[Chorus]\nUnder the yellow glow\nMoving my body slow\nDancing all night\nDancing all night\nWatch how the energy grow\nFeel it from head to toe\nDancing all night\nDancing all night\n\n[Verse]\nThe asphalt’s holding the midday heat\nSteam is rising up off the ground\nNo more shoes on these tired feet\nLaughter making a joyful sound\nPass the bottle and share a glass\nLight reflecting in every eye\nWatching all of the strangers pass\nHigh as the birds in the purple sky\n\n[Chorus]\nUnder the yellow glow\nMoving my body slow\nDancing all night\nDancing all night\nWatch how the energy grow\nFeel it from head to toe\nDancing all night\nDancing all night\n\n[Bridge]\nMorning is coming but we don't care\nThe moon is still hanging above the square\nTell the DJ to play it loud\nLose yourself in the happy crowd\n\n[Chorus]\nUnder the yellow glow\nMoving my body slow\nDancing all night\nDancing all night\nWatch how the energy grow\nFeel it from head to toe\nDancing all night\nDancing all night\n\n[Outro]",
+  }),
+  sample({
+    id: "sample_web_classical_new_dawn",
+    feature: "PROMPT_MUSIC",
+    title: "New Dawn",
+    genre: "classical",
+    output_url: "/samples/classical-new-dawn.mp3",
+    cover_url: "/samples/classical-new-dawn.jpg",
+    prompt: "Cinematic orchestral piece, hopeful strings and piano building to a triumphant finale with brass and timpani",
   }),
   // Music video examples hidden pending payment provider review.
   // sample({

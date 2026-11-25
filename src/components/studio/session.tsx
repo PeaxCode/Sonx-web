@@ -3,7 +3,9 @@
 import Image from "next/image";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { AppleSignInButton } from "@/components/apple-button";
+import { EmailSignIn, OrDivider } from "@/components/email-sign-in";
 import { GoogleSignInButton } from "@/components/google-button";
+import { trackEvent } from "@/lib/analytics";
 import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
 import { getSupabase } from "@/lib/supabase/client";
 
@@ -54,11 +56,13 @@ function SignInDialog({ request, onClose }: { request: SignInRequest; onClose: (
           {request.title ?? "Sign in to create your song"}
         </h2>
         <p className="mt-3 text-fog">
-          {request.text ?? "Use the same account as the Sonx app and everything stays in sync."}
+          {request.text ?? "New here? Continue to create your free account. Already use the Sonx app? The same account works here."}
         </p>
         <div className="mt-6 flex flex-col gap-3">
-          <AppleSignInButton next={request.next} />
           <GoogleSignInButton next={request.next} />
+          <AppleSignInButton next={request.next} />
+          <OrDivider />
+          <EmailSignIn next={request.next} />
         </div>
         <p className="mt-5 text-xs text-fog">
           By continuing you agree to the{" "}
@@ -89,7 +93,12 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const close = useCallback(() => setRequest(null), []);
-  const value = useMemo<SessionValue>(() => ({ signedIn, requestSignIn: setRequest }), [signedIn]);
+  const requestSignIn = useCallback((next: SignInRequest) => {
+    // Where the visitor was headed tells which action asked for an account.
+    trackEvent("signin_modal_open", { next: next.next.split("?")[0], page: window.location.pathname });
+    setRequest(next);
+  }, []);
+  const value = useMemo<SessionValue>(() => ({ signedIn, requestSignIn }), [signedIn, requestSignIn]);
 
   return (
     <SessionContext.Provider value={value}>

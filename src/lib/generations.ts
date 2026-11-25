@@ -1,5 +1,5 @@
 import { callProxy, ProxyError } from "@/lib/api";
-import type { Feature } from "@/lib/billing-config";
+import type { Feature, Plan } from "@/lib/billing-config";
 import { getSupabase } from "@/lib/supabase/client";
 
 export type GenerationStatus = "processing" | "completed" | "failed";
@@ -21,14 +21,16 @@ export interface Generation {
   completed_at: string | null;
   /** Bundled example from the Sonx app, not a row in the user's library. */
   is_sample?: boolean;
-  /** Real artwork when one exists (sample video thumbnails); otherwise CoverArt. */
+  /** Real artwork when one exists (examples, house songs); otherwise CoverArt. */
   cover_url?: string;
+  /** Set while the song is published on the owner's profile and Explore. */
+  published_at?: string | null;
 }
 
 export const MUSIC_FEATURES: Feature[] = ["PROMPT_MUSIC", "PHOTO_MUSIC", "LYRICS_MUSIC", "AI_SINGING"];
 
 const COLUMNS =
-  "id,client_request_id,feature,title,genre,prompt,lyrics,status,output_url,error,is_favorite,created_at,completed_at";
+  "id,client_request_id,feature,title,genre,prompt,lyrics,status,output_url,error,is_favorite,created_at,completed_at,published_at,cover_url";
 
 export const newRequestId = (prefix: string) => `${prefix}_${crypto.randomUUID().replaceAll("-", "")}`;
 
@@ -39,11 +41,15 @@ export async function syncBillingAccount() {
 
 export interface ServerBilling {
   isPro: boolean;
-  currentPlan: "FREE" | "WEEKLY" | "MONTHLY" | "YEARLY";
+  currentPlan: Plan;
   credits: number;
   usage: Partial<Record<Feature, number>>;
   periodStart: number;
   periodEnd: number;
+  /** Where the active subscription was bought: app_store, play_store, paddle... */
+  store?: string | null;
+  /** Manage link for that subscription (Paddle portal or store settings). */
+  managementUrl?: string | null;
 }
 
 export async function fetchBilling() {
@@ -66,12 +72,22 @@ export async function startGeneration(
   }
 }
 
-export async function fetchGenerations(): Promise<Generation[]> {
-  const { data, error } = await getSupabase()
+/** Songs per page in the library; later pages load as the list scrolls. */
+export const LIBRARY_PAGE_SIZE = 30;
+
+/**
+ * One page of the user's library, newest first. `before` is the created_at of
+ * the last row already shown; `favorites` limits it to hearted songs.
+ */
+export async function fetchGenerations(options: { before?: string; favorites?: boolean; limit?: number } = {}): Promise<Generation[]> {
+  let query = getSupabase()
     .from("generations")
     .select(COLUMNS)
     .order("created_at", { ascending: false })
-    .limit(500);
+    .limit(options.limit ?? LIBRARY_PAGE_SIZE);
+  if (options.before) query = query.lt("created_at", options.before);
+  if (options.favorites) query = query.eq("is_favorite", true);
+  const { data, error } = await query;
   if (error) throw error;
   return (data ?? []) as Generation[];
 }
@@ -85,6 +101,30 @@ export async function fetchGeneration(id: string): Promise<Generation | null> {
 /** Asks the server to check the provider when a webhook is late. */
 export async function refreshGeneration(id: string) {
   return callProxy<{ status: GenerationStatus }>("generation-refresh", { generationId: id });
+}
+
+/**
+ * Where the download icon points. Users' songs come through /api/download, which
+ * names the file after the song; examples are on this origin, so the download
+ * attribute names them.
+ */
+export function downloadLink(generation: Generation): { href: string; filename?: string } {
+  if (generation.is_sample || !generation.output_url?.startsWith("http")) {
+    return { href: generation.output_url ?? "", filename: `${generation.title}.mp3` };
+  }
+  return { href: `/api/download/${generation.id}` };
+}
+
+/** The public page for a shared song. */
+export const songUrl = (id: string) => `${window.location.origin}/song/${id}`;
+
+/** Makes a song readable on its public page (generations.shared_at). */
+export async function shareGeneration(id: string) {
+  const { error } = await getSupabase()
+    .from("generations")
+    .update({ shared_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) throw error;
 }
 
 export async function setFavorite(id: string, isFavorite: boolean) {

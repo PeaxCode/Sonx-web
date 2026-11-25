@@ -4,6 +4,7 @@ import { SAMPLE_GENERATIONS } from "@/lib/samples";
 import { useLibrary } from "./library";
 import { useSession } from "./session";
 import { TrackList } from "./track-list";
+import { Loading } from "@/components/spinner";
 
 const heading = "mb-4 font-display text-lg font-semibold";
 
@@ -24,7 +25,7 @@ export function VideoList() {
   return (
     <>
       <h2 id="videos-title" className={heading}>Your videos</h2>
-      {loading || signedIn === null ? <p className="text-fog">Loading your videos</p> : (
+      {loading || signedIn === null ? <Loading label="Loading your videos" /> : (
         <TrackList
           generations={generations.filter((generation) => generation.feature === "AI_MUSIC_VIDEO")}
           emptyText="Your music videos show up here, including the ones you make in the app."

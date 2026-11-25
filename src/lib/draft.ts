@@ -23,6 +23,15 @@ export function saveDraft(draft: Draft) {
   }
 }
 
+/** Whether a song is waiting to be made (without taking it). */
+export function hasDraft() {
+  try {
+    return sessionStorage.getItem(DRAFT_KEY) !== null;
+  } catch {
+    return false;
+  }
+}
+
 /** Reads and clears the draft. */
 export function takeDraft(): Draft | null {
   try {

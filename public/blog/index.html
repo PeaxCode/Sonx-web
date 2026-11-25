@@ -4,6 +4,8 @@
 <head>
 <meta charset="UTF-8">
 <!-- Google tag (gtag.js) -->
+<!-- Consent Mode v2 defaults (same as components/consent.tsx) -->
+<script>(function(){window.dataLayer=window.dataLayer||[];function g(){dataLayer.push(arguments);}var off={ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'};g('consent','default',Object.assign({analytics_storage:'denied',region:["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","IS","LI","NO","GB","CH","TR"],wait_for_update:500},off));g('consent','default',Object.assign({analytics_storage:'granted'},off));try{var c=localStorage.getItem('sonx:consent');if(c==='granted'||c==='denied')g('consent','update',{analytics_storage:c});}catch(e){}})();</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-1F8ZGT6QEJ"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -13,12 +15,12 @@
   gtag('config', 'G-1F8ZGT6QEJ');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sonx Journal — AI Music Insights, Comparisons & Guides</title>
+<title>Sonx Blog — AI Music Insights, Comparisons & Guides</title>
 <meta name="description" content="Long-form articles, original data studies and practical guides on AI music generation — from the team behind Sonx.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://getsonx.com/blog/">
 
-<meta property="og:title" content="Sonx Journal — AI Music Insights">
+<meta property="og:title" content="Sonx Blog — AI Music Insights">
 <meta property="og:description" content="Long-form articles on AI music generation, app comparisons, and practical guides.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://getsonx.com/blog/">
@@ -34,7 +36,7 @@
 {
   "@context": "https://schema.org",
   "@type": "Blog",
-  "name": "Sonx Journal",
+  "name": "Sonx Blog",
   "url": "https://getsonx.com/blog/",
   "description": "Long-form articles on AI music generation, app comparisons, and practical guides.",
   "publisher": {
@@ -161,13 +163,12 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
     <li><a href="/create">Create</a></li>
     <!-- Music video hidden pending payment provider review: <li><a href="/video">Music videos</a></li> -->
     <li><a href="/library">Library</a></li>
-    <li><a href="/blog/" class="active">Journal</a></li>
+    <li><a href="/pricing">Pricing</a></li>
+    <li><a href="/blog/" class="active">Blog</a></li>
   </ul>
   <div class="nav-cta">
     <a href="/login" class="btn-nav-ghost">Sign in</a>
-    <a href="https://aimusicgeneratorsonx.go.link/iCF6Q" class="btn-nav" target="_blank">
-      <span>⬇</span> Download
-    </a>
+    <a href="/create" class="btn-nav" data-cta="nav_create">Create a song</a>
     <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
       <span></span>
       <span></span>
@@ -180,13 +181,14 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
     <li><a href="/create">Create</a></li>
     <!-- Music video hidden pending payment provider review: <li><a href="/video">Music videos</a></li> -->
     <li><a href="/library">Library</a></li>
-    <li><a href="/blog/" class="active">Journal</a></li>
+    <li><a href="/pricing">Pricing</a></li>
+    <li><a href="/blog/" class="active">Blog</a></li>
   </ul>
   <a href="/login" class="mobile-menu-signup">Sign in</a>
 </div>
 
 <header class="blog-header">
-  <div class="blog-eyebrow">The Sonx Journal</div>
+  <div class="blog-eyebrow">The Sonx Blog</div>
   <h1 class="blog-title">Notes on <span class="accent">AI&nbsp;music</span></h1>
   <p class="blog-tagline">Long-form essays, app comparisons, and plain-English guides on how AI music actually works — from the team building Sonx.</p>
 </header>
@@ -330,7 +332,7 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
 <section class="subscribe">
   <h3>New essays every other week</h3>
   <p>Get the next deep-dive in your inbox — no fluff, no spam.</p>
-  <a href="https://aimusicgeneratorsonx.go.link/iCF6Q" class="subscribe-cta" target="_blank">Try Sonx free <span>→</span></a>
+  <a href="/create" class="subscribe-cta" data-cta="subscribe_create">Make a song with Sonx <span>→</span></a>
 </section>
 
 <footer>
@@ -400,7 +402,7 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
   document.addEventListener('click', function(e){
     var t = e.target;
     if (!t || !t.closest) return;
-    var a = t.closest('a[href*="' + HOST + '"]');
+    var a = t.closest('a[href*="' + HOST + '"], a[href^="/create"], a[href^="/pricing"]');
     if (a) window.trackCta(label(a));
   }, true);
 })();

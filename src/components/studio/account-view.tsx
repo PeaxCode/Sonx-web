@@ -1,25 +1,56 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { PLAN_LABELS, PLAN_LIMITS, STORE_LINKS, type Feature } from "@/lib/billing-config";
+import { PLAN_LABELS, PLAN_LIMITS, SONG_POOL, STORE_LINKS, type Feature } from "@/lib/billing-config";
+import { Aurora } from "@/components/aurora";
+import { compact } from "@/components/explore/tiles";
+import { exploreEnabled } from "@/lib/flags";
+import { MUSIC_FEATURES } from "@/lib/generations";
+import { webCheckoutEnabled, webCreditsEnabled } from "@/lib/paddle";
 import { getSupabase } from "@/lib/supabase/client";
 import { useBilling } from "./billing";
+import { ConfirmDialog } from "./confirm-dialog";
 import { useFeedback } from "./feedback";
+import { useLibrary } from "./library";
+import { LoadMore } from "./load-more";
+import { useMyProfile } from "./my-profile";
+import { RetentionDialog } from "./retention-dialog";
+import { TrackList } from "./track-list";
+import { Loading, Spinner } from "@/components/spinner";
 
+const STORE_NAMES: Record<string, string> = {
+  paddle: "Paddle (web)",
+  app_store: "the App Store",
+  mac_app_store: "the App Store",
+  play_store: "Google Play",
+};
+
+const SUPPORT_EMAIL = "support@getsonx.com";
+const SUPPORT_MAILTO = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Web purchase not on my account")}`;
+
+// One row: instrumentals and songs with vocals share the plan's songs.
 const USAGE_ROWS: { feature: Feature; label: string }[] = [
-  { feature: "PROMPT_MUSIC", label: "Instrumentals" },
-  { feature: "LYRICS_MUSIC", label: "Songs with vocals" },
+  { feature: SONG_POOL, label: "Songs this month" },
   // Hidden with music video, pending payment provider review:
   // { feature: "AI_MUSIC_VIDEO", label: "Music videos" },
 ];
 
 export function AccountView({ email, name, avatarUrl }: { email: string | null; name: string | null; avatarUrl: string | null }) {
   const router = useRouter();
-  const { billing } = useBilling();
+  const { billing, pending, outcome, dismissOutcome, refresh } = useBilling();
   const { notify } = useFeedback();
   const [busy, setBusy] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  // "Before you go" opens first; it leads on to the subscription manager in one click.
+  const [retaining, setRetaining] = useState(false);
+  const { profile, editProfile } = useMyProfile();
+  const { generations, loading: songsLoading, hasMore, loadingMore, loadMore } = useLibrary();
+  const songs = generations.filter((generation) => MUSIC_FEATURES.includes(generation.feature));
+  const webPlan = billing?.isPro && billing.store === "paddle";
+  const appPlan = billing?.isPro && billing.store && billing.store !== "paddle" ? STORE_NAMES[billing.store] ?? "your app store" : null;
 
   const signOut = async () => {
     setBusy(true);
@@ -29,15 +60,11 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
   };
 
   const deleteAccount = async () => {
-    const confirmed = window.confirm(
-      "Delete your account? Your songs and credits are deleted everywhere, including the app. " +
-      "Subscriptions are billed by the App Store or Google Play: cancel yours there to stop future charges.",
-    );
-    if (!confirmed) return;
     setBusy(true);
     const { error } = await getSupabase().functions.invoke("delete-account", { body: {} });
     if (error) {
       setBusy(false);
+      setConfirmingDelete(false);
       notify("Your account could not be deleted. Try again in a moment.", "error");
       return;
     }
@@ -47,58 +74,211 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
   };
 
   return (
-    <div className="flex flex-col gap-10">
-      <section className="flex items-center gap-4">
-        {avatarUrl ? (
-          <Image src={avatarUrl} alt="" width={56} height={56} unoptimized className="rounded-full" />
+    <div className="flex flex-col gap-8">
+      <section className="flex flex-col gap-5 sm:flex-row sm:items-center">
+        {(profile?.avatar_url ?? avatarUrl) ? (
+          <Image src={(profile?.avatar_url ?? avatarUrl)!} alt="" width={88} height={88} unoptimized referrerPolicy="no-referrer" className="size-[88px] rounded-full object-cover ring-2 ring-paper/10" />
         ) : (
-          <span className="flex size-14 items-center justify-center rounded-full bg-raised font-display text-lg">
-            {(name ?? email ?? "S").charAt(0).toUpperCase()}
+          <span className="bg-signature flex size-[88px] items-center justify-center rounded-full text-3xl font-semibold">
+            {(profile?.display_name ?? name ?? email ?? "S").charAt(0).toUpperCase()}
           </span>
         )}
-        <div className="min-w-0">
-          <p className="truncate text-lg font-medium">{name ?? email}</p>
-          {name && email && <p className="truncate text-fog">{email}</p>}
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-2xl font-semibold tracking-[-0.02em]">{profile?.display_name ?? name ?? email}</p>
+          <p className="truncate text-sm text-paper/60">
+            {exploreEnabled && profile ? `@${profile.handle}` : email}
+          </p>
+          {exploreEnabled && profile?.bio && <p className="mt-2 max-w-xl text-sm text-paper/80">{profile.bio}</p>}
+          {exploreEnabled && profile && (
+            <p className="mt-2 flex flex-wrap gap-4 text-sm text-paper/60 tabular-nums">
+              <span><strong className="font-semibold text-paper">{compact.format(profile.followers)}</strong> {profile.followers === 1 ? "follower" : "followers"}</span>
+              <span><strong className="font-semibold text-paper">{compact.format(profile.following)}</strong> following</span>
+              <span><strong className="font-semibold text-paper">{profile.songs}</strong> published</span>
+              <span><strong className="font-semibold text-paper">{compact.format(profile.plays)}</strong> {profile.plays === 1 ? "play" : "plays"}</span>
+            </p>
+          )}
         </div>
+        {exploreEnabled && profile !== undefined && (
+          <div className="flex shrink-0 gap-2">
+            <button type="button" onClick={() => editProfile()}
+              className="rounded-full bg-paper/[0.08] px-4 py-2 text-sm font-medium transition hover:bg-paper/15">
+              {profile ? "Edit profile" : "Set up your profile"}
+            </button>
+            {profile && (
+              <Link href={`/artist/${profile.handle}`} className="rounded-full px-4 py-2 text-sm font-medium text-paper/70 transition hover:bg-paper/10 hover:text-paper">
+                View profile
+              </Link>
+            )}
+          </div>
+        )}
       </section>
 
-      <section aria-labelledby="plan-title" className="rounded-[var(--radius-panel)] border border-line p-6">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 id="plan-title" className="font-display text-lg font-semibold">{billing ? PLAN_LABELS[billing.currentPlan] : "Plan"}</h2>
-          <p className="text-fog tabular-nums">{billing ? `${billing.credits} credits` : ""}</p>
+      {exploreEnabled && (
+        <section aria-labelledby="your-songs-title">
+          <div className="mb-3 flex items-baseline justify-between gap-3">
+            <h2 id="your-songs-title" className="text-xl font-semibold tracking-[-0.03em]">Your songs</h2>
+            <p className="text-xs text-fog">Public songs show on your profile and in Explore.</p>
+          </div>
+          {songsLoading ? <Loading label="Loading your songs" /> : (
+            <>
+              <TrackList generations={songs} emptyText="Songs you make, here or in the Sonx app, show up here." />
+              <LoadMore hasMore={hasMore} loading={loadingMore} onLoad={loadMore} />
+            </>
+          )}
+        </section>
+      )}
+
+      {pending && (
+        <p role="status" className="flex items-center gap-3 rounded-[var(--radius-control)] border border-orchid/40 bg-raised px-4 py-3 text-sm">
+          <Spinner size={18} />
+          Payment received. {pending === "plan" ? "Activating your plan" : "Adding your credits"}, this usually takes a few seconds.
+        </p>
+      )}
+      {outcome?.status === "added" && (
+        <div role="status" className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-control)] border border-orchid/40 bg-raised px-4 py-3 text-sm">
+          <p>
+            {outcome.kind === "plan"
+              ? "Your plan is active."
+              : `${outcome.credits.toLocaleString("en-US")} credits added. You now have ${billing?.credits.toLocaleString("en-US") ?? outcome.credits} credits.`}
+          </p>
+          <button type="button" onClick={dismissOutcome} className="font-semibold text-paper/70 hover:text-paper">Dismiss</button>
         </div>
-        {billing && (
-          <dl className="mt-5 grid gap-3">
+      )}
+      {outcome?.status === "late" && (
+        <div role="alert" className="flex flex-col gap-3 rounded-[var(--radius-control)] border border-danger/40 bg-raised px-4 py-4 text-sm">
+          <p className="font-semibold">Your payment went through, but {outcome.kind === "plan" ? "your plan is" : "the credits are"} not on your account yet.</p>
+          <p className="text-paper/70">
+            You have not been charged twice, and nothing is lost. Check again in a few minutes. If it still has not arrived, email{" "}
+            <a href={SUPPORT_MAILTO} className="font-semibold text-orchid hover:text-paper">{SUPPORT_EMAIL}</a>{" "}
+            with your Paddle receipt and we will add it.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <button type="button" onClick={() => { void refresh(); dismissOutcome(); }}
+              className="rounded-full bg-paper/10 px-5 py-2 font-semibold transition hover:bg-paper/15">
+              Check again
+            </button>
+            <a href={SUPPORT_MAILTO} className="rounded-full px-5 py-2 font-semibold text-paper/70 transition hover:text-paper">Contact support</a>
+          </div>
+        </div>
+      )}
+
+      <section aria-labelledby="plan-title" className="relative isolate overflow-hidden rounded-[28px] border border-paper/[0.06] p-6 md:p-8">
+        <Aurora className="opacity-40" />
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="text-sm font-medium text-paper/60">Your plan</p>
+            <h2 id="plan-title" className="mt-1 text-3xl font-semibold tracking-[-0.03em]">{billing ? PLAN_LABELS[billing.currentPlan] : "Plan"}</h2>
+          </div>
+          {/* Credits are a subscriber top-up, so the balance stays hidden until there is a plan. */}
+          {billing?.isPro && (
+            <p className="rounded-full bg-paper/10 px-4 py-1.5 text-sm font-medium tabular-nums backdrop-blur">{billing.credits} credits</p>
+          )}
+        </div>
+        {billing && !billing.isPro && (
+          <p className="mt-4 text-sm text-paper/70">
+            {(billing.usage[SONG_POOL] ?? 0) < PLAN_LIMITS.FREE[SONG_POOL]
+              ? "Your free song for this month is ready to use. "
+              : `You have used this month's free song. The next one arrives on ${new Date(billing.periodEnd).toLocaleDateString("en-US", { month: "long", day: "numeric" })}. `}
+            Subscribe for {PLAN_LIMITS.MONTHLY[SONG_POOL]}+ songs a month, MP3 downloads and commercial use.
+          </p>
+        )}
+        {billing?.isPro && billing.periodEnd > 0 && (
+          <p className="mt-2 text-sm text-paper/70">
+            Songs reset on {new Date(billing.periodEnd).toLocaleDateString("en-US", { month: "long", day: "numeric" })}
+          </p>
+        )}
+        {billing?.isPro && (
+          <dl className="mt-7 grid gap-5">
             {USAGE_ROWS.map(({ feature, label }) => {
               const limit = PLAN_LIMITS[billing.currentPlan][feature];
               const used = Math.min(billing.usage[feature] ?? 0, limit);
               return (
-                <div key={feature} className="flex items-center justify-between gap-4 text-sm">
-                  <dt className="text-fog">{label}</dt>
-                  <dd className="tabular-nums">{limit === 0 ? "Credits only" : `${limit - used} of ${limit} left`}</dd>
+                <div key={feature}>
+                  <div className="flex items-center justify-between gap-4 text-sm">
+                    <dt className="text-paper/70">{label}</dt>
+                    <dd className="font-medium tabular-nums">{limit === 0 ? "Credits only" : `${limit - used} of ${limit} left`}</dd>
+                  </div>
+                  {limit > 0 && (
+                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-paper/10" aria-hidden="true">
+                      <div className="bg-signature h-full rounded-full" style={{ width: `${((limit - used) / limit) * 100}%` }} />
+                    </div>
+                  )}
                 </div>
               );
             })}
           </dl>
         )}
-        <p className="mt-5 text-sm text-fog">
-          Plans and credits are managed in the Sonx app.{" "}
-          <a href={STORE_LINKS.ios} target="_blank" rel="noreferrer" className="text-violet hover:text-orchid">App Store</a>
-          {" or "}
-          <a href={STORE_LINKS.android} target="_blank" rel="noreferrer" className="text-violet hover:text-orchid">Google Play</a>.
-        </p>
+        {billing?.isPro && (
+          <p className="mt-6 text-sm text-paper/60">
+            {billing.store && STORE_NAMES[billing.store] ? `Billed by ${STORE_NAMES[billing.store]}. ` : ""}
+            {billing.managementUrl ? (
+              <button type="button" onClick={() => setRetaining(true)} className="font-medium text-paper underline-offset-4 hover:underline">
+                {billing.store === "paddle" ? "Manage subscription and invoices" : "Manage subscription"}
+              </button>
+            ) : (
+              "Manage it where you subscribed."
+            )}
+          </p>
+        )}
+        {billing && (webCheckoutEnabled || webCreditsEnabled) ? (
+          <div className="mt-6 flex flex-wrap gap-3">
+            {!billing.isPro && webCheckoutEnabled && (
+              <Link href="/pricing" className="rounded-full bg-paper px-6 py-2.5 text-sm font-semibold text-night transition hover:bg-paper/90">
+                See plans
+              </Link>
+            )}
+            {billing.isPro && webCreditsEnabled && (
+              <Link href="/pricing#credits-title" className="rounded-full bg-paper/10 px-6 py-2.5 text-sm font-semibold backdrop-blur transition hover:bg-paper/15">
+                Buy credits
+              </Link>
+            )}
+          </div>
+        ) : (
+          <p className="mt-5 text-sm text-fog">
+            Plans and credits are available in the Sonx app.{" "}
+            <a href={STORE_LINKS.ios} target="_blank" rel="noreferrer" className="text-violet hover:text-orchid">App Store</a>
+            {" or "}
+            <a href={STORE_LINKS.android} target="_blank" rel="noreferrer" className="text-violet hover:text-orchid">Google Play</a>.
+          </p>
+        )}
       </section>
 
-      <section className="flex flex-col items-start gap-3">
+      <section className="flex flex-wrap items-center justify-between gap-3 border-t border-paper/[0.06] pt-8">
         <button type="button" disabled={busy} onClick={signOut}
-          className="rounded-[var(--radius-control)] border border-line px-5 py-2.5 text-sm font-medium transition hover:bg-plum disabled:opacity-50">
+          className="rounded-full bg-paper/[0.06] px-6 py-2.5 text-sm font-medium transition hover:bg-paper/10 disabled:opacity-50">
           Sign out
         </button>
-        <button type="button" disabled={busy} onClick={deleteAccount}
-          className="px-1 py-2 text-sm text-danger transition hover:underline disabled:opacity-50">
+        <button type="button" disabled={busy} onClick={() => setConfirmingDelete(true)}
+          className="rounded-full px-4 py-2.5 text-sm text-danger transition hover:bg-danger/10 disabled:opacity-50">
           Delete account
         </button>
       </section>
+
+      {retaining && billing?.isPro && billing.managementUrl && (
+        <RetentionDialog plan={billing.currentPlan} periodStart={billing.periodStart} periodEnd={billing.periodEnd}
+          managementUrl={billing.managementUrl} onClose={() => setRetaining(false)} />
+      )}
+
+      {confirmingDelete && (
+        <ConfirmDialog title="Delete your account?" confirmLabel="Delete account" typeToConfirm="DELETE" busy={busy}
+          onConfirm={deleteAccount} onCancel={() => setConfirmingDelete(false)}>
+          <p>Your songs, lyrics and credits are deleted everywhere, including the Sonx app. This cannot be undone.</p>
+          {webPlan && (
+            <p className="rounded-[var(--radius-control)] border border-danger/40 px-3 py-2 text-paper">
+              Your web plan keeps billing until you cancel it.{" "}
+              {billing?.managementUrl ? (
+                <a href={billing.managementUrl} target="_blank" rel="noreferrer" className="font-semibold underline">Cancel it first</a>
+              ) : "Cancel it first with Manage subscription"}
+              , then delete your account.
+            </p>
+          )}
+          {appPlan && (
+            <p className="rounded-[var(--radius-control)] border border-danger/40 px-3 py-2 text-paper">
+              Deleting does not cancel your plan. Cancel it in {appPlan} first to stop future charges.
+            </p>
+          )}
+        </ConfirmDialog>
+      )}
     </div>
   );
 }

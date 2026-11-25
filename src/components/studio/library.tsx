@@ -5,6 +5,7 @@ import { getSupabase } from "@/lib/supabase/client";
 import {
   deleteGeneration,
   fetchGenerations,
+  LIBRARY_PAGE_SIZE,
   refreshGeneration,
   renameGeneration,
   setFavorite,
@@ -18,15 +19,28 @@ const POLL_INTERVAL_MS = 5000;
 // to check the provider once a generation is clearly late.
 const REFRESH_AFTER_MS = 3 * 60 * 1000;
 const REFRESH_INTERVAL_MS = 60 * 1000;
+/** How long a deleted song can be brought back (the undo toast's lifetime). */
+export const UNDO_MS = 10_000;
 
 interface LibraryValue {
+  /** The pages loaded so far, newest first. */
   generations: Generation[];
   loading: boolean;
+  /** More songs exist beyond the loaded pages. */
+  hasMore: boolean;
+  loadingMore: boolean;
+  loadMore: () => Promise<void>;
   /** Shows a just-started generation before the next poll. */
   track: (generationId: string) => Promise<void>;
   toggleFavorite: (generation: Generation) => Promise<void>;
   rename: (generation: Generation, title: string) => Promise<void>;
   remove: (generation: Generation) => Promise<void>;
+  /** Hides the song now and deletes it after UNDO_MS; returns the undo. */
+  removeWithUndo: (generation: Generation) => () => void;
+  /** Songs that finished (or failed) while this tab was open, newest last; for the ready alert. */
+  finished: Generation[];
+  /** Reflects a publish or unpublish done on the server. */
+  markPublished: (id: string, publishedAt: string | null) => void;
 }
 
 const LibraryContext = createContext<LibraryValue | null>(null);
@@ -36,16 +50,55 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
   const { signedIn } = useSession();
   const [fetched, setGenerations] = useState<Generation[]>([]);
   const [fetching, setLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   // Visitors have an empty library; the studio shows the examples instead.
   const generations = useMemo(() => (signedIn ? fetched : []), [signedIn, fetched]);
   const loading = signedIn === null || (signedIn && fetching);
   const lastRefresh = useRef(new Map<string, number>());
+  const [finished, setFinished] = useState<Generation[]>([]);
+  const pendingDeletes = useRef(new Map<string, ReturnType<typeof setTimeout>>());
 
+  // Leaving the page commits any delete still waiting out its undo window.
+  useEffect(() => {
+    const pending = pendingDeletes.current;
+    const flush = () => {
+      pending.forEach((timer, id) => {
+        clearTimeout(timer);
+        void deleteGeneration(id);
+      });
+      pending.clear();
+    };
+    window.addEventListener("pagehide", flush);
+    return () => window.removeEventListener("pagehide", flush);
+  }, []);
+
+  // Refreshes the newest page and merges it in, keeping pages loaded further down.
   const reload = useCallback(async () => {
     const rows = await fetchGenerations();
-    setGenerations(rows);
+    const fresh = new Map(rows.map((row) => [row.id, row]));
+    setGenerations((current) => [
+      ...rows,
+      ...current.filter((row) => !fresh.has(row.id)),
+    ].sort((a, b) => b.created_at.localeCompare(a.created_at)));
     setLoading(false);
   }, []);
+
+  const loadMore = useCallback(async () => {
+    const last = fetched[fetched.length - 1];
+    if (!hasMore || loadingMore || !last) return;
+    setLoadingMore(true);
+    try {
+      const rows = await fetchGenerations({ before: last.created_at });
+      setGenerations((current) => {
+        const known = new Set(current.map((row) => row.id));
+        return [...current, ...rows.filter((row) => !known.has(row.id))];
+      });
+      setHasMore(rows.length === LIBRARY_PAGE_SIZE);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [fetched, hasMore, loadingMore]);
 
   useEffect(() => {
     if (!signedIn) return;
@@ -54,6 +107,7 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
       .then((rows) => {
         if (!active) return;
         setGenerations(rows);
+        setHasMore(rows.length === LIBRARY_PAGE_SIZE);
         setLoading(false);
       })
       .catch(() => active && setLoading(false));
@@ -88,15 +142,16 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
         .in("id", processingIds);
       if (!data) return;
       const updates = new Map(data.map((row) => [row.id, row]));
-      let finished = false;
-      setGenerations((current) => current.map((generation) => {
+      const done = generations.flatMap((generation) => {
         const update = updates.get(generation.id);
-        if (!update || update.status === generation.status) return generation;
-        finished = true;
-        return { ...generation, ...update } as Generation;
-      }));
+        return update && update.status !== generation.status ? [{ ...generation, ...update } as Generation] : [];
+      });
+      if (done.length === 0) return;
+      const byId = new Map(done.map((generation) => [generation.id, generation]));
+      setGenerations((current) => current.map((generation) => byId.get(generation.id) ?? generation));
+      setFinished((current) => [...current, ...done].slice(-10));
       // The server settled the charge (commit or refund); show the real balance.
-      if (finished) void refreshBilling();
+      void refreshBilling();
     }, POLL_INTERVAL_MS);
     return () => clearInterval(timer);
   }, [processingIds, generations, refreshBilling]);
@@ -104,6 +159,10 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<LibraryValue>(() => ({
     generations,
     loading,
+    hasMore: Boolean(signedIn) && hasMore,
+    loadingMore,
+    loadMore,
+    finished,
     track: async () => {
       await reload();
       void refreshBilling();
@@ -117,11 +176,28 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
       setGenerations((current) => current.map((item) => (item.id === generation.id ? { ...item, title } : item)));
       await renameGeneration(generation.id, title).catch(() => reload());
     },
+    removeWithUndo: (generation) => {
+      setGenerations((current) => current.filter((item) => item.id !== generation.id));
+      const timer = setTimeout(() => {
+        pendingDeletes.current.delete(generation.id);
+        deleteGeneration(generation.id).catch(() => reload());
+      }, UNDO_MS);
+      pendingDeletes.current.set(generation.id, timer);
+      return () => {
+        if (!pendingDeletes.current.has(generation.id)) return;
+        clearTimeout(timer);
+        pendingDeletes.current.delete(generation.id);
+        setGenerations((current) => [...current, generation].sort((a, b) => b.created_at.localeCompare(a.created_at)));
+      };
+    },
+    markPublished: (id, publishedAt) => {
+      setGenerations((current) => current.map((item) => (item.id === id ? { ...item, published_at: publishedAt } : item)));
+    },
     remove: async (generation) => {
       setGenerations((current) => current.filter((item) => item.id !== generation.id));
       await deleteGeneration(generation.id).catch(() => reload());
     },
-  }), [generations, loading, reload, refreshBilling]);
+  }), [generations, loading, signedIn, hasMore, loadingMore, loadMore, finished, reload, refreshBilling]);
 
   return <LibraryContext.Provider value={value}>{children}</LibraryContext.Provider>;
 }

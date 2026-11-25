@@ -3,33 +3,41 @@
 import { MUSIC_FEATURES } from "@/lib/generations";
 import { SAMPLE_GENERATIONS } from "@/lib/samples";
 import { useLibrary } from "./library";
+import { MakingCard } from "./making-card";
+import { PromptIdeas } from "./prompt-ideas";
 import { useSession } from "./session";
 import { TrackList } from "./track-list";
+import { Loading } from "@/components/spinner";
 
-const heading = "mb-4 font-display text-lg font-semibold";
+const heading = "mb-4 text-2xl font-semibold tracking-[-0.035em]";
 
 /** Songs only (no videos), newest first, including ones made in the app. Visitors hear the examples. */
 export function MusicList() {
   const { generations, loading } = useLibrary();
   const { signedIn } = useSession();
+  const songs = generations.filter((generation) => MUSIC_FEATURES.includes(generation.feature));
 
   if (signedIn === false) {
     return (
       <>
         <h2 id="songs-title" className={heading}>Hear what Sonx makes</h2>
-        <TrackList generations={SAMPLE_GENERATIONS.filter((item) => MUSIC_FEATURES.includes(item.feature))} emptyText="" />
+        {/* A handful, so the ideas below stay in reach; Home has the full shelf. */}
+        <TrackList generations={SAMPLE_GENERATIONS.filter((item) => MUSIC_FEATURES.includes(item.feature)).slice(0, 5)} emptyText="" />
         <p className="mt-4 text-sm text-fog">Songs you create show up here, along with the ones you make in the Sonx app.</p>
+        <PromptIdeas />
       </>
     );
   }
   return (
     <>
+      <MakingCard />
       <h2 id="songs-title" className={heading}>Your songs</h2>
-      {loading || signedIn === null ? <p className="text-fog">Loading your songs</p> : (
-        <TrackList
-          generations={generations.filter((generation) => MUSIC_FEATURES.includes(generation.feature))}
-          emptyText="Your songs show up here, along with the ones you make in the Sonx app."
-        />
+      {loading || signedIn === null ? <Loading label="Loading your songs" /> : (
+        <>
+          <TrackList generations={songs} emptyText="Your songs show up here, along with the ones you make in the Sonx app." />
+          {/* A new account's column is mostly empty: give it somewhere to start. */}
+          {songs.length < 3 && <PromptIdeas />}
+        </>
       )}
     </>
   );

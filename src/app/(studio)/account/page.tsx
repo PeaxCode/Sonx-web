@@ -2,6 +2,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { AccountView } from "@/components/studio/account-view";
 import { createServerSupabase } from "@/lib/supabase/server";
+import { Loading } from "@/components/spinner";
 
 export const metadata = { title: "Account", robots: { index: false } };
 
@@ -26,9 +27,9 @@ async function AccountDetails() {
 
 export default function AccountPage() {
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8 md:px-8 lg:py-12">
-      <h1 className="mb-8 font-display text-2xl font-semibold">Account</h1>
-      <Suspense fallback={<p className="text-fog">Loading your account</p>}>
+    <div className="mx-auto max-w-3xl px-4 py-8 md:px-8 lg:py-14">
+      <h1 className="mb-8 text-3xl font-semibold tracking-[-0.04em] md:text-4xl">Account</h1>
+      <Suspense fallback={<Loading label="Loading your account" className="py-20" />}>
         <AccountDetails />
       </Suspense>
     </div>

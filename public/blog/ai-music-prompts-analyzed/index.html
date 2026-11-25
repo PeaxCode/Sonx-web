@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <!-- Google tag (gtag.js) -->
+<!-- Consent Mode v2 defaults (same as components/consent.tsx) -->
+<script>(function(){window.dataLayer=window.dataLayer||[];function g(){dataLayer.push(arguments);}var off={ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'};g('consent','default',Object.assign({analytics_storage:'denied',region:["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","IS","LI","NO","GB","CH","TR"],wait_for_update:500},off));g('consent','default',Object.assign({analytics_storage:'granted'},off));try{var c=localStorage.getItem('sonx:consent');if(c==='granted'||c==='denied')g('consent','update',{analytics_storage:c});}catch(e){}})();</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-1F8ZGT6QEJ"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -13,7 +15,7 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>1,136 AI Music Prompts, Analyzed &mdash; and 143 Better Ones | Sonx Journal</title>
+<title>1,136 AI Music Prompts, Analyzed &mdash; and 143 Better Ones | Sonx Blog</title>
 <meta name="description" content="We analyzed 1,136 AI music prompts from 16 public sources. Median length 7 words, only 21.6% name a tempo, almost none ask for a chorus. Plus 143 original prompts to copy.">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="author" content="Sonx Team">
@@ -378,13 +380,12 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
     <li><a href="/create">Create</a></li>
     <!-- Music video hidden pending payment provider review: <li><a href="/video">Music videos</a></li> -->
     <li><a href="/library">Library</a></li>
-    <li><a href="/blog/" class="active">Journal</a></li>
+    <li><a href="/pricing">Pricing</a></li>
+    <li><a href="/blog/" class="active">Blog</a></li>
   </ul>
   <div class="nav-cta">
     <a href="/login" class="btn-nav-ghost">Sign in</a>
-    <a href="https://aimusicgeneratorsonx.go.link/iCF6Q" class="btn-nav" target="_blank">
-      <span>&#11015;</span> Download
-    </a>
+    <a href="/create" class="btn-nav" data-cta="nav_create">Create a song</a>
     <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
       <span></span>
       <span></span>
@@ -397,7 +398,8 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
     <li><a href="/create">Create</a></li>
     <!-- Music video hidden pending payment provider review: <li><a href="/video">Music videos</a></li> -->
     <li><a href="/library">Library</a></li>
-    <li><a href="/blog/" class="active">Journal</a></li>
+    <li><a href="/pricing">Pricing</a></li>
+    <li><a href="/blog/" class="active">Blog</a></li>
   </ul>
   <a href="/login" class="mobile-menu-signup">Sign in</a>
 </div>
@@ -407,7 +409,7 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
 <header class="article-head">
   <div class="breadcrumb">
     <a href="/">Home</a><span class="sep">/</span>
-    <a href="/blog/">Journal</a><span class="sep">/</span>
+    <a href="/blog/">Blog</a><span class="sep">/</span>
     <span>1,136 AI Music Prompts, Analyzed</span>
   </div>
   <span class="article-tag">Data Study</span>
@@ -423,7 +425,7 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
 </header>
 
 <div class="hero-image">
-  <img src="/blog/img/ai-music-prompts-analyzed-cover.svg" alt="We analyzed 1,136 AI music prompts &mdash; Sonx Journal cover" />
+  <img src="/blog/img/ai-music-prompts-analyzed-cover.svg" alt="We analyzed 1,136 AI music prompts &mdash; Sonx Blog cover" />
 </div>
 
 <div class="article-wrap">
@@ -1028,7 +1030,7 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
       <h4>Test a prompt while you read</h4>
       <p>Sonx turns a written prompt into a full track with vocals in about a minute, on your phone. Free to start.</p>
       <div class="inline-cta-buttons">
-        <a href="https://aimusicgeneratorsonx.go.link/iCF6Q" class="btn-primary" target="_blank">Try Sonx free <span>&#8594;</span></a>
+        <a href="/create" class="btn-primary" data-cta="article_create">Make a song with Sonx <span>&#8594;</span></a>
       </div>
     </div>
 
@@ -2278,7 +2280,7 @@ window.addEventListener('scroll',()=>{
   document.addEventListener('click', function(e){
     var t = e.target;
     if (!t || !t.closest) return;
-    var a = t.closest('a[href*="' + HOST + '"]');
+    var a = t.closest('a[href*="' + HOST + '"], a[href^="/create"], a[href^="/pricing"]');
     if (a) window.trackCta(label(a));
   }, true);
 })();

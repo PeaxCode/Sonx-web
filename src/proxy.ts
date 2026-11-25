@@ -16,6 +16,12 @@ export async function proxy(request: NextRequest) {
   if (request.headers.get("host") === "www.getsonx.com") {
     return NextResponse.redirect(`https://getsonx.com${path}${requested.search}`, 308);
   }
+  // The private test deployment asks every crawler to stay out (see next.config.ts).
+  if (request.headers.get("host") === "dev.getsonx.com" && path === "/robots.txt") {
+    return new NextResponse("User-agent: *\nDisallow: /\n", {
+      headers: { "Content-Type": "text/plain", "X-Robots-Tag": "noindex, nofollow" },
+    });
+  }
   // next.config.ts turns off Next.js's trailing-slash redirect so the Journal
   // keeps its indexed /blog/<slug>/ URLs; everything else drops the slash as before.
   if (path === "/blog" || /^\/blog\/[^/.]+$/.test(path)) {

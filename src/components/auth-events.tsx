@@ -16,7 +16,13 @@ export function AuthEvents() {
 
     const [name, method] = decodeURIComponent(match[1]).split(":");
     if (name !== "sign_up" && name !== "login") return clear();
-    return trackEvent(name, { method }, clear);
+    // signin_complete is the funnel step; sign_up / login are GA4's recommended events.
+    const stopFunnel = trackEvent("signin_complete", { method, is_new: name === "sign_up" });
+    const stopEvent = trackEvent(name, { method }, clear);
+    return () => {
+      stopFunnel();
+      stopEvent();
+    };
   }, []);
 
   return null;

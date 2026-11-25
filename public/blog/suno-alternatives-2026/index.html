@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <!-- Google tag (gtag.js) -->
+<!-- Consent Mode v2 defaults (same as components/consent.tsx) -->
+<script>(function(){window.dataLayer=window.dataLayer||[];function g(){dataLayer.push(arguments);}var off={ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'};g('consent','default',Object.assign({analytics_storage:'denied',region:["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","IS","LI","NO","GB","CH","TR"],wait_for_update:500},off));g('consent','default',Object.assign({analytics_storage:'granted'},off));try{var c=localStorage.getItem('sonx:consent');if(c==='granted'||c==='denied')g('consent','update',{analytics_storage:c});}catch(e){}})();</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-1F8ZGT6QEJ"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -13,7 +15,7 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Suno Alternatives in 2026: Which AI Music App Is Right for You? | Sonx Journal</title>
+<title>Suno Alternatives in 2026: Which AI Music App Is Right for You? | Sonx Blog</title>
 <meta name="description" content="Suno is the default AI music app, but is it right for you? An honest guide to Suno, Udio, Sonx and the alternatives, from a team that builds one of them.">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="author" content="Sonx Team">
@@ -26,7 +28,7 @@
 <meta property="og:image" content="https://getsonx.com/blog/img/suno-alternatives-2026-cover.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:site_name" content="Sonx Journal">
+<meta property="og:site_name" content="Sonx Blog">
 <meta property="article:published_time" content="2026-05-21">
 <meta property="article:author" content="Sonx Team">
 <meta property="article:section" content="App Comparison">
@@ -71,7 +73,7 @@
   "@type": "BreadcrumbList",
   "itemListElement": [
     { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://getsonx.com/" },
-    { "@type": "ListItem", "position": 2, "name": "Journal", "item": "https://getsonx.com/blog/" },
+    { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://getsonx.com/blog/" },
     { "@type": "ListItem", "position": 3, "name": "Suno Alternatives in 2026" }
   ]
 }
@@ -262,13 +264,12 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
     <li><a href="/create">Create</a></li>
     <!-- Music video hidden pending payment provider review: <li><a href="/video">Music videos</a></li> -->
     <li><a href="/library">Library</a></li>
-    <li><a href="/blog/" class="active">Journal</a></li>
+    <li><a href="/pricing">Pricing</a></li>
+    <li><a href="/blog/" class="active">Blog</a></li>
   </ul>
   <div class="nav-cta">
     <a href="/login" class="btn-nav-ghost">Sign in</a>
-    <a href="https://aimusicgeneratorsonx.go.link/iCF6Q" class="btn-nav" target="_blank">
-      <span>⬇</span> Download
-    </a>
+    <a href="/create" class="btn-nav" data-cta="nav_create">Create a song</a>
     <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
       <span></span>
       <span></span>
@@ -281,7 +282,8 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
     <li><a href="/create">Create</a></li>
     <!-- Music video hidden pending payment provider review: <li><a href="/video">Music videos</a></li> -->
     <li><a href="/library">Library</a></li>
-    <li><a href="/blog/" class="active">Journal</a></li>
+    <li><a href="/pricing">Pricing</a></li>
+    <li><a href="/blog/" class="active">Blog</a></li>
   </ul>
   <a href="/login" class="mobile-menu-signup">Sign in</a>
 </div>
@@ -291,7 +293,7 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
 <header class="article-head">
   <div class="breadcrumb">
     <a href="/">Home</a><span class="sep">/</span>
-    <a href="/blog/">Journal</a><span class="sep">/</span>
+    <a href="/blog/">Blog</a><span class="sep">/</span>
     <span>Suno Alternatives in 2026</span>
   </div>
   <span class="article-tag">App Comparison</span>
@@ -307,7 +309,7 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
 </header>
 
 <div class="hero-image">
-  <img src="/blog/img/suno-alternatives-2026-cover.svg" alt="Suno alternatives in 2026 — an honest comparison of AI music apps, Sonx Journal" />
+  <img src="/blog/img/suno-alternatives-2026-cover.svg" alt="Suno alternatives in 2026 — an honest comparison of AI music apps, Sonx Blog" />
 </div>
 
 <div class="article-wrap">
@@ -383,7 +385,7 @@ footer{display:flex;flex-direction:column;align-items:center;text-align:center;g
       <h4>See the all-in-one flow yourself</h4>
       <p>Songs and lyrics, created and downloaded from your phone. Sonx is free on iOS and Android.</p>
       <div class="inline-cta-buttons">
-        <a href="https://aimusicgeneratorsonx.go.link/iCF6Q" class="btn-primary" target="_blank">Try Sonx free <span>→</span></a>
+        <a href="/create" class="btn-primary" data-cta="article_create">Make a song with Sonx <span>→</span></a>
       </div>
     </div>
 
@@ -579,7 +581,7 @@ window.addEventListener('scroll',()=>{
   document.addEventListener('click', function(e){
     var t = e.target;
     if (!t || !t.closest) return;
-    var a = t.closest('a[href*="' + HOST + '"]');
+    var a = t.closest('a[href*="' + HOST + '"], a[href^="/create"], a[href^="/pricing"]');
     if (a) window.trackCta(label(a));
   }, true);
 })();
