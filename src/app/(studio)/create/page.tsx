@@ -9,7 +9,7 @@ type CreateSearchParams = Promise<{ prompt?: string; genre?: string }>;
 
 const TITLE = "AI Song Maker: Turn Text or Lyrics into a Song | Sonx";
 const DESCRIPTION =
-  "Describe a song or paste your lyrics and Sonx makes it with AI vocals in 1 to 3 minutes. Pick a genre and voice, then play and download your MP3.";
+  "Describe a song or paste your lyrics and Sonx makes it with AI vocals in 2 to 5 minutes. Pick a genre and voice, then play and download your MP3.";
 
 export const metadata = {
   title: { absolute: TITLE },

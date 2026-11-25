@@ -26,7 +26,7 @@ export const WAYS = [
 export const STEPS = [
   { time: "0:00", title: "Describe it", text: "A mood, a moment or a story in one sentence. Or paste your own lyrics." },
   { time: "0:05", title: "Sonx writes and sings", text: "Lyrics, voice and arrangement come together while you wait or browse." },
-  { time: "1–3 min", title: "Play, download, share", text: "The song lands in your library as an MP3, on the web and in the app." },
+  { time: "2–5 min", title: "Play, download, share", text: "The song lands in your library as an MP3, on the web and in the app." },
 ];
 
 // Each starter sets the genre too, so the form never says Pop under an R&B prompt.
@@ -55,7 +55,7 @@ export const FAQ = [
   {
     question: "How long does a song take?",
     answer:
-      "Usually 1 to 3 minutes. You can leave the page or keep browsing while it works; we let you know when it is ready, and it waits in your library.",
+      "Usually 2 to 5 minutes. You can leave the page or keep browsing while it works; we let you know when it is ready, and it waits in your library.",
   },
   {
     question: "Are my songs the same on my phone?",

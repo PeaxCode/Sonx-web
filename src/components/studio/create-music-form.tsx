@@ -221,7 +221,7 @@ export function CreateMusicForm({ initialPrompt = "", initialGenre, restoreDraft
       setTitle("");
       setTopicBefore(null);
       // On /create the card beside the form shows the progress; elsewhere a toast says it started.
-      if (!create) notify("Your song is being made. It takes 1 to 3 minutes, and we will tell you when it is ready.");
+      if (!create) notify("Your song is being made. It takes 2 to 5 minutes, and we will tell you when it is ready.");
     } catch (error) {
       create?.setMaking(null);
       if (isInsufficientBalance(error)) paywall();

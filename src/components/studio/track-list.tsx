@@ -51,7 +51,7 @@ function Writing() {
             style={{ height: `${6 + bar * 3}px`, animationDelay: `${bar * 150}ms` }} />
         ))}
       </span>
-      Making your song, usually 1 to 3 minutes
+      Making your song, usually 2 to 5 minutes
     </span>
   );
 }

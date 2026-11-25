@@ -15,7 +15,7 @@ import { SITE_URL } from "@/lib/journal";
 // Under 60 characters, so search results show it whole.
 const TITLE = "AI Song Generator — Full Songs with Vocals from Text | Sonx";
 const DESCRIPTION =
-  "Sonx AI turns any idea into a full song with AI lyrics and vocals in 1 to 3 minutes. On the web, iOS and Android. Describe your song and start creating now.";
+  "Sonx AI turns any idea into a full song with AI lyrics and vocals in 2 to 5 minutes. On the web, iOS and Android. Describe your song and start creating now.";
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
