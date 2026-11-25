@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useState } from "react";
-import { genreName } from "@/components/studio/track-list";
+import { genreName } from "@/lib/song-labels";
 import { useSession } from "@/components/studio/session";
 import { fetchExplore, fetchFollowingSongs, type ExploreData, type PublicArtist, type PublicSong } from "@/lib/profiles";
 import { ArtistRow } from "./artist";

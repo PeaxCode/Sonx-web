@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { Aurora } from "@/components/aurora";
 import { CoverArt } from "@/components/cover-art";
 import { SharedSongPlayButton } from "@/components/studio/shared-song-player";
-import { genreName, kindLabel } from "@/components/studio/track-list";
+import { genreName, kindLabel } from "@/lib/song-labels";
 import { isGenre } from "@/lib/billing-config";
 import { fetchSharedSong } from "@/lib/shared-songs";
 
@@ -21,14 +21,22 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const song = await fetchSharedSong((await params).id);
   if (!song) return { title: "Song not found", robots: { index: false } };
-  const description = `Listen to “${song.title}”, a ${genreName(song.genre) || "new"} song made with Sonx AI. Make your own from one sentence.`;
+  const genre = genreName(song.genre);
+  const kind = kindLabel(song).toLowerCase();
+  const phrase = genre ? `${genre} ${kind}` : kind;
+  const description = `Listen to “${song.title}”, ${/^[aeiou]/i.test(phrase) ? "an" : "a"} ${phrase} made with Sonx AI. Make your own song from one sentence.`;
+  const url = `/song/${song.id}`;
+  // A page's openGraph replaces the layout's, so the share image is set again here.
+  const image = { url: "/og-image-v2.png", width: 1200, height: 630, alt: `${song.title}, made with Sonx` };
   return {
-    title: `${song.title} — made with Sonx`,
+    // The layout template adds " | Sonx".
+    title: `${song.title}: ${genre ? `${genre} ` : ""}song made with AI`,
     description,
+    alternates: { canonical: url },
     // Shared by its owner for listening; kept out of search until song pages are curated.
     robots: { index: false, follow: true },
-    openGraph: { siteName: "Sonx", type: "music.song", title: song.title, description, url: `/song/${song.id}`, audio: song.output_url },
-    twitter: { card: "summary_large_image", title: song.title, description },
+    openGraph: { siteName: "Sonx", type: "music.song", title: song.title, description, url, images: [image], audio: song.output_url },
+    twitter: { card: "summary_large_image", title: song.title, description, images: [image.url] },
   };
 }
 

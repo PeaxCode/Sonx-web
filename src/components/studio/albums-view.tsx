@@ -9,7 +9,7 @@ import { createAlbum, deleteAlbum, fetchAlbums, fetchAlbumSongs, removeFromAlbum
 import { ConfirmDialog } from "./confirm-dialog";
 import { useFeedback } from "./feedback";
 import { usePlayer } from "./player";
-import { genreName } from "./track-list";
+import { genreName } from "@/lib/song-labels";
 import { Loading } from "@/components/spinner";
 
 const field = "min-w-0 rounded-[var(--radius-control)] border border-line bg-night px-3 py-2 text-sm focus:border-paper/40 focus:outline-none";

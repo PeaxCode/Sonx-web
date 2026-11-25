@@ -8,7 +8,7 @@ import { prefersReducedMotion } from "@/lib/motion";
 import { useCreateOptional } from "./create-context";
 import { useLibrary } from "./library";
 import { usePlayer } from "./player";
-import { genreName } from "./track-list";
+import { genreName } from "@/lib/song-labels";
 
 type Phase = "lyrics" | "starting" | "processing" | "completed" | "failed";
 type StepState = "todo" | "active" | "done" | "failed";

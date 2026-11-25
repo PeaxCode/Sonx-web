@@ -9,7 +9,7 @@ import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
 import { DownloadButton } from "./download-button";
 import { FullPlayer } from "./full-player";
 import { usePlayer } from "./player";
-import { kindLabel } from "./track-list";
+import { kindLabel } from "@/lib/song-labels";
 
 function Seek({ className = "" }: { className?: string }) {
   const { time, duration, seek } = usePlayer();
