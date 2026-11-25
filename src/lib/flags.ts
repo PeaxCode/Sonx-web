@@ -1,12 +1,8 @@
-// Build-time switches for work that is not ready for the live site.
+// Build-time switches for live-site features.
 
 /**
  * Explore and public profiles (/explore, /artist/*) run on published songs and real
- * follows, but stay off getsonx.com until launch. They show on Vercel previews
- * (dev.getsonx.com) and local dev; production needs NEXT_PUBLIC_EXPLORE_ENABLED=true.
- * Unknown environments stay hidden.
+ * follows. They are on everywhere; set NEXT_PUBLIC_EXPLORE_ENABLED=false to hide them
+ * (takes effect on the next build).
  */
-export const exploreEnabled =
-  process.env.NEXT_PUBLIC_EXPLORE_ENABLED === "true" ||
-  process.env.NEXT_PUBLIC_VERCEL_ENV === "preview" ||
-  process.env.NODE_ENV === "development";
+export const exploreEnabled = process.env.NEXT_PUBLIC_EXPLORE_ENABLED !== "false";
