@@ -7,7 +7,7 @@ import { IconChevronDown, IconNext, IconPause, IconPlay, IconPrevious } from "@/
 import { formatTime } from "@/lib/audio";
 import { activeLyricIndex, timeLyrics } from "@/lib/lyrics-sync";
 import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
-import { genreName, kindLabel } from "./track-list";
+import { genreName, kindLabel } from "@/lib/song-labels";
 import { DownloadButton } from "./download-button";
 import { usePlayer } from "./player";
 

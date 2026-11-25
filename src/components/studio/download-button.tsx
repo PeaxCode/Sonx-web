@@ -10,7 +10,7 @@ import { useFeedback } from "./feedback";
  * MP3 download. Examples download for everyone; the user's own songs need a
  * plan (free songs play but do not download), so free accounts get the paywall.
  */
-export function DownloadButton({ generation, className, size = 18 }: { generation: Generation; className: string; size?: number }) {
+export function DownloadButton({ generation, className, size = 18, label: text }: { generation: Generation; className: string; size?: number; label?: string }) {
   const { billing } = useBilling();
   const { openPaywall } = useFeedback();
   const label = `Download ${generation.title}`;
@@ -23,6 +23,7 @@ export function DownloadButton({ generation, className, size = 18 }: { generatio
           openPaywall("MP3 downloads come with a plan");
         }}>
         <IconDownload size={size} />
+        {text && <span>{text}</span>}
       </button>
     );
   }
@@ -31,6 +32,7 @@ export function DownloadButton({ generation, className, size = 18 }: { generatio
     <a href={href} download={filename ?? true} aria-label={label} className={className}
       onClick={() => trackEvent("song_download", { sample: Boolean(generation.is_sample) })}>
       <IconDownload size={size} />
+      {text && <span>{text}</span>}
     </a>
   );
 }

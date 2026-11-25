@@ -23,8 +23,13 @@ async function profileFor(handle: string): Promise<PublicProfile | null> {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const profile = await profileFor((await params).handle);
-  // Kept out of search results with the rest of Explore until launch.
-  return { title: profile ? `${profile.display_name} (@${profile.handle})` : "Artist", robots: { index: false } };
+  if (!profile) return { title: "Artist not found", robots: { index: false } };
+  // Kept out of search results with the rest of Explore until the index decision.
+  return {
+    title: `${profile.display_name} (@${profile.handle})`,
+    alternates: { canonical: `/artist/${profile.handle.toLowerCase()}` },
+    robots: { index: false, follow: true },
+  };
 }
 
 export default function ArtistPage({ params }: Props) {

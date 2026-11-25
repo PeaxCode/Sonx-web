@@ -9,7 +9,7 @@ import { useFeedback } from "./feedback";
  * Publishes the song to its own page (/song/<id>) and hands the link to the
  * phone's share sheet, or copies it on desktop.
  */
-export function ShareButton({ generation, className, size = 18 }: { generation: Generation; className: string; size?: number }) {
+export function ShareButton({ generation, className, size = 18, label }: { generation: Generation; className: string; size?: number; label?: string }) {
   const { notify } = useFeedback();
   // Only songs have a public page (videos and voice models cannot be shared).
   if (generation.is_sample || generation.feature === "AI_MUSIC_VIDEO" || generation.feature === "VOICE_TRAINING") return null;
@@ -35,6 +35,7 @@ export function ShareButton({ generation, className, size = 18 }: { generation: 
   return (
     <button type="button" aria-label={`Share ${generation.title}`} onClick={share} className={className}>
       <IconShare size={size} />
+      {label && <span>{label}</span>}
     </button>
   );
 }
