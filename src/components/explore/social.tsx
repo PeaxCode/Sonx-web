@@ -4,13 +4,14 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useMyProfile } from "@/components/studio/my-profile";
 import { useSession } from "@/components/studio/session";
+import { avatarSrc } from "@/lib/avatars";
 import { isAllowedAvatar, isFollowing, setFollowing } from "@/lib/profiles";
 
 /** Round avatar: the profile picture, or the first letter on the signature gradient. */
 export function Avatar({ url, name, size, className = "" }: { url: string | null; name: string; size: number; className?: string }) {
   if (isAllowedAvatar(url)) {
-    // Only Google sign-in pictures and getsonx.com (the database refuses other hosts).
-    return <Image src={url} alt="" width={size} height={size} unoptimized referrerPolicy="no-referrer" className={`rounded-full bg-raised object-cover ${className}`} style={{ width: size, height: size }} />;
+    // Only Google sign-in pictures, getsonx.com and the profile-images bucket (the database refuses other hosts).
+    return <Image src={avatarSrc(url)} alt="" width={size} height={size} unoptimized referrerPolicy="no-referrer" className={`rounded-full bg-raised object-cover ${className}`} style={{ width: size, height: size }} />;
   }
   return (
     <span aria-hidden="true" className={`bg-signature flex items-center justify-center rounded-full font-semibold ${className}`}
