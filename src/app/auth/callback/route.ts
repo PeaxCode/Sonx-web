@@ -2,9 +2,12 @@ import { NextResponse } from "next/server";
 import { AUTH_EVENT_COOKIE } from "@/lib/auth-event";
 import { createServerSupabase } from "@/lib/supabase/server";
 
-/** Only same-site paths are accepted, so the callback cannot redirect elsewhere. */
+/**
+ * Only same-site paths are accepted, so the callback cannot redirect elsewhere.
+ * Browsers read "\" as "/" and drop tabs and newlines, so "/\evil.com" is refused too.
+ */
 const safeNext = (value: string | null) =>
-  value && value.startsWith("/") && !value.startsWith("//") ? value : "/create";
+  value && value.startsWith("/") && !value.startsWith("//") && !/[\\\u0000-\u001f]/.test(value) ? value : "/create";
 
 /** OAuth (PKCE) return: exchanges the code for a session cookie. */
 export async function GET(request: Request) {
