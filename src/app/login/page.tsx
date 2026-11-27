@@ -7,7 +7,9 @@ import { GoogleSignInButton } from "@/components/google-button";
 
 export const metadata = { title: "Sign in or create your account", robots: { index: false } };
 
-const safeNext = (value?: string) => (value && value.startsWith("/") && !value.startsWith("//") ? value : "/create");
+/** Same-site paths only. Browsers read "\" as "/" and drop tabs and newlines, so "/\evil.com" is refused too. */
+const safeNext = (value?: string) =>
+  value && value.startsWith("/") && !value.startsWith("//") && !/[\\\u0000-\u001f]/.test(value) ? value : "/create";
 
 type LoginSearchParams = Promise<{ next?: string; error?: string }>;
 
