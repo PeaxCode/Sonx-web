@@ -20,14 +20,31 @@ const nextConfig: NextConfig = {
       },
     },
   },
-  // dev.getsonx.com is a private test deployment (the dev branch): keep every
-  // response out of search engines. proxy.ts also serves it a blocking robots.txt.
+  // Don't tell visitors which framework serves the site.
+  poweredByHeader: false,
   async headers() {
-    return [{
-      source: "/:path*",
-      has: [{ type: "host", value: DEV_HOST }],
-      headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
-    }];
+    return [
+      {
+        // Browser security rules for every response. No page is meant to be shown
+        // inside another site's frame (checkout included), so framing is refused.
+        // Paddle's form is a frame inside our page, which these rules do not affect.
+        source: "/:path*",
+        headers: [
+          { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), browsing-topics=()" },
+        ],
+      },
+      {
+        // dev.getsonx.com is a private test deployment (the dev branch): keep every
+        // response out of search engines. proxy.ts also serves it a blocking robots.txt.
+        source: "/:path*",
+        has: [{ type: "host", value: DEV_HOST }],
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
+    ];
   },
   // AI music video is hidden pending payment provider review; see app/(studio)/video/page.tsx.
   async redirects() {
