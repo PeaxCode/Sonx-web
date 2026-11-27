@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { fetchMyProfile, isAllowedAvatar, saveProfile, suggestHandle, validateHandle, type ProfileInput, type PublicProfile } from "@/lib/profiles";
+import { randomPresetAvatar } from "@/lib/avatars";
 import { getSupabase } from "@/lib/supabase/client";
 import { ProfileDialog } from "./profile-dialog";
 import { useSession } from "./session";
@@ -25,7 +26,7 @@ const metadataString = (metadata: Record<string, unknown>, ...keys: string[]) =>
 export function MyProfileProvider({ children }: { children: React.ReactNode }) {
   const { signedIn } = useSession();
   const [profile, setProfile] = useState<PublicProfile | null | undefined>(undefined);
-  const [editing, setEditing] = useState<{ initial: ProfileInput; isNew: boolean } | null>(null);
+  const [editing, setEditing] = useState<{ initial: ProfileInput; isNew: boolean; signInAvatar: string | null } | null>(null);
   const afterSave = useRef<(() => void) | undefined>(undefined);
   // The latest profile for callbacks created before it existed (e.g. a toast's Edit button).
   const latest = useRef(profile);
@@ -42,19 +43,29 @@ export function MyProfileProvider({ children }: { children: React.ReactNode }) {
     if (signedIn) void refresh();
   }, [signedIn, refresh]);
 
-  /** Name, avatar and a handle suggestion from the sign-in account. */
-  const signInDefaults = useCallback(async (): Promise<ProfileInput> => {
+  /**
+   * Name, avatar and a handle suggestion from the sign-in account. Apple and email sign-ins carry
+   * no picture, so those start on a random preset; `signInAvatar` is the account's own picture only.
+   */
+  const signInDefaults = useCallback(async (): Promise<ProfileInput & { signInAvatar: string | null }> => {
     const { data } = await getSupabase().auth.getUser();
     const metadata = data.user?.user_metadata ?? {};
-    const name = metadataString(metadata, "full_name", "name") ?? data.user?.email?.split("@")[0] ?? "";
+    const email = data.user?.email ?? "";
+    // "Hide my email" relay addresses are random letters, not a name worth showing.
+    const emailName = email.endsWith("@privaterelay.appleid.com") ? "" : email.split("@")[0];
+    const name = metadataString(metadata, "full_name", "name") ?? emailName;
     const avatar = metadataString(metadata, "avatar_url", "picture");
-    return { handle: suggestHandle(name), display_name: name.slice(0, 40) || "Sonx artist", bio: "", avatar_url: isAllowedAvatar(avatar) ? avatar : null };
+    const signInAvatar = isAllowedAvatar(avatar) ? avatar : null;
+    return {
+      handle: suggestHandle(name), display_name: name.slice(0, 40) || "Sonx artist", bio: "",
+      avatar_url: signInAvatar ?? randomPresetAvatar(), signInAvatar,
+    };
   }, []);
 
   const ensureProfile = useCallback(async (): Promise<PublicProfile> => {
     const existing = profile ?? (await fetchMyProfile().catch(() => null));
     if (existing) return existing;
-    const defaults = await signInDefaults();
+    const defaults: ProfileInput = await signInDefaults();
     // The suggested handle, then numbered variants, then a random one: the first free one wins.
     const base = defaults.handle && !validateHandle(defaults.handle) ? defaults.handle.slice(0, 26) : "artist";
     const candidates = [base, ...[2, 3, 4, 5].map((n) => `${base}-${n}`), `${base}-${Math.random().toString(36).slice(2, 6)}`]
@@ -79,12 +90,10 @@ export function MyProfileProvider({ children }: { children: React.ReactNode }) {
   const editProfile = useCallback((then?: () => void) => {
     afterSave.current = then;
     const profile = latest.current;
-    if (profile) {
-      setEditing({ initial: { handle: profile.handle, display_name: profile.display_name, bio: profile.bio ?? "", avatar_url: profile.avatar_url }, isNew: false });
-      return;
-    }
-    // A new profile starts from the sign-in name and picture.
-    void signInDefaults().then((initial) => setEditing({ initial, isNew: true }));
+    // A new profile starts from the sign-in name and picture; the sign-in picture stays on offer either way.
+    void signInDefaults().then(({ signInAvatar, ...defaults }) => setEditing(profile
+      ? { initial: { handle: profile.handle, display_name: profile.display_name, bio: profile.bio ?? "", avatar_url: profile.avatar_url }, isNew: false, signInAvatar }
+      : { initial: defaults, isNew: true, signInAvatar }));
   }, [signInDefaults]);
 
   const value = useMemo<MyProfileValue>(
@@ -96,7 +105,7 @@ export function MyProfileProvider({ children }: { children: React.ReactNode }) {
     <MyProfileContext.Provider value={value}>
       {children}
       {editing && (
-        <ProfileDialog initial={editing.initial} isNew={editing.isNew} onClose={() => setEditing(null)}
+        <ProfileDialog initial={editing.initial} isNew={editing.isNew} signInAvatar={editing.signInAvatar} onClose={() => setEditing(null)}
           onSaved={() => {
             setEditing(null);
             void refresh().then(() => afterSave.current?.());

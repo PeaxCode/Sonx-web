@@ -7,7 +7,9 @@ import { useState } from "react";
 import { PLAN_LABELS, PLAN_LIMITS, SONG_POOL, STORE_LINKS, type Feature, type Plan } from "@/lib/billing-config";
 import { Aurora } from "@/components/aurora";
 import { compact } from "@/components/explore/tiles";
+import { avatarSrc } from "@/lib/avatars";
 import { exploreEnabled } from "@/lib/flags";
+import { isAllowedAvatar } from "@/lib/profiles";
 import { MUSIC_FEATURES } from "@/lib/generations";
 import { webCheckoutEnabled, webCreditsEnabled } from "@/lib/paddle";
 import { getSupabase } from "@/lib/supabase/client";
@@ -50,6 +52,8 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
   const { profile, editProfile } = useMyProfile();
   const { generations, loading: songsLoading, hasMore, loadingMore, loadMore } = useLibrary();
   const songs = generations.filter((generation) => MUSIC_FEATURES.includes(generation.feature));
+  // Once there is a profile its picture wins, including "no picture"; before that, the sign-in one.
+  const shownAvatar = profile ? (isAllowedAvatar(profile.avatar_url) ? profile.avatar_url : null) : avatarUrl;
   const webPlan = billing?.isPro && billing.store === "paddle";
   const appPlan = billing?.isPro && billing.store && billing.store !== "paddle" ? STORE_NAMES[billing.store] ?? "your app store" : null;
 
@@ -77,8 +81,8 @@ export function AccountView({ email, name, avatarUrl }: { email: string | null; 
   return (
     <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-5 sm:flex-row sm:items-center">
-        {(profile?.avatar_url ?? avatarUrl) ? (
-          <Image src={(profile?.avatar_url ?? avatarUrl)!} alt="" width={88} height={88} unoptimized referrerPolicy="no-referrer" className="size-[88px] rounded-full object-cover ring-2 ring-paper/10" />
+        {shownAvatar ? (
+          <Image src={avatarSrc(shownAvatar)} alt="" width={88} height={88} unoptimized referrerPolicy="no-referrer" className="size-[88px] rounded-full object-cover ring-2 ring-paper/10" />
         ) : (
           <span className="bg-signature flex size-[88px] items-center justify-center rounded-full text-3xl font-semibold">
             {(profile?.display_name ?? name ?? email ?? "S").charAt(0).toUpperCase()}

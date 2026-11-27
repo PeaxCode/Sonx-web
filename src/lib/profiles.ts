@@ -185,7 +185,8 @@ export async function saveProfile(input: ProfileInput): Promise<void> {
     p_handle: input.handle.trim().toLowerCase(),
     p_display_name: input.display_name.trim(),
     p_bio: input.bio.trim() || null,
-    p_avatar_url: input.avatar_url,
+    // An empty string removes the picture; null would keep the current one.
+    p_avatar_url: input.avatar_url ?? "",
   });
   if (!error) return;
   if (error.code === "23505") throw new Error("That handle is taken. Try another.");
